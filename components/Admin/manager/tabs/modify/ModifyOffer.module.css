@@ -1,0 +1,124 @@
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 0px 10px;
+}
+.buttons > * {
+  background-color: var(--blue-500);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.off {
+  background-color: red;
+}
+.loader {
+  display: none;
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid var(--blue-500);
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  animation: spin 1s linear infinite;
+  z-index: 50;
+}
+.loader_show_red {
+  display: block;
+  border-top: 4px solid red !important;
+  margin-top: -1px;
+}
+.loader_show_blue {
+  display: block;
+  border-top: 4px solid var(--blue-500) !important;
+  margin-top: -1px;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.offerName {
+  background-color: rgba(0, 0, 0, 0.3);
+  font-size: 1.6rem;
+  font-weight: bold;
+  padding: 10px;
+}
+.renameModal {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  transform: translateY(-42px);
+  font-size: 2.6rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  /* white-space: nowrap; */
+  display: none;
+}
+.renameModal_show {
+  display: grid;
+  grid-template-columns: 20% 70%;
+  cursor: pointer;
+}
+.renameModal_show > * {
+  animation: top 300ms;
+}
+@keyframes top {
+  0% {
+    margin-top: -600px;
+    opacity: 0;
+  }
+  100% {
+    margin-top: 0px;
+    opacity: 1;
+  }
+}
+.nameHeading {
+  transform: translateY(-26px);
+  width: auto;
+}
+.renameModal_inputDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+}
+.renameModal_inputDiv input {
+  height: 50px;
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  font-size: 2.6rem;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0px 10px;
+}
+.renameModal_inputDiv input:focus {
+  outline: 4px solid red;
+}
+.renameModal_inputDiv button {
+  background-color: var(--blue-500);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}

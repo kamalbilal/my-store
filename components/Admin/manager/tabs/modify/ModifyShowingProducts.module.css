@@ -1,0 +1,94 @@
+.body {
+  overflow-y: scroll;
+  height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 30px;
+  margin-top: 10px;
+}
+.bodyForInsert {
+  overflow-y: scroll;
+  height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 30px;
+  margin-top: 10px;
+}
+.row {
+  display: grid;
+  grid-template-columns: 20% auto;
+  gap: 10px;
+  padding: 0px 5px;
+}
+.details {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 1);
+}
+.details div {
+  padding: 2px 0px;
+}
+.details div span {
+  color: white;
+  margin-left: 5px;
+}
+
+.input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.input input {
+  padding: 5px;
+  padding-top: 6px;
+  width: 60px;
+  background-color: black;
+  border: none;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 20px;
+  font-size: 1.6rem;
+}
+.input input:focus {
+  border: none;
+  outline: 3px solid red;
+}
+.button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.button div {
+  padding: 10px 15px;
+  padding-top: 8px;
+  background-color: var(--blue-500);
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.6rem;
+  cursor: pointer;
+  user-select: none;
+}
+.button div:nth-child(2) {
+  background-color: red;
+  margin-right: 0px;
+}
+.line {
+  width: 98vw;
+  display: flex;
+  justify-content: center;
+  height: 2px;
+  background-color: black;
+}
+.noData {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  font-weight: bold;
+}

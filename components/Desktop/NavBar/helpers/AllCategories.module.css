@@ -1,0 +1,100 @@
+.mainDiv {
+  font-size: 3rem;
+  display: flex;
+  height: 100%;
+  background-color: gray;
+}
+.categories {
+  width: 100%;
+  max-width: 20%;
+  min-width: 20%;
+  background-color: white;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  padding: 1rem;
+  margin: 0;
+  /* margin-bottom: 2rem; */
+  text-transform: uppercase;
+  background-color: var(--blue-500);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.scroller {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 100%;
+  border-right: 2px solid var(--white-light);
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollerHide::-webkit-scrollbar {
+  /* display: none; */
+  opacity: 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollerHide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox End */
+.category {
+  font-size: 2rem;
+  color: black;
+  text-transform: capitalize;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  transition: all;
+  transition-duration: 150ms;
+  border-radius: 10px;
+  padding-bottom: 1.2rem;
+}
+.category:hover {
+  /* outline: 2px solid var(--red-500); */
+  color: white;
+  background-color: var(--blue-500);
+}
+
+.right {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.877);
+}
+.header {
+  width: 100% !important;
+  position: relative;
+}
+.escBtn {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 1rem;
+  background-color: white;
+  border-radius: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.escBtn:hover,
+.escBtn:focus {
+  outline: 3px solid red;
+}
+.closeIcon {
+  transform: scale(1.8);
+  color: red;
+}

@@ -1,0 +1,201 @@
+.container {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  margin-bottom: 30px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  /* padding-left: 10px; */
+  /* padding-right: 10px; */
+  margin-bottom: 10px;
+  /* background-color: rebeccapurple; */
+}
+.title {
+  font-size: 2.5rem;
+  margin-left: 15px;
+  padding: 3px;
+  padding-bottom: 6.5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  /* padding: 5px;
+  margin-left: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-bottom: 9px; */
+  color: white;
+  background-color: var(--blue-500);
+  text-transform: capitalize;
+  /* background-color: var(--white-light-2); */
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  transition: all;
+  transition-duration: 200ms;
+  /* outline-offset: 15px; */
+  /* animation: blinker 3s linear infinite; */
+}
+.titleChange {
+  border: 3px solid var(--blue-500);
+}
+.container:hover .titleChange {
+  /* animation: none;
+  border: 3px solid var(--blue-500);
+  color: var(--blue-500);
+  background-color: transparent; */
+}
+@keyframes blinker {
+  50% {
+    /* color: red; */
+    /* background-color: transparent; */
+  }
+}
+.dateDiv {
+  animation: none;
+  width: 222px;
+  font-weight: bold;
+  outline: 3px solid var(--blue-500);
+  color: var(--blue-500);
+  display: flex;
+  white-space: nowrap;
+  padding: 0;
+  justify-content: space-between;
+  font-size: 2rem;
+  background-color: var(--blue-500);
+  transform: translateX(-25px);
+}
+.timeTitle {
+  /* width: 150px; */
+  background-color: var(--blue-500);
+  padding: 10px;
+  padding-top: 7px;
+  color: white;
+  font-size: 2rem;
+  height: 40px;
+}
+.timeDiv {
+  /* padding-left: 12px; */
+  /* padding-right: 10px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: red;
+  background-color: white;
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+}
+.timeDiv div {
+  transform: translateY(-1px);
+}
+.timeDot {
+  margin-left: 3px;
+  margin-right: 3px;
+  transform: translateY(-1px);
+}
+.hours,
+.minutes,
+.seconds {
+  color: red;
+}
+.seconds {
+  /* margin-left: 3px; */
+  color: red;
+}
+.showAll {
+  /* margin-left: auto; */
+  display: flex;
+  margin-right: 10px;
+  padding: 10px;
+  background-color: var(--blue-500);
+  border-radius: 5px;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.products {
+  display: flex;
+  gap: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.leftIconDiv {
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  transform: translateY(-70%) scale(1.4);
+  left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 500px;
+  background-color: red;
+  color: white;
+  border: 1px solid white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.39);
+  opacity: 0;
+  transition: all;
+  transition-duration: 300ms;
+}
+.leftIcon {
+  transform: scale(1.9);
+}
+.rightIconDiv {
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  transform: translateY(-70%) scale(1.4);
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 500px;
+  background-color: red;
+  color: white;
+  border: 1px solid white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.39);
+  opacity: 0;
+  transition: all;
+  transition-duration: 300ms;
+}
+.productsDiv {
+  display: flex;
+  gap: 12px;
+  /* overflow-x: hidden; */
+  transform: translateX(0px);
+  transition: all;
+  transition-duration: 400ms;
+  transition-timing-function: ease-in;
+  /* width: auto !important; */
+}
+.container:hover .leftIconDiv {
+  opacity: 1 !important;
+}
+.container:hover .rightIconDiv {
+  opacity: 1 !important;
+}
+.offerEnded {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: white;
+  background-color: red;
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 5px;
+  transform: translateX(-15px) !important;
+}

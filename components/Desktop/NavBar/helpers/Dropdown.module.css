@@ -1,0 +1,89 @@
+
+.noAccount {
+    display: flex;
+   justify-content: space-evenly;
+   gap: 5px;
+   padding: 15px;
+   position: relative;
+}
+.noAccount::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 85%;
+    height: 1px;
+    background-color: #c4c4c4;
+}
+.account {
+    padding: 15px 20px;
+    position: relative;
+}
+.account::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 85%;
+    height: 1px;
+    background-color: #c4c4c4;
+}
+.accountTitle {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+.accountDetail {
+    font-size: 1.2rem;
+    margin-top: 5px;
+    }
+.button {
+    width: 100%; 
+    padding: 10px;
+    background-color: var(--blue-500);
+    color: white;
+    font-weight: 600;
+    border-radius: 5px;
+    border: none;
+}
+.login {
+    background-color: var(--white-light);
+    color: var(--blue-500);
+        
+}
+.dropdown {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+
+    padding: 0px 10px;
+}
+.dropdown button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: #333;
+    font-size: 1.4rem;
+    transition: all;
+    transition-duration: 100ms;
+}
+.dropdown button:hover {
+    background-color: var(--white-light);
+    scale: 1.05;
+}
+.icons {
+    scale: 1.3;
+    translate: 0px 0px;
+    color: var(--blue-500);
+}
+.accountIcons {
+    translate: 1px 0px;
+    scale: 1.26;
+}
+.settingIcon {
+    scale: 1.35;
+}
+.logoutIcon {
+    translate: 2px 0px;
+    scale: 1.4;
+}

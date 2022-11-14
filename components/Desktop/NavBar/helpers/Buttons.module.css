@@ -1,0 +1,84 @@
+.buttonWrapper {
+  font-size: 1.3rem;
+  padding: 0.5rem;
+  background-color: var(--white-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  transition: all;
+  transition-duration: 75ms;
+  position: relative;
+  height: 40px;
+  width: 40px;
+}
+
+.buttonWrapper:hover {
+  background-color: white;
+  outline: var(--outlineSize) solid var(--blue-500);
+}
+.buttonWrapper:focus {
+  background-color: white;
+  outline: var(--outlineSize) solid var(--blue-500);
+  transform: scale(1.05);
+}
+.redOutline:focus,
+.redOutline:hover {
+  outline: var(--outlineSize) solid var(--red-500) !important;
+}
+.cart {
+  color: var(--blue-500);
+  font-size: 2rem;
+}
+.gift {
+  color: var(--red-500);
+  font-size: 2rem;
+}
+.iconsColorBlue {
+  color: var(--blue-500) !important;
+}
+.iconsColorRed {
+  color: var(--red-500) !important;
+}
+.heart {
+  color: var(--red-500);
+  font-size: 2.3rem;
+}
+.profileWrapper {
+  width: 80px;
+  height: 40px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.profile {
+  color: var(--blue-500);
+  font-size: 2.2rem;
+}
+.arrow {
+  color: gray;
+  transition: all;
+  transition-duration: 75ms;
+  font-size: 2rem;
+}
+.buttonWrapper:focus .arrow {
+  font-size: 2.5rem;
+}
+.redOutline:focus .arrow {
+  font-size: 2.5rem;
+}
+.count {
+  position: absolute;
+  z-index: 10;
+  right: -0.3rem;
+  top: -0.2rem;
+  font-size: 1rem;
+  background-color: var(--red-500);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  width: 20px;
+  height: 20px;
+  color: white;
+}

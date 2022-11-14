@@ -1,0 +1,93 @@
+.body {
+  width: 100%;
+  height: calc(100% - 40px);
+  padding-bottom: 10px;
+  overflow-y: scroll;
+  font-size: 2rem;
+  font-weight: bold;
+}
+.offerDetailsTitle {
+  color: white;
+  padding: 10px 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  margin-top: 10px;
+}
+.colorWhite {
+  color: white;
+}
+.data,
+.dataTitles {
+  display: grid;
+  grid-template-columns: 25% auto;
+  align-items: center;
+  padding: 0px 10px;
+}
+.data > *,
+.dataTitles > * {
+  padding: 5px 0px;
+}
+.data:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.data:hover {
+  background-color: var(--blue-500);
+}
+.data:hover * {
+  color: white;
+}
+.options {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  justify-content: flex-start;
+}
+.delete {
+  margin-left: auto;
+  margin-right: 5px;
+}
+.alloptions {
+  margin-left: 60px;
+}
+.length {
+  margin-right: 70px;
+}
+.manageBtn {
+  margin-left: 10px;
+}
+.checkbox {
+  width: 50px;
+  height: 25px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  position: relative;
+  transform: translateY(-3px);
+}
+.checkbox div {
+  position: absolute;
+  /* top: 50%;
+  transform: translateY(-50%); */
+  top: 5px;
+  left: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 200px;
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  transition: all;
+  transition-timing-function: ease-in-out;
+  transition-duration: 300ms;
+  pointer-events: none;
+}
+.checked {
+  background-color: green;
+  position: relative !important;
+  transform: translateY(-3px);
+}
+.checked div {
+  position: absolute !important;
+  background-color: white;
+  left: 30px !important;
+  pointer-events: none;
+}

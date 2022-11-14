@@ -1,0 +1,52 @@
+.container {
+  background-color: var(--blue-500);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 50px;
+  /* align-items: center; */
+  justify-items: center;
+  color: white;
+  /* padding-bottom: 10px; */
+}
+.icon,
+.twitterIcon {
+  color: white;
+  font-size: 2.5rem;
+}
+.twitterIcon {
+  font-size: 2.7rem;
+}
+.heading {
+  margin-bottom: 30px;
+  font-size: 2.1rem;
+}
+.element {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  margin-bottom: 20px;
+  color: white;
+  /* font-weight: 600; */
+}
+.element:hover {
+  text-decoration: underline;
+}
+.text {
+  padding: 0;
+  margin: 0;
+  font-size: 1.3rem;
+  transform: translateY(-1px);
+}
+.copyright {
+  margin: 0;
+  text-align: center;
+  background-color: var(--blue-500);
+  width: 100%;
+  padding: 10px;
+  padding-bottom: 10px;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: bold;
+  border-top: 1px solid rgba(210, 213, 217, 0.26);
+}

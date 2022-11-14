@@ -1,0 +1,64 @@
+.tabsNames {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  border-top: 5px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  margin-bottom: 10px;
+}
+.tabBtn {
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  padding: 20px;
+  padding-bottom: 15px;
+  position: relative;
+}
+
+.tabBtnActive {
+  color: var(--blue-500);
+  font-weight: bold;
+}
+.tabBtnActive::after {
+  content: "";
+  position: absolute;
+  width: 90%;
+  height: 3px;
+  background-color: var(--blue-500);
+  bottom: -1px;
+  left: 50%;
+  right: 50%;
+  transform: translate(-50%, -50%);
+  animation-name: afterAnimation;
+  animation-duration: 0.5s;
+}
+@keyframes afterAnimation {
+  0% {
+    width: 0px;
+    opacity: 0;
+  }
+  100% {
+    width: 90%;
+    opacity: 1;
+  }
+}
+.tabsData div {
+  animation-name: opacity;
+  animation-duration: 0.2s;
+}
+@keyframes opacity {
+  0% {
+    /* width: 0px; */
+    opacity: 0;
+  }
+  100% {
+    /* width: 100%; */
+    opacity: 1;
+  }
+}
+.tabsData > * {
+  display: none;
+}
+
+.show {
+  display: block !important;
+}

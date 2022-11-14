@@ -1,0 +1,34 @@
+.specifications {
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  line-height: 40px;
+  width: 100%;
+  align-items: center;
+  height: 100%;
+  /* transform: translateX(50%); */
+}
+
+.specifications ul {
+  display: inline-grid;
+  grid-template-columns: 35% 35%;
+  grid-column-gap: 55px;
+  white-space: nowrap;
+  list-style: none;
+  /* justify-content: center; */
+}
+.specifications li {
+  /* width: 50%; */
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+.specifications li > span:first-child {
+  color: var(--blue-500);
+  font-weight: bold;
+  margin-right: 2px;
+}
+.specifications li::before {
+  content: "• ";
+  font-size: 2rem;
+  color: var(--blue-500);
+}

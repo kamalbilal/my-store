@@ -1,0 +1,48 @@
+.bannerWrapper {
+  width: 100%;
+  height: 100%;
+}
+.imagesWrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.arrowBtn {
+  opacity: 0;
+  position: absolute;
+  top: 0px;
+  height: 100%;
+  width: 4.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 5;
+  transition: all;
+  transition-duration: 300ms;
+  outline: none;
+  border: none;
+}
+.imagesWrapper:hover > .arrowBtn {
+  opacity: 1;
+}
+.leftBtn {
+  left: 0;
+}
+.leftIcon {
+  transform: scale(5);
+  color: white;
+}
+.rightBtn {
+  right: 0;
+}
+.slider {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  transition: transform;
+  transition-duration: 700ms;
+  transition-timing-function: ease-in;
+  transform: translateX(0);
+}

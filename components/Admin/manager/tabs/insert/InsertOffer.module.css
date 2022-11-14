@@ -1,0 +1,42 @@
+.pagination {
+  overflow-x: scroll;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.541);
+}
+.pagination button {
+  font-weight: bold;
+  color: white;
+  padding: 10px;
+}
+.pagination {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.pagination::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+.active_pagination {
+  background-color: var(--blue-500);
+  border-radius: 8px;
+}
+.reGet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: red;
+  padding: 10px;
+  font-weight: bold;
+  padding-left: 13px;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.reGet > * {
+  transform: scale(1.8);
+}

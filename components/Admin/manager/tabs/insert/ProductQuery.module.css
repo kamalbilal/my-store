@@ -1,0 +1,45 @@
+.body {
+  padding: 20px;
+  margin-top: 10px;
+}
+.discount {
+  font-size: 1.8rem;
+  font-weight: bold;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 10px;
+  flex-direction: column;
+}
+.discount div input {
+  margin-left: 10px;
+  font-size: 1.8rem;
+  width: 70px;
+  border-radius: 10px;
+  height: 35px;
+  border: none;
+  text-align: center;
+}
+.discount div input:focus {
+  outline: 2px solid red;
+}
+.discount div:nth-child(2) input {
+  width: 80%;
+  padding-left: 5px;
+  text-align: left;
+}
+.discount button {
+  width: 180px;
+}
+.newOfferButton {
+  background-color: green;
+  color: white;
+  padding: 10px 15px;
+  font-size: 1.7rem;
+  font-weight: bold;
+  border-radius: 10px;
+}
+.insertButton {
+  background-color: var(--blue-500);
+}

@@ -1,0 +1,200 @@
+.viewDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  margin-top: 5px;
+  padding: 10px 0px;
+  border-radius: 5px;
+  user-select: none;
+}
+.view {
+  margin-right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--white-light);
+  padding: 5px 15px;
+  border-radius: 20px;
+  transition: all;
+  transition-duration: 75ms;
+}
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* .sortBy {
+  display: flex;
+  background-color: var(--white-light);
+  border-radius: 20px;
+  padding: 0px 15px;
+  padding-right: 0;
+}
+.sortBy p {
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-1px);
+  align-self: center;
+  margin-right: 8px;
+}
+
+.sortBy button {
+  padding: 11px 10px;
+}
+.sortBy button:nth-child(3) {
+  padding: 0 15px !important;
+} */
+.sortBy {
+  display: grid;
+  grid-template-columns: 8.5rem auto;
+  background-color: var(--white-light);
+  border-radius: 20px;
+  transition: all;
+  transition-duration: 75ms;
+  position: relative;
+}
+.sortBy p {
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-1px);
+  padding: 9px;
+  margin-left: 10px;
+}
+.sortBy button:not(.dropdownButton) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--blue-500);
+  color: white;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  cursor: pointer;
+}
+.sortBy button div {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+  padding: 0px 10px;
+}
+.sortBy button div span > * {
+  transform: translateY(2px) scale(1.5);
+  margin-left: 4px;
+}
+.dropdown {
+  position: absolute;
+  font-size: 1.6rem;
+  color: red;
+  right: 0px;
+  top: calc(100% + 6px);
+  /* top: 0; */
+  background-color: white;
+  /* width: calc(100% + 20px); */
+  width: 150px;
+  padding: 0 !important;
+  z-index: 10;
+  border-radius: 8px;
+  border: 2px solid var(--blue-500);
+  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+.dropdownShow {
+  display: block;
+  animation: topFade 100ms;
+}
+@keyframes topFade {
+  0% {
+    top: 85%;
+    opacity: 0;
+  }
+  100% {
+    top: calc(100% + 6px);
+    opacity: 1;
+  }
+}
+.dropdownButton {
+  color: black;
+  width: 100%;
+  padding: 10px 0px;
+  font-size: 1.4rem;
+}
+.dropdownButton:not(:last-child) {
+  border-bottom: 1px solid var(--white-light);
+}
+.dropdownButton:hover,
+.dropdownButton:focus {
+  background-color: var(--blue-500);
+  color: white;
+  font-weight: bold;
+  outline: none;
+}
+.dropdownButton:hover:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.dropdownButton:hover:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.sortBySelectedMatch {
+  background-color: var(--blue-500);
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  animation: fade 300ms;
+}
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.sortBySelectedPrice {
+  font-size: 1.5rem;
+  background-color: var(--blue-500);
+  color: white;
+  font-weight: bold;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  animation: fade 300ms;
+}
+.view:hover,
+.sortBy:hover {
+  outline: 4px solid var(--blue-500);
+}
+.view p {
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  transform: translateY(-1px);
+}
+.blueColor {
+  color: var(--blue-500);
+}
+.grid {
+  cursor: pointer;
+  font-size: 2.2rem;
+  transform: translateY(3px);
+}
+.list {
+  font-size: 1.7rem !important;
+  cursor: pointer;
+  transform: translateY(2.5px);
+}
+.foundTitle {
+  font-size: 1.6rem;
+  /* font-weight: bold; */
+  margin-left: 10px;
+}
+.foundTitle span {
+  font-weight: bold;
+  color: red;
+}
