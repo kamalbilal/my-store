@@ -155,10 +155,12 @@ function ProductLayout({ productData }) {
     productData["shipping"].map((element, index) => {
       const newPrice = element["displayAmount"] || "free";
       const oldPrice = element["displayAmount"] || "free";
-      const fulldate = new Date(element["deliveryDate"]);
-      const month = monthNames[fulldate.getMonth()];
-      const date = fulldate.getDate();
-      element["deliveryDate"] = `${month} ${date}`;
+      if (element["deliveryDate"]) {
+        const fulldate = new Date(element["deliveryDate"]);
+        const month = monthNames[fulldate.getMonth()];
+        const date = fulldate.getDate();
+        element["deliveryDate"] = `${month} ${date}`;
+      }
       const bizData = element;
       setShippingData((prev) => ({
         ...prev,
@@ -394,7 +396,6 @@ function ProductLayout({ productData }) {
     let index = priceList["InNumbers"].indexOf(test);
     if (index === -1) {
       index = priceList["InNumbers"].indexOf(test.slice(0, -1)); // slice ; from last 
-      console.log({index, "ssj" : test.slice(0, -1)}); // slice ; from last 
       if (index === -1) {
         setDefaultQuality(productData["quantityAvaliable"]);
         return setCurrentPrice(productData["maxPrice"]);
@@ -553,7 +554,6 @@ function ProductLayout({ productData }) {
           if (propertyName === "Ships From") {
             return;
           }
-
           return (
             <div key={index}>
               <span className={styles.heading}>
@@ -657,6 +657,17 @@ function ProductLayout({ productData }) {
                 type="text"
                 placeholder={quantity}
                 value={quantity}
+                disabled={
+                  maxPurchaseLimit > 0
+                    ? quantity >= maxPurchaseLimit
+                      ? true
+                      : quantity === 0
+                        ? true
+                        : false
+                    : quantity >= defaultQuality
+                      ? true
+                      : false
+                }
                 onBlur={() => {
                   setInputFocused(false);
                   if ((quantity === 0 && inputFocused === true) || quantity === "0" || quantity < 0) {
@@ -690,11 +701,11 @@ function ProductLayout({ productData }) {
                   ? quantity >= maxPurchaseLimit
                     ? true
                     : quantity === 0
+                      ? true
+                      : false
+                  : quantity >= defaultQuality
                     ? true
                     : false
-                  : quantity >= defaultQuality
-                  ? true
-                  : false
               }
               onClick={() => {
                 //console.log({ maxPurchaseLimit, quantity, defaultQuality });
@@ -708,8 +719,7 @@ function ProductLayout({ productData }) {
               {quantity === 0 && inputFocused === false ? (
                 <span className={(styles.colorName, styles.outOfStock)}>Out of Stock.</span>
               ) : maxPurchaseLimit > 0 ? (
-                `${maxPurchaseLimit} ${
-                  maxPurchaseLimit > 1 ? productData["multiUnitName"] || "pieces" : productData["oddUnitName"] || "piece"
+                `${maxPurchaseLimit} ${maxPurchaseLimit > 1 ? productData["multiUnitName"] || "pieces" : productData["oddUnitName"] || "piece"
                 }${productData["buyLimitText"] || " at most per customer"}`
               ) : (
                 `${defaultQuality} ${productData["multiUnitName"]} Avaliable`
@@ -756,11 +766,10 @@ function ProductLayout({ productData }) {
               </div>
               <div className={styles.moreOptions}>
                 <div>
-                  {`Estimated Date: ${
-                    mainshippingFee["bizData"].hasOwnProperty("deliveryDate") === true
-                      ? mainshippingFee["bizData"]["deliveryDate"]
-                      : mainshippingFee["bizData"]["deliveryTime"] + " Days"
-                  }`}
+                  {`Estimated Date: ${mainshippingFee["bizData"].hasOwnProperty("deliveryDate") === true
+                    ? mainshippingFee["bizData"]["deliveryDate"]
+                    : mainshippingFee["bizData"]["deliveryTime"] + " Days"
+                    }`}
                 </div>
                 <button onClick={showShippingMethodModal} className={styles.showMoreOptions}>
                   More Options <IoIosArrowDown />
@@ -786,53 +795,54 @@ function ProductLayout({ productData }) {
               {/* Data */}
               {shippingData
                 ? Object.keys(shippingData).map((element, index) => {
-                    if (shippingData[element]["display"] === false) {
-                      return;
-                    }
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          for (let x in toggleCheckBtn) {
-                            setToggleCheckBtn((prev) => ({ ...prev, [x]: false }));
-                          }
-                          setToggleCheckBtn((prev) => ({ ...prev, [index]: true }));
-                          setMainshippingFee(shippingData[element]);
-                          if (shippingData[element]["oldPrice"] === "free") {
-                            setShippingDataSelected(null);
-                          } else {
-                            setShippingDataSelected(element);
-                          }
-                        }}
-                        className={styles.shippingDetailList}
-                      >
-                        <div className={styles.shippingFeeTitle}>
-                          {shippingData[element]["newPrice"] === "free" ? "Free" : ""} Shipping
-                          {shippingData[element]["newPrice"] !== "free" ? ": $" + round(shippingData[element]["newPrice"], 2) : ""}
-                        </div>
-                        <div className={cn(styles.shippingDetail, styles.shippingDetailLineHeight)}>
-                          <div>
-                            {`To ${shippingData[element]["bizData"]["shipTo"]} via
+                  if (shippingData[element]["display"] === false) {
+                    return;
+                  }
+                  // console.log(shippingData[element]);
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        for (let x in toggleCheckBtn) {
+                          setToggleCheckBtn((prev) => ({ ...prev, [x]: false }));
+                        }
+                        setToggleCheckBtn((prev) => ({ ...prev, [index]: true }));
+                        setMainshippingFee(shippingData[element]);
+                        if (shippingData[element]["oldPrice"] === "free") {
+                          setShippingDataSelected(null);
+                        } else {
+                          setShippingDataSelected(element);
+                        }
+                      }}
+                      className={styles.shippingDetailList}
+                    >
+                      <div className={styles.shippingFeeTitle}>
+                        {shippingData[element]["newPrice"] === "free" ? "Free" : ""} Shipping
+                        {shippingData[element]["newPrice"] !== "free" ? ": $" + round(shippingData[element]["newPrice"], 2) : ""}
+                      </div>
+                      <div className={cn(styles.shippingDetail, styles.shippingDetailLineHeight)}>
+                        <div>
+                          {`To ${shippingData[element]["bizData"]["shipTo"]} via
                             ${shippingData[element]["bizData"]["deliveryProviderName"]}`}
-                          </div>
-                          <div>
-                            Estimated Date:{" "}
-                            {shippingData[element]["bizData"].hasOwnProperty("deliveryDate") === true
-                              ? shippingData[element]["bizData"]["deliveryDate"]
-                              : shippingData[element]["bizData"]["deliveryTime"] + " Days"}
-                          </div>
                         </div>
-                        {/* checkbox */}
-                        <div className={styles.checkBtn}>
-                          {toggleCheckBtn[index] !== true ? (
-                            <ImRadioUnchecked className={styles.check} />
-                          ) : (
-                            <FaCheckCircle className={styles.check} />
-                          )}
+                        <div>
+                          Estimated Date:{" "}
+                          {shippingData[element]["bizData"].hasOwnProperty("deliveryDate") === true
+                            ? (shippingData[element]["bizData"]["deliveryDate"])
+                            : (shippingData[element]["bizData"]["deliveryTime"]) + " Days"}
                         </div>
-                      </button>
-                    );
-                  })
+                      </div>
+                      {/* checkbox */}
+                      <div className={styles.checkBtn}>
+                        {toggleCheckBtn[index] !== true ? (
+                          <ImRadioUnchecked className={styles.check} />
+                        ) : (
+                          <FaCheckCircle className={styles.check} />
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
                 : ""}
 
               {/* Data End */}
@@ -850,23 +860,19 @@ function ProductLayout({ productData }) {
             ref={addToCart_AddToCart_ref}
             disabled={quantity == 0 ? true : false}
             onMouseOver={() => {
+              console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
-              const totalNumberOfProductsDetails = totalNumberOfProductDetails;
-              let userSelecedAll = true;
-              if (numberOfSelectedProductsDetails.length === totalNumberOfProductsDetails) {
-                numberOfSelectedProductsDetails.map((element3, index3) => {
-                  if (sizeColorsSelectedData[element3] == null) {
-                    userSelecedAll = false;
-                    return;
-                  }
-                });
-              } else {
-                userSelecedAll = false;
+              // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
+              if (numberOfSelectedProductsDetails.length === 0 || numberOfSelectedProductsDetails.length !== totalNumberOfProductDetails) {
+                return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
-              if (userSelecedAll === false) {
-                cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
 
-                return;
+              const isAllSelected = !(numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false))
+
+              if (isAllSelected === true) {
+                // api thing
+              } else {
+                return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
             }}
             onMouseLeave={() => {
@@ -874,70 +880,70 @@ function ProductLayout({ productData }) {
             }}
             onClick={() => {
               //console.log("buy now");
-              if (addToCart === false) {
-                const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
-                const totalNumberOfProductsDetails = totalNumberOfProductDetails;
+              // if (addToCart === false) {
+              //   const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
+              //   const totalNumberOfProductsDetails = totalNumberOfProductDetails;
 
-                let userSelecedAll = true;
-                if (numberOfSelectedProductsDetails.length === totalNumberOfProductsDetails) {
-                  numberOfSelectedProductsDetails.map((element3, index3) => {
-                    if (sizeColorsSelectedData[element3] == null) {
-                      userSelecedAll = false;
-                      return;
-                    }
-                  });
-                } else {
-                  userSelecedAll = false;
-                }
+              //   let userSelecedAll = true;
+              //   if (numberOfSelectedProductsDetails.length === totalNumberOfProductsDetails) {
+              //     numberOfSelectedProductsDetails.map((element3, index3) => {
+              //       if (sizeColorsSelectedData[element3] == null) {
+              //         userSelecedAll = false;
+              //         return;
+              //       }
+              //     });
+              //   } else {
+              //     userSelecedAll = false;
+              //   }
 
-                if (userSelecedAll === false) {
-                  cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
-                  setTimeout(() => {
-                    cartErrorRef.current.classList.remove(styles.cartErrorDiv_show);
-                  }, 2000);
+              //   if (userSelecedAll === false) {
+              //     cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
+              //     setTimeout(() => {
+              //       cartErrorRef.current.classList.remove(styles.cartErrorDiv_show);
+              //     }, 2000);
 
-                  return;
-                } else {
-                  if (quantity <= 0) {
-                    return;
-                  }
-                  const tempCartNumber = cartNumber;
-                  const alreadyInCart = tempCartNumber["ids"].hasOwnProperty(productData["_id"]);
-                  const cartData = {
-                    _id: productData["_id"],
-                    productPrice: productData["maxPrice"],
-                    title: productData["title"],
-                    discount: productData["discount"],
-                    maxPrice_AfterDiscount: productData["maxPrice_AfterDiscount"],
-                    shippingDetails: { ...mainshippingFee },
-                    productSelectedDetails: { ...sizeColorsSelectedData },
-                    // productSelectedDetailsIndex: { ...productSelectedDetailsIndex },
-                    quantity: quantity,
-                    selectedImage: productDataContainImage === true ? productSelectedImageForCart : mainImage,
-                    totalProductOptions: totalNumberOfProductDetails,
-                    totalSelectedProductOptions: Object.keys(sizeColorsSelectedData).length,
-                  };
-                  tempCartNumber["ids"].push(cartData);
-                  if (alreadyInCart === false) {
-                    tempCartNumber["count"] = Object.keys(tempCartNumber["ids"]).length;
-                  }
-                  setCartNumber({ ...tempCartNumber });
-                  addToCart_To_Server(cartData, "add");
-                }
-              } else {
-                const tempCartNumber = cartNumber;
-                // const alreadyInCart = tempCartNumber["ids"].hasOwnProperty(productData["_id"]);
-                tempCartNumber["ids"].forEach((element, index) => {
-                  if (element["_id"] === productData["_id"]) {
-                    addToCart_To_Server(productData["_id"], "remove");
-                    tempCartNumber["ids"].remove(index);
-                    console.log(tempCartNumber["ids"].length);
-                    tempCartNumber["count"] = tempCartNumber["ids"].length;
-                    setCartNumber({ ...tempCartNumber });
-                  }
-                });
-              }
-              setAddToCart((prev) => !prev);
+              //     return;
+              //   } else {
+              //     if (quantity <= 0) {
+              //       return;
+              //     }
+              //     const tempCartNumber = cartNumber;
+              //     const alreadyInCart = tempCartNumber["ids"].hasOwnProperty(productData["_id"]);
+              //     const cartData = {
+              //       _id: productData["_id"],
+              //       productPrice: productData["maxPrice"],
+              //       title: productData["title"],
+              //       discount: productData["discount"],
+              //       maxPrice_AfterDiscount: productData["maxPrice_AfterDiscount"],
+              //       shippingDetails: { ...mainshippingFee },
+              //       productSelectedDetails: { ...sizeColorsSelectedData },
+              //       // productSelectedDetailsIndex: { ...productSelectedDetailsIndex },
+              //       quantity: quantity,
+              //       selectedImage: productDataContainImage === true ? productSelectedImageForCart : mainImage,
+              //       totalProductOptions: totalNumberOfProductDetails,
+              //       totalSelectedProductOptions: Object.keys(sizeColorsSelectedData).length,
+              //     };
+              //     tempCartNumber["ids"].push(cartData);
+              //     if (alreadyInCart === false) {
+              //       tempCartNumber["count"] = Object.keys(tempCartNumber["ids"]).length;
+              //     }
+              //     setCartNumber({ ...tempCartNumber });
+              //     addToCart_To_Server(cartData, "add");
+              //   }
+              // } else {
+              //   const tempCartNumber = cartNumber;
+              //   // const alreadyInCart = tempCartNumber["ids"].hasOwnProperty(productData["_id"]);
+              //   tempCartNumber["ids"].forEach((element, index) => {
+              //     if (element["_id"] === productData["_id"]) {
+              //       addToCart_To_Server(productData["_id"], "remove");
+              //       tempCartNumber["ids"].remove(index);
+              //       console.log(tempCartNumber["ids"].length);
+              //       tempCartNumber["count"] = tempCartNumber["ids"].length;
+              //       setCartNumber({ ...tempCartNumber });
+              //     }
+              //   });
+              // }
+              // setAddToCart((prev) => !prev);
             }}
             className={cn(styles.buyButton, styles.cartBtn, addToCart === false ? styles.addToCart : styles.success)}
           >
