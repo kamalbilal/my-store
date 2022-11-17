@@ -356,7 +356,7 @@ function ProductLayout({ productData }) {
     // //console.log(mainImage);
   }, [mainImage]);
 
-  async function addToCart_To_Server(cartData, type) {
+  async function addToCart_To_Server(cartData) {
     let options = {
       url: "http://localhost:8000/addtocart",
       method: "POST",
@@ -367,9 +367,8 @@ function ProductLayout({ productData }) {
         "Content-Type": "application/json",
       },
       data: {
-        cartData,
+        ...cartData,
         pwd: "Kamal",
-        type: type, // add or remove
       },
     };
 
@@ -590,6 +589,7 @@ function ProductLayout({ productData }) {
                           setSizeColorsSelectedData((prevState) => ({
                             ...prevState,
                             [index]: {
+                              propertyName,
                               isSelected: false,
                               selected: "",
                               Data: `${dataAttributeFirst}:${dataAttributeSecond};`,
@@ -603,6 +603,7 @@ function ProductLayout({ productData }) {
                           setSizeColorsSelectedData((prevState) => ({
                             ...prevState,
                             [index]: {
+                              propertyName,
                               isSelected: true,
                               selected: dataAttributeThird,
                               Data: `${dataAttributeFirst}:${dataAttributeSecond};`,
@@ -798,7 +799,6 @@ function ProductLayout({ productData }) {
                   if (shippingData[element]["display"] === false) {
                     return;
                   }
-                  // console.log(shippingData[element]);
                   return (
                     <button
                       key={index}
@@ -813,6 +813,7 @@ function ProductLayout({ productData }) {
                         } else {
                           setShippingDataSelected(element);
                         }
+                       
                       }}
                       className={styles.shippingDetailList}
                     >
@@ -853,7 +854,10 @@ function ProductLayout({ productData }) {
 
         {/* Add to cart */}
         <div ref={addToCardDiv_ref} className={styles.buyDiv}>
-          <button disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
+          <button onClick={() => {
+                        console.log(mainshippingFee);
+
+          }} disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
             Buy Now
           </button>
           <button
@@ -868,8 +872,27 @@ function ProductLayout({ productData }) {
               }
 
               const isAllSelected = !(numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false))
-
               if (isAllSelected === true) {
+                const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-")
+                const shippingDetails = mainshippingFee["bizData"]
+                const newPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
+                const oldPrice = mainshippingFee["oldPrice"] === "free" ? 0 : mainshippingFee["oldPrice"]
+                const order_quantity = quantity
+                const selectedProperties = sizeColorsSelectedData
+
+                const cartData = {
+                  productId : productData["productId"],
+                  cartName,
+                  quantity: order_quantity,
+                  newPrice, 
+                  oldPrice,
+                  discount: 0,
+                  selectedProperties,
+                  shippingDetails,
+                }
+
+                console.log(cartData);
+                addToCart_To_Server(cartData)
                 // api thing
               } else {
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);

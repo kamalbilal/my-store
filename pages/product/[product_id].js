@@ -55,7 +55,7 @@ export async function getServerSideProps(ctx) {
     };
   }
 
-  res["productId"] = "";
+  // res["productId"] = "";
 
   return {
     props: { productData: res }, // will be passed to the page component as props
