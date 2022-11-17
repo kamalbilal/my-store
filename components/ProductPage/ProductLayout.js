@@ -875,8 +875,7 @@ function ProductLayout({ productData }) {
               if (isAllSelected === true) {
                 const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-")
                 const shippingDetails = mainshippingFee["bizData"]
-                const newPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
-                const oldPrice = mainshippingFee["oldPrice"] === "free" ? 0 : mainshippingFee["oldPrice"]
+                const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
                 const order_quantity = quantity
                 const selectedProperties = sizeColorsSelectedData
 
@@ -884,8 +883,8 @@ function ProductLayout({ productData }) {
                   productId : productData["productId"],
                   cartName,
                   quantity: order_quantity,
-                  newPrice, 
-                  oldPrice,
+                  price: Number(currentPrice), 
+                  shippingPrice,
                   discount: 0,
                   selectedProperties,
                   shippingDetails,
