@@ -52,11 +52,13 @@ function ProductLayout({ productData }) {
   const [productSelectedImageForCart, setProductSelectedImageForCart] = useState();
   const [productDataContainImage, setProductDataContainImage] = useState(false);
   const [totalNumberOfProductDetails, setTotalNumberOfProductDetails] = useState(0);
+  const [showAddedCartToast, setShowAddedCartToast] = useState(false);
   const shippingMethodModalRef = useRef();
   const addToCardDiv_ref = useRef();
   const addToCart_BuyNow_ref = useRef();
   const addToCart_AddToCart_ref = useRef();
   const cartErrorRef = useRef();
+  const cartAddedRef = useRef();
   const runUseEffect2 = useRef(true);
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -377,6 +379,7 @@ function ProductLayout({ productData }) {
   }
 
   useEffect(() => {
+    setShowAddedCartToast(false)
     let test = "";
     let canRunFully = true;
     for (const key in sizeColorsSelectedData) {
@@ -423,6 +426,24 @@ function ProductLayout({ productData }) {
     sizeColors_allRefs[skuPropertyId].push(el);
     // console.log({ el, propertyName });
   }
+
+  function hideToastOnClickAnywhere() {
+    console.log("toast added to cart hidden");
+    setShowAddedCartToast(false)
+  }
+  useEffect(() => {
+    if (showAddedCartToast === true) {
+      cartAddedRef.current.classList.add(styles.cartErrorDiv_show);
+      window.addEventListener("click", hideToastOnClickAnywhere)
+    } else {
+      cartAddedRef.current.classList.remove(styles.cartErrorDiv_show);
+    }
+
+    return () => {
+      window.removeEventListener("click", hideToastOnClickAnywhere)
+    }
+  }, [showAddedCartToast])
+
 
   return (
     <div className={styles.container}>
@@ -813,7 +834,7 @@ function ProductLayout({ productData }) {
                         } else {
                           setShippingDataSelected(element);
                         }
-                       
+
                       }}
                       className={styles.shippingDetailList}
                     >
@@ -855,7 +876,7 @@ function ProductLayout({ productData }) {
         {/* Add to cart */}
         <div ref={addToCardDiv_ref} className={styles.buyDiv}>
           <button onClick={() => {
-                        console.log(mainshippingFee);
+            console.log(mainshippingFee);
 
           }} disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
             Buy Now
@@ -864,6 +885,7 @@ function ProductLayout({ productData }) {
             ref={addToCart_AddToCart_ref}
             disabled={quantity == 0 ? true : false}
             onMouseOver={() => {
+              if (showAddedCartToast === true) return
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
               // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
@@ -873,27 +895,34 @@ function ProductLayout({ productData }) {
 
               const isAllSelected = !(numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false))
               if (isAllSelected === true) {
-                const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-")
-                const shippingDetails = mainshippingFee["bizData"]
-                const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
-                const order_quantity = quantity
-                const selectedProperties = sizeColorsSelectedData
+                  const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-")
+                  const shippingDetails = mainshippingFee["bizData"]
+                  const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
+                  const order_quantity = quantity
+                  const selectedProperties = sizeColorsSelectedData
 
-                const cartData = {
-                  productId : productData["productId"],
-                  cartName,
-                  quantity: order_quantity,
-                  price: Number(currentPrice), 
-                  shippingPrice,
-                  discount: 0,
-                  selectedProperties,
-                  shippingDetails,
-                }
+                  const cartData = {
+                    productId: productData["productId"],
+                    cartName,
+                    quantity: order_quantity,
+                    price: Number(currentPrice),
+                    shippingPrice,
+                    discount: 0,
+                    selectedProperties,
+                    shippingDetails,
+                  }
 
-                console.log(cartData);
-                addToCart_To_Server(cartData)
-                // api thing
+                  console.log(cartData);
+                  // addToCart_To_Server(cartData)
+
+                  setShowAddedCartToast(true)
+
+
+                  // api thing
+                
+
               } else {
+                setShowAddedCartToast(false)
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
             }}
@@ -973,6 +1002,18 @@ function ProductLayout({ productData }) {
               <div className={styles.cartError}>Please Select All Product Options</div>
               <div className={styles.arrow}>
                 <div class={styles.triangleLeft}>
+                  <div class={styles.innerTriangle}></div>
+                </div>
+              </div>
+            </div>
+            <div ref={cartAddedRef} className={styles.cartErrorDiv}>
+              <div className={cn(styles.cartError, styles.cartAdded)}>
+                Successfully Added To Cart 
+                <br />
+              <button className={styles.viewCartBtn} onClick={() => console.log("Go to cart")}>Go to Cart</button>
+              </div>
+              <div className={styles.arrow}>
+                <div class={cn(styles.triangleLeft, styles.cartAddedTriangleLeft)}>
                   <div class={styles.innerTriangle}></div>
                 </div>
               </div>

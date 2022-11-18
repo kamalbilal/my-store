@@ -445,6 +445,14 @@
   border: 1px solid red;
   top: -69px;
   left: -50px;
+  box-shadow: 3px 3px 14px 0 rgb(220 136 136 / 20%);
+}
+.cartAdded {
+  color: var(--blue-500);
+  border: 1px solid var(--blue-500);
+  font-weight: bold;
+  left: -39px;
+  top: -87px;
 }
 .triangleLeft {
   width: 0;
@@ -454,7 +462,9 @@
   border-bottom: 16px solid transparent;
   border-right: 16px solid red;
 }
-
+.cartAddedTriangleLeft {
+  border-right: 15px solid var(--blue-500);
+}
 .innerTriangle {
   position: relative;
   top: -15px;
@@ -473,6 +483,7 @@
 }
 .cartErrorDiv {
   display: none;
+  cursor: default;
 }
 .cartErrorDiv_show {
   display: block;
@@ -480,6 +491,7 @@
   animation-duration: 0.3s;
   opacity: 1 !important;
 }
+
 @keyframes cartScale {
   0% {
     opacity: 0;
@@ -496,4 +508,15 @@
 
 .buyDiv *:disabled {
   cursor: not-allowed !important;
+}
+.viewCartBtn {
+  border: none;
+  outline: none;
+  color: red;
+  cursor: pointer;
+  transform: translateY(5px);
+  font-size: 1.4rem;
+}
+.viewCartBtn:hover {
+  text-decoration: underline;
 }
