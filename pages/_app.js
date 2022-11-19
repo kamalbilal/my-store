@@ -27,7 +27,7 @@ import axios from "axios";
 function MyApp({ Component, pageProps }) {
   const [cartNumber, setCartNumber] = useState({
     count: 0,
-    ids: [],
+    data: [],
   }); // default value
   const [giftNumber, setGiftNumber] = useState({ count: 0 }); // dafault value
   const [heartNumber, setHeartNumber] = useState({ count: 0 }); // dafault value

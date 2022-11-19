@@ -452,7 +452,7 @@
   border: 1px solid var(--blue-500);
   font-weight: bold;
   left: -39px;
-  top: -87px;
+  top: -84px;
 }
 .triangleLeft {
   width: 0;
@@ -489,17 +489,20 @@
   display: block;
   animation-name: cartScale;
   animation-duration: 0.3s;
-  opacity: 1 !important;
+  /* opacity: 1 !important; */
 }
 
 @keyframes cartScale {
   0% {
     opacity: 0;
-    transform: translate(-10px -15px) scale(0);
+    scale: 0.3; 
+    translate: -15px -15px;
   }
   100% {
     opacity: 1;
-    transform: translate(-10px -15px) scale(1);
+    scale: 1 ;
+    translate: -15px -15px;
+
   }
 }
 .outOfStock {
@@ -515,7 +518,8 @@
   color: red;
   cursor: pointer;
   transform: translateY(5px);
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  font-weight: normal ;
 }
 .viewCartBtn:hover {
   text-decoration: underline;

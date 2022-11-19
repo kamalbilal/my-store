@@ -15,12 +15,13 @@ import { CartContext, GiftContext, HeartContext } from "../../userContext";
 import { replaceAll } from "../../libs/replace";
 // require("dotenv").config();
 import axios from "axios";
+import Link from 'next/link';
 
 function ProductLayout({ productData }) {
   const { cartNumber, setCartNumber } = useContext(CartContext);
 
   useEffect(() => {
-    // //console.log(cartNumber);
+    console.log(cartNumber);
   }, [cartNumber]);
 
   //console.log(productData);
@@ -39,7 +40,6 @@ function ProductLayout({ productData }) {
   const [inputFocused, setInputFocused] = useState(false);
   const plusBtnRef = useRef();
   const quantityInput = useRef();
-  const [addToCart, setAddToCart] = useState(false);
   const [maxPurchaseLimit, setMaxPurchaseLimit] = useState(productData["maxPurchaseLimit"]);
   const [priceList, setPriceList] = useState(productData["priceList"]);
   const [currentPrice, setCurrentPrice] = useState(productData["maxPrice"]);
@@ -427,14 +427,15 @@ function ProductLayout({ productData }) {
     // console.log({ el, propertyName });
   }
 
-  function hideToastOnClickAnywhere() {
-    console.log("toast added to cart hidden");
+  function hideToastOnClickAnywhere(e) {
+    if(e.target.id === "addToCart_button") return
+    console.log("toast added to cart ==> hidden");
     setShowAddedCartToast(false)
   }
   useEffect(() => {
     if (showAddedCartToast === true) {
       cartAddedRef.current.classList.add(styles.cartErrorDiv_show);
-      window.addEventListener("click", hideToastOnClickAnywhere)
+        window.addEventListener("click", hideToastOnClickAnywhere)
     } else {
       cartAddedRef.current.classList.remove(styles.cartErrorDiv_show);
     }
@@ -603,7 +604,6 @@ function ProductLayout({ productData }) {
                         const dataAttributeSecond = e.target.getAttribute("data-attribute-second");
                         const dataAttributeThird = e.target.getAttribute("data-attribute-third");
 
-                        setAddToCart(false);
                         if (sizeColors_allRefs[dataAttributeFirst][id].classList.contains(styles.itemFocus)) {
                           sizeColors_allRefs[dataAttributeFirst][id].classList.remove(styles.itemFocus);
 
@@ -882,9 +882,29 @@ function ProductLayout({ productData }) {
             Buy Now
           </button>
           <button
+            id="addToCart_button"
             ref={addToCart_AddToCart_ref}
             disabled={quantity == 0 ? true : false}
             onMouseOver={() => {
+              if (showAddedCartToast === true) return
+              console.log(sizeColorsSelectedData);
+              const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
+              // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
+              if (numberOfSelectedProductsDetails.length === 0 || numberOfSelectedProductsDetails.length !== totalNumberOfProductDetails) {
+                return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
+              }
+
+              const isAllSelected = !(numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false))
+              if (isAllSelected === false) {                
+                setShowAddedCartToast(false)
+                return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
+
+              }
+            }}
+            onMouseLeave={() => {
+              cartErrorRef.current.classList.remove(styles.cartErrorDiv_show);
+            }}
+            onClick={() => {
               if (showAddedCartToast === true) return
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
@@ -913,11 +933,19 @@ function ProductLayout({ productData }) {
                   }
 
                   console.log(cartData);
+                  setCartNumber((prev) => {
+                    if (prev.data.hasOwnProperty(cartName)) {
+                      return {...prev, data: {...prev.data, [cartName]: {
+                        ...cartData
+                      }}}
+                    } else {
+                      return {...prev, count: prev.count+ 1, data: {...prev.data, [cartName]: {
+                        ...cartData
+                      }}}
+                    }
+                  })
                   // addToCart_To_Server(cartData)
-
                   setShowAddedCartToast(true)
-
-
                   // api thing
                 
 
@@ -926,77 +954,7 @@ function ProductLayout({ productData }) {
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
             }}
-            onMouseLeave={() => {
-              cartErrorRef.current.classList.remove(styles.cartErrorDiv_show);
-            }}
-            onClick={() => {
-              //console.log("buy now");
-              // if (addToCart === false) {
-              //   const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
-              //   const totalNumberOfProductsDetails = totalNumberOfProductDetails;
-
-              //   let userSelecedAll = true;
-              //   if (numberOfSelectedProductsDetails.length === totalNumberOfProductsDetails) {
-              //     numberOfSelectedProductsDetails.map((element3, index3) => {
-              //       if (sizeColorsSelectedData[element3] == null) {
-              //         userSelecedAll = false;
-              //         return;
-              //       }
-              //     });
-              //   } else {
-              //     userSelecedAll = false;
-              //   }
-
-              //   if (userSelecedAll === false) {
-              //     cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
-              //     setTimeout(() => {
-              //       cartErrorRef.current.classList.remove(styles.cartErrorDiv_show);
-              //     }, 2000);
-
-              //     return;
-              //   } else {
-              //     if (quantity <= 0) {
-              //       return;
-              //     }
-              //     const tempCartNumber = cartNumber;
-              //     const alreadyInCart = tempCartNumber["ids"].hasOwnProperty(productData["_id"]);
-              //     const cartData = {
-              //       _id: productData["_id"],
-              //       productPrice: productData["maxPrice"],
-              //       title: productData["title"],
-              //       discount: productData["discount"],
-              //       maxPrice_AfterDiscount: productData["maxPrice_AfterDiscount"],
-              //       shippingDetails: { ...mainshippingFee },
-              //       productSelectedDetails: { ...sizeColorsSelectedData },
-              //       // productSelectedDetailsIndex: { ...productSelectedDetailsIndex },
-              //       quantity: quantity,
-              //       selectedImage: productDataContainImage === true ? productSelectedImageForCart : mainImage,
-              //       totalProductOptions: totalNumberOfProductDetails,
-              //       totalSelectedProductOptions: Object.keys(sizeColorsSelectedData).length,
-              //     };
-              //     tempCartNumber["ids"].push(cartData);
-              //     if (alreadyInCart === false) {
-              //       tempCartNumber["count"] = Object.keys(tempCartNumber["ids"]).length;
-              //     }
-              //     setCartNumber({ ...tempCartNumber });
-              //     addToCart_To_Server(cartData, "add");
-              //   }
-              // } else {
-              //   const tempCartNumber = cartNumber;
-              //   // const alreadyInCart = tempCartNumber["ids"].hasOwnProperty(productData["_id"]);
-              //   tempCartNumber["ids"].forEach((element, index) => {
-              //     if (element["_id"] === productData["_id"]) {
-              //       addToCart_To_Server(productData["_id"], "remove");
-              //       tempCartNumber["ids"].remove(index);
-              //       console.log(tempCartNumber["ids"].length);
-              //       tempCartNumber["count"] = tempCartNumber["ids"].length;
-              //       setCartNumber({ ...tempCartNumber });
-              //     }
-              //   });
-              // }
-              // setAddToCart((prev) => !prev);
-            }}
-            className={cn(styles.buyButton, styles.cartBtn, addToCart === false ? styles.addToCart : styles.success)}
+            className={cn(styles.buyButton, styles.cartBtn)}
           >
             <div ref={cartErrorRef} className={styles.cartErrorDiv}>
               <div className={styles.cartError}>Please Select All Product Options</div>
@@ -1006,11 +964,12 @@ function ProductLayout({ productData }) {
                 </div>
               </div>
             </div>
+            
             <div ref={cartAddedRef} className={styles.cartErrorDiv}>
               <div className={cn(styles.cartError, styles.cartAdded)}>
                 Successfully Added To Cart 
                 <br />
-              <button className={styles.viewCartBtn} onClick={() => console.log("Go to cart")}>Go to Cart</button>
+              <div className={styles.viewCartBtn}><Link href="/cart">Go to Cart</Link></div>
               </div>
               <div className={styles.arrow}>
                 <div class={cn(styles.triangleLeft, styles.cartAddedTriangleLeft)}>
@@ -1018,7 +977,7 @@ function ProductLayout({ productData }) {
                 </div>
               </div>
             </div>
-            {addToCart === false ? "Add to Cart" : "Added to Cart"}
+            Add to Cart
           </button>
         </div>
       </div>

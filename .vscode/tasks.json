@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0", 
+    "tasks":[
+        {
+            "label": "Run Nextjs Development Server",
+            "type": "shell",
+            "command": "yarn dev",
+            "problemMatcher": []
+
+        },
+        {
+            "label": "Build Nextjs Project",
+            "type": "shell",
+            "command": "yarn build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build and Start Nextjs Project",
+            "type": "shell",
+            "command": "yarn build && yarn start",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Nextjs Project",
+            "type": "shell",
+            "command": "yarn start",
+            "problemMatcher": []
+        },
+    ]
+}

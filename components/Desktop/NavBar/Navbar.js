@@ -119,10 +119,10 @@ function Navbar() {
       </div>
 
       <div className={styles.buttons}>
-        <Buttons Value={giftNumber} Name="Gift" Icon={BsGiftFill} Count={1} Color="blue" />
-        <Buttons Value={cartNumber} Name="Cart" Icon={FaShoppingCart} Count={1} />
-        <Buttons Value={heartNumber} Name="Heart" Icon={RiHeart2Fill} Count={7} Color="blue" />
-        <Buttons Name="Profile" Icon={FaUserCircle} Show_hide_dropdown_Func={show_hide_dropdown} />
+        <Buttons Router={router} Value={giftNumber} Name="Gift" Icon={BsGiftFill} Count={1} Color="blue" />
+        <Buttons Router={router} Value={cartNumber} Name="Cart" Icon={FaShoppingCart} Count={1} />
+        <Buttons Router={router} Value={heartNumber} Name="Heart" Icon={RiHeart2Fill} Count={7} Color="blue" />
+        <Buttons Router={router} Name="Profile" Icon={FaUserCircle} Show_hide_dropdown_Func={show_hide_dropdown} />
         <div ref={closeDropdownFromAnywhere_Ref} className={cn(styles.fixed, styles.hide)} onClick={() => show_hide_dropdown()}></div>
 
         <div ref={dropdownRef} className={cn(styles.profileDropdown, styles.hide)}>

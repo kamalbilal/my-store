@@ -10,7 +10,7 @@ function count(count) {
   }
 }
 
-function Buttons({ Value, Name, Icon, Count, Color, Show_hide_dropdown_Func }) {
+function Buttons({ Router, Value, Name, Icon, Count, Color, Show_hide_dropdown_Func }) {
   let IconColor;
   if (Color !== "red") {
     Color = styles.buttonWrapper;
@@ -32,7 +32,7 @@ function Buttons({ Value, Name, Icon, Count, Color, Show_hide_dropdown_Func }) {
   } else if (Name === "Cart") {
     return (
       <Tippy duration={0} placement="bottom" content={<Tooltip Place="bottom">Cart</Tooltip>}>
-        <button className={Color}>
+        <button onClick={() => Router.push("/cart")} className={Color}>
           {count(Value.count)}
           {<Icon className={cn(IconColor, styles.cart)} />}
         </button>
