@@ -24,7 +24,7 @@ function ProductLayout({ productData }) {
     console.log(cartNumber);
   }, [cartNumber]);
 
-  //console.log(productData);
+  console.log(productData);
   const allImagesRefs = useRef([]);
   const modalRef = useRef();
   const allImagesModalRefs = useRef([]);
@@ -920,31 +920,52 @@ function ProductLayout({ productData }) {
                   const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
                   const order_quantity = quantity
                   const selectedProperties = sizeColorsSelectedData
+                  const selectedDiscount = 0
 
-                  const cartData = {
+                  const serverCartData = {
                     productId: productData["productId"],
                     cartName,
                     quantity: order_quantity,
                     price: Number(currentPrice),
                     shippingPrice,
-                    discount: 0,
+                    discount: selectedDiscount,
                     selectedProperties,
                     shippingDetails,
                   }
+                  addToCart_To_Server(serverCartData)
 
-                  console.log(cartData);
+                  const cartDataLocalStorage = {
+                    productId: productData["productId"],
+                    cartName,
+                    selectedQuantity: order_quantity,
+                    selectedPrice: Number(currentPrice),
+                    selectedShippingPrice : shippingPrice,
+                    selectedDiscount,
+                    selectedProperties,
+                    selectedShippingDetails: shippingDetails,
+                    images: productData["images"],
+                    minPrice: productData["minPrice"],
+                    maxPrice: productData["maxPrice"],
+                    multiUnitName: productData["multiUnitName"],
+                    oddUnitName: productData["oddUnitName"],
+                    maxPurchaseLimit: productData["maxPurchaseLimit"],
+                    buyLimitText: productData["buyLimitText"],
+                    quantityAvaliable: productData["quantityAvaliable"],
+                    priceList_InNames: productData["priceList_InNames"],
+                    priceList_InNumbers: productData["priceList_InNumbers"],
+                    priceList_Data: productData["priceList_Data"]
+                  }
                   setCartNumber((prev) => {
                     if (prev.data.hasOwnProperty(cartName)) {
                       return {...prev, data: {...prev.data, [cartName]: {
-                        ...cartData
+                        ...cartDataLocalStorage
                       }}}
                     } else {
                       return {...prev, count: prev.count+ 1, data: {...prev.data, [cartName]: {
-                        ...cartData
+                        ...cartDataLocalStorage
                       }}}
                     }
                   })
-                  // addToCart_To_Server(cartData)
                   setShowAddedCartToast(true)
                   // api thing
                 

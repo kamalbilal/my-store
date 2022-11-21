@@ -126,7 +126,7 @@ function Navbar() {
         <div ref={closeDropdownFromAnywhere_Ref} className={cn(styles.fixed, styles.hide)} onClick={() => show_hide_dropdown()}></div>
 
         <div ref={dropdownRef} className={cn(styles.profileDropdown, styles.hide)}>
-          <Dropdown userData={userData} setUserData={setUserData} router={router} hideDropDown={show_hide_dropdown} CartIcon={FaShoppingCart} HeartIcon={RiHeart2Fill}/>
+          <Dropdown Router={router} userData={userData} setUserData={setUserData} router={router} hideDropDown={show_hide_dropdown} CartIcon={FaShoppingCart} HeartIcon={RiHeart2Fill}/>
         </div>
       </div>
     </div>

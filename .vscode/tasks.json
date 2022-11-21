@@ -4,7 +4,7 @@
         {
             "label": "Run Nextjs Development Server",
             "type": "shell",
-            "command": "yarn dev",
+            "command": "xdg-open 'http://localhost:3001' && yarn dev",
             "problemMatcher": []
 
         },
@@ -17,13 +17,13 @@
         {
             "label": "Build and Start Nextjs Project",
             "type": "shell",
-            "command": "yarn build && yarn start",
+            "command": "yarn build && xdg-open 'http://localhost:3000' && yarn start",
             "problemMatcher": []
         },
         {
             "label": "Start Nextjs Project",
             "type": "shell",
-            "command": "yarn start",
+            "command": "xdg-open 'http://localhost:3000' && yarn start",
             "problemMatcher": []
         },
     ]

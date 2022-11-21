@@ -27,7 +27,9 @@ import axios from "axios";
 function MyApp({ Component, pageProps }) {
   const [cartNumber, setCartNumber] = useState({
     count: 0,
-    data: [],
+    data: {},
+    firstTimeCreation: true,
+    gotNewData: false
   }); // default value
   const [giftNumber, setGiftNumber] = useState({ count: 0 }); // dafault value
   const [heartNumber, setHeartNumber] = useState({ count: 0 }); // dafault value
@@ -75,17 +77,72 @@ function MyApp({ Component, pageProps }) {
     } else {
       getUserData()
     }
-  }, [router]);
+
+    // get cart
+    if (!cartNumber.hasOwnProperty("firstTimeCreation") && (cartNumber.hasOwnProperty("count") && cartNumber.count === 0) && (cartNumber.hasOwnProperty("gotNewData") && cartNumber.gotNewData === false)) {
+      getUserCartData()
+    }
+  }, [router]);  
+
+  useEffect(() => {
+    if (cartNumber.hasOwnProperty("firstTimeCreation") && cartNumber.firstTimeCreation === true) {
+      let cart = localStorage.getItem("cart")
+      if (cart) {
+        cart = JSON.parse(cart)
+        setCartNumber(cart)
+      } else {
+        getUserCartData()
+      }
+    } else {
+      localStorage.setItem("cart", JSON.stringify(cartNumber))
+    }
+  }, [cartNumber]) 
 
   useEffect(() => {
     if (Object.values(userData).length !== 0) {
       localStorage.setItem("userData", JSON.stringify(userData))
     } else {
-      localStorage.removeItem("userData")
+      // when logout btn is clicked
+      localStorage.clear()
+      setCartNumber({
+        count: 0,
+        data: {},
+        gotNewData: false
+      })
     }
   }, [userData])
 
 
+  async function getUserCartData() {
+    console.log("getting cart data");
+    const url = "http://localhost:8000/getusercart";
+    let options = {
+      url: url,
+      method: "POST",
+      credentials: "include",
+      withCredentials: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      data: {
+        pwd: "Kamal",
+      },
+    };
+
+    const response = await axios(options);
+    console.log(response);
+    if (response.data.success === true) {
+      const count = response.data.cart.length
+      const tempObj = {}
+      for (let index = 0; index < response.data.cart.length; index++) {
+        const element = response.data.cart[index];
+        tempObj[element["cartName"]] = element
+      }
+      setCartNumber({count: count, data: tempObj, gotNewData: true})
+    }
+
+  }
   async function getUserData() {
     const url = "http://localhost:8000/getUserData";
     let options = {

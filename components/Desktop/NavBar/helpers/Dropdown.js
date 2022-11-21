@@ -6,7 +6,7 @@ import {RiSettings4Fill} from "react-icons/ri"
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function Dropdown({ userData, setUserData, router, hideDropDown, CartIcon, HeartIcon }) {
+function Dropdown({Router, userData, setUserData, router, hideDropDown, CartIcon, HeartIcon }) {
   const [isUserLoggedIn, setisUserLoggedIn] = useState(userData.hasOwnProperty("email"));
   
   useEffect(() => {
@@ -72,7 +72,7 @@ function Dropdown({ userData, setUserData, router, hideDropDown, CartIcon, Heart
         ) : (
           ""
         )}
-        <button onClick={() => hideDropDown()}>
+        <button onClick={() => {hideDropDown();Router.push("/cart")}}>
           <CartIcon className={styles.icons} />
           <div>My Cart</div>
         </button>
