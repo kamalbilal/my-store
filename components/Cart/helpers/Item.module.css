@@ -1,0 +1,16 @@
+.item {
+  display: grid;
+  grid-template-columns: 210px auto;
+}
+.itemSelectDiv {
+    display: flex;
+    align-items: center;
+}
+.check {
+  transform: scale(3);
+  color: var(--blue-500);
+  border-radius: 50%;
+  margin: 0 20px;
+  cursor: pointer;
+}
+

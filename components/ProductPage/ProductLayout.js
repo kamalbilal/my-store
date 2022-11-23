@@ -935,6 +935,7 @@ function ProductLayout({ productData }) {
                   addToCart_To_Server(serverCartData)
 
                   const cartDataLocalStorage = {
+                    title: productData["title"],
                     productId: productData["productId"],
                     cartName,
                     selectedQuantity: order_quantity,

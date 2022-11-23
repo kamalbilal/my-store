@@ -1,0 +1,11 @@
+.cart {
+    margin: 80px 70px;
+    display: grid;
+    grid-template-columns: 70% auto;
+    gap: 20px;
+}
+.leftContent {
+    background-color: white;
+    padding: 0 30px;
+    border-radius: 5px;
+}
