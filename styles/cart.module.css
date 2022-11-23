@@ -4,8 +4,35 @@
     grid-template-columns: 70% auto;
     gap: 20px;
 }
-.leftContent {
+
+.shoppingTitleDiv{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.niceBox {
+    border-radius: 5px;
+    box-shadow: 0 4px 6px 0 rgb(0 0 0 / 6%);
+    padding: 10px 30px;
     background-color: white;
-    padding: 0 30px;
+}
+.selectAllBtn {
+    display: flex;
+    align-items: center;
+    font-size: 1.4rem;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: var(--blue-500);
+    color: white;
+    font-weight: 400;
     border-radius: 5px;
 }
+.check {
+    transform: scale(1.5);
+    color: var(--blue-500);
+    border-radius: 50%;
+    color: white;
+    /* cursor: pointer; */
+  }
+  

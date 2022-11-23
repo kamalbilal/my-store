@@ -10,7 +10,7 @@
   transform: scale(3);
   color: var(--blue-500);
   border-radius: 50%;
-  margin: 0 20px;
+  margin-right: 20px;
   cursor: pointer;
 }
 

@@ -1,18 +1,10 @@
 import Image from "next/image";
 import styles from "./CartItems.module.css";
 import Item from "./helpers/Item";
-import { ImRadioUnchecked } from "react-icons/im";
-import { FaCheckCircle } from "react-icons/fa";
-import { useState, useEffect } from "react";
-import cn from "classnames"
 
-function CartItems({ cartData }) {
+function CartItems({ cartData, ImRadioUnchecked, FaCheckCircle, cn, checkedButton, useEffect }) {
   const { cartNumber, setCartNumber } = cartData;
-  const [checkedButtonsData, setCheckedButtonsData] = useState({});
-
-  useEffect(() => {
-    console.log(checkedButtonsData);
-  }, [checkedButtonsData]);
+  const { checkedButtonsData, setCheckedButtonsData } = checkedButton;
 
   console.log(cartNumber);
   return (
