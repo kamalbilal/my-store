@@ -1,5 +1,5 @@
 import styles from "./Item.module.css";
-function Item({ Image,cn, data, ImRadioUnchecked, FaCheckCircle, checkedButtonsData, setCheckedButtonsData, useEffect }) {
+function Item({ Image,cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, checkedButtonsData, setCheckedButtonsData, useEffect }) {
 
   useEffect(() => {
     setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }));
@@ -23,8 +23,9 @@ function Item({ Image,cn, data, ImRadioUnchecked, FaCheckCircle, checkedButtonsD
       </div>
 
       {/* title etc */}
-      <div>
-        {data["title"]}
+      <div className={styles.details}>
+        <div className={styles.title}>{data["title"]}</div>
+        <button className={styles.properties}>{Object.values(data["selectedProperties"]).map((el) => el.selected).join("/")} <span className={styles.arrowIcon}><SlArrowRight/></span> </button>
       </div>
     </div>
   );

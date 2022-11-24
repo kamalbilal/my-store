@@ -2,12 +2,14 @@ import { useRef, useEffect } from "react";
 import Router from "next/router";
 import Link from "next/link";
 import { useContext } from "react";
-import { VisitedLinksArray } from "../userContext";
+import { VisitedLinksArray, getUserData_context } from "../userContext";
 import { deleteCookie } from "cookies-next";
 import axios from "axios";
 
 function Register() {
   const { visitedLinksArray, setVisitedLinksArray } = useContext(VisitedLinksArray);
+  const {getUserData, setGetUserData} = useContext(getUserData_context);
+  
   const emailRef = useRef();
   const passwordRef = useRef();
 
@@ -45,7 +47,7 @@ function Register() {
     const response = await axios(options);
 
     if (response.data.success === true) {
-      localStorage.setItem("userData", JSON.stringify({email: response.data.email}))
+      setGetUserData(true)
       const redirectToLink = visitedLinksArray.length > 0 ? visitedLinksArray[visitedLinksArray.length - 1] : "/";
       Router.replace(redirectToLink)
     }

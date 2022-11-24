@@ -14,3 +14,4 @@ export const SearchedPageData_context = createContext(null);
 export const SearchPageNumber_context = createContext(null);
 export const SearchPageNumberHistory_context = createContext(null);
 export const UserData_context = createContext(null);
+export const getUserData_context = createContext(null);

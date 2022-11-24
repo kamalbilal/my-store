@@ -2,30 +2,15 @@ import { useRef, useEffect } from "react";
 import Router from "next/router";
 import Link from "next/link";
 import { useContext } from "react";
-import { VisitedLinksArray } from "../userContext";
+import { VisitedLinksArray, getUserData_context } from "../userContext";
 import axios from "axios";
 // import { deleteCookie } from "cookies-next";
 
 function Login() {
   const { visitedLinksArray, setVisitedLinksArray } = useContext(VisitedLinksArray);
+  const {getUserData, setGetUserData} = useContext(getUserData_context);
   const emailRef = useRef();
-  const passwordRef = useRef();
-
-  // function setCredentials() {
-  //   document.cookie = "email=" + email.current.value;
-  //   document.cookie = "password=" + password.current.value;
-  //   Router.push("/loginAuthentication?links=" + JSON.stringify(visitedLinksArray));
-  // }
-
-  // const getCookies = function () {
-  //   var pairs = document.cookie.split(";");
-  //   var cookies = {};
-  //   for (var i = 0; i < pairs.length; i++) {
-  //     var pair = pairs[i].split("=");
-  //     cookies[(pair[0] + "").trim()] = unescape(pair.slice(1).join("="));
-  //   }
-  //   return cookies;
-  // };
+  const passwordRef = useRef();  
 
   async function login(e) {
     e.preventDefault();
@@ -54,7 +39,7 @@ function Login() {
     const response = await axios(options);
     console.log(response.data);
     if (response.data.success === true) {
-      localStorage.setItem("userData", JSON.stringify({email: response.data.email}))
+      setGetUserData(true)
       console.log(visitedLinksArray);
       const redirectToLink = visitedLinksArray.length > 0 ? visitedLinksArray[visitedLinksArray.length - 1] : "/";
       Router.replace(redirectToLink)

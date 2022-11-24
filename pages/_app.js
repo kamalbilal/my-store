@@ -17,7 +17,8 @@ import {
   SearchedPageData_context,
   SearchPageNumber_context,
   SearchPageNumberHistory_context,
-  UserData_context
+  UserData_context,
+  getUserData_context,
 } from "../userContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -28,8 +29,6 @@ function MyApp({ Component, pageProps }) {
   const [cartNumber, setCartNumber] = useState({
     count: 0,
     data: {},
-    firstTimeCreation: true,
-    gotNewData: false
   }); // default value
   const [giftNumber, setGiftNumber] = useState({ count: 0 }); // dafault value
   const [heartNumber, setHeartNumber] = useState({ count: 0 }); // dafault value
@@ -44,6 +43,7 @@ function MyApp({ Component, pageProps }) {
   const [pageNumber, setPageNumber] = useState(0); // dafault value
   const [searchPageNumberHistory, setSearchPageNumberHistory] = useState({}); // dafault value
   const [userData, setUserData] = useState({}); // dafault value
+  const [getUserData, setGetUserData] = useState(); // dafault value
 
   const router = useRouter();
   const forbiddenLinks = ["/register", "/login", "/register/authentication", "/login/authentication"];
@@ -63,87 +63,30 @@ function MyApp({ Component, pageProps }) {
       setVisitedLinksArray(tempArray);
     }
 
-
-
-    // set user data
-    let userDataTemp = localStorage.getItem("userData")
-    if (userDataTemp && userDataTemp !== "{}") {
-      try {
-        userDataTemp = JSON.parse(userDataTemp)
-        setUserData(userDataTemp)
-      } catch (error) {
-        getUserData()
-      }
-    } else {
-      getUserData()
-    }
-
-    // get cart
-    if (!cartNumber.hasOwnProperty("firstTimeCreation") && (cartNumber.hasOwnProperty("count") && cartNumber.count === 0) && (cartNumber.hasOwnProperty("gotNewData") && cartNumber.gotNewData === false)) {
-      getUserCartData()
-    }
   }, [router]);  
 
   useEffect(() => {
-    if (cartNumber.hasOwnProperty("firstTimeCreation") && cartNumber.firstTimeCreation === true) {
-      let cart = localStorage.getItem("cart")
-      if (cart) {
-        cart = JSON.parse(cart)
-        setCartNumber(cart)
-      } else {
-        getUserCartData()
-      }
-    } else {
-      localStorage.setItem("cart", JSON.stringify(cartNumber))
+    if (getUserData === true) {
+      getUserData_Func()
     }
-  }, [cartNumber]) 
+  }, [getUserData])
 
   useEffect(() => {
-    if (Object.values(userData).length !== 0) {
-      localStorage.setItem("userData", JSON.stringify(userData))
-    } else {
+      getUserData_Func()
+  }, [])
+
+  useEffect(() => {
+    if (Object.values(userData).length === 0) {
       // when logout btn is clicked
-      localStorage.clear()
       setCartNumber({
         count: 0,
         data: {},
-        gotNewData: false
       })
     }
   }, [userData])
 
-
-  async function getUserCartData() {
-    console.log("getting cart data");
-    const url = "http://localhost:8000/getusercart";
-    let options = {
-      url: url,
-      method: "POST",
-      credentials: "include",
-      withCredentials: true,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      data: {
-        pwd: "Kamal",
-      },
-    };
-
-    const response = await axios(options);
-    console.log(response);
-    if (response.data.success === true) {
-      const count = response.data.cart.length
-      const tempObj = {}
-      for (let index = 0; index < response.data.cart.length; index++) {
-        const element = response.data.cart[index];
-        tempObj[element["cartName"]] = element
-      }
-      setCartNumber({count: count, data: tempObj, gotNewData: true})
-    }
-
-  }
-  async function getUserData() {
+  async function getUserData_Func() {
+    console.log("Getting user data");
     const url = "http://localhost:8000/getUserData";
     let options = {
       url: url,
@@ -160,13 +103,30 @@ function MyApp({ Component, pageProps }) {
       // const response = await fetch(url, options);
     };
 
-
     const response = await axios(options);
     console.log(response);
     if (response.data.success === true) {
-      setUserData(response.data.data)
+      setGetUserData(false)
+      setUserData(response.data.data["userData"])
+
+      // cart
+      const count = response.data.data["userCart"].length
+      const cartData = {}
+      response.data.data["userCart"].map((el) => {
+        cartData[el.cartName] = el
+      })
+
+      setCartNumber({
+        count: count,
+        data: cartData,
+      })
+
     } else {
       setUserData({})
+      setCartNumber({
+        count: 0,
+        data: {},
+      })
     }
 
   }
@@ -195,6 +155,7 @@ function MyApp({ Component, pageProps }) {
       );
     } else {
       return (
+        <getUserData_context.Provider value={{ getUserData, setGetUserData }}>
         <UserData_context.Provider value={{ userData, setUserData }}>
           <SearchPageNumberHistory_context.Provider value={{ searchPageNumberHistory, setSearchPageNumberHistory }}>
             <SearchPageNumber_context.Provider value={{ pageNumber, setPageNumber }}>
@@ -219,6 +180,7 @@ function MyApp({ Component, pageProps }) {
             </SearchPageNumber_context.Provider>
           </SearchPageNumberHistory_context.Provider>
         </UserData_context.Provider>
+        </getUserData_context.Provider>
       );
     }
   }

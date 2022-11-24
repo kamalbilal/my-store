@@ -1,6 +1,6 @@
 .item {
   display: grid;
-  grid-template-columns: 210px auto;
+  grid-template-columns: 190px auto;
 }
 .itemSelectDiv {
     display: flex;
@@ -13,4 +13,31 @@
   margin-right: 20px;
   cursor: pointer;
 }
-
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  overflow: hidden;
+}
+.title {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  word-wrap: normal;
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #3a3e4a;
+}
+.properties {
+  padding: 0;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #222;
+}
+.arrowIcon svg {
+  color: #222;
+  transform: scale(1) translate(-1.5px, 3px) 
+}
