@@ -112,3 +112,11 @@ button {
 }
 
 /* Loader end */
+
+.customTippy {
+  padding: 5px 10px;
+  font-weight: bold;
+}
+.tippyMT-10 {
+  margin-top: 1rem;
+}

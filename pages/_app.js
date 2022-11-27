@@ -1,4 +1,7 @@
 import "../styles/globals.css";
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light-border.css';
+import 'tippy.js/animations/scale.css';
 import NextNProgress from "nextjs-progressbar";
 import styles from "./index.module.css";
 import Navbar from "../components/Desktop/NavBar/Navbar";

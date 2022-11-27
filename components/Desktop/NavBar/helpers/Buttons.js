@@ -2,7 +2,6 @@ import styles from "./Buttons.module.css";
 import cn from "classnames";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Tippy from "@tippyjs/react";
-import Tooltip from "../../Tooltip/Tooltip";
 
 function count(count) {
   if (count && count != 0) {
@@ -22,7 +21,7 @@ function Buttons({ Router, Value, Name, Icon, Count, Color, Show_hide_dropdown_F
 
   if (Name === "Gift") {
     return (
-      <Tippy placement="bottom" duration={0} content={<Tooltip Place="bottom">Gift</Tooltip>}>
+      <Tippy className="customTippy tippyMT-10" placement="bottom" theme="light-border" duration={200} animation="scale"  content="Gift">
         <button className={Color}>
           {count(Value.count)}
           {<Icon className={cn(IconColor, styles.gift)} />}
@@ -31,7 +30,7 @@ function Buttons({ Router, Value, Name, Icon, Count, Color, Show_hide_dropdown_F
     );
   } else if (Name === "Cart") {
     return (
-      <Tippy duration={0} placement="bottom" content={<Tooltip Place="bottom">Cart</Tooltip>}>
+      <Tippy className="customTippy tippyMT-10" duration={200} animation="scale"  placement="bottom" theme="light-border" content="Cart">
         <button onClick={() => Router.push("/cart")} className={Color}>
           {count(Value.count)}
           {<Icon className={cn(IconColor, styles.cart)} />}
@@ -40,7 +39,7 @@ function Buttons({ Router, Value, Name, Icon, Count, Color, Show_hide_dropdown_F
     );
   } else if (Name === "Heart") {
     return (
-      <Tippy duration={0} placement="bottom" content={<Tooltip Place="bottom">Wishlist</Tooltip>}>
+      <Tippy className="customTippy tippyMT-10" duration={200} animation="scale"  placement="bottom" theme="light-border" content="Wishlist">
         <button className={Color}>
           {count(Value.count)}
           {<Icon className={cn(IconColor, styles.heart)} />}
@@ -49,7 +48,7 @@ function Buttons({ Router, Value, Name, Icon, Count, Color, Show_hide_dropdown_F
     );
   } else if (Name === "Profile") {
     return (
-      <Tippy duration={0} placement="bottom" content={<Tooltip Place="bottom">Profile</Tooltip>}>
+      <Tippy className="customTippy tippyMT-10" theme="light-border" duration={200} animation="scale"  placement="bottom" content="Profile">
         <button className={cn(Color, styles.profileWrapper)} onClick={Show_hide_dropdown_Func}>
           {count(Count)}
           {<Icon className={cn(IconColor, styles.profile)} />}

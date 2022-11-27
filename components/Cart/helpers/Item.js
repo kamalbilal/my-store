@@ -1,6 +1,8 @@
 import styles from "./Item.module.css";
-function Item({ Image,cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, checkedButtonsData, setCheckedButtonsData, useEffect }) {
+import Tippy from "@tippyjs/react";
 
+
+function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, checkedButtonsData, setCheckedButtonsData, HiOutlineTrash, RiHeart2Line, FiEdit, useEffect }) {
   useEffect(() => {
     setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }));
   }, []);
@@ -8,24 +10,62 @@ function Item({ Image,cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, c
   return (
     <div className={styles.item}>
       <div className={styles.itemSelectDiv}>
-      {checkedButtonsData.hasOwnProperty(data.cartName) ? (
-        checkedButtonsData[data.cartName] === true ? (
-          <FaCheckCircle onClick={() => setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }))} className={cn(styles.check, "unselectable")} />
+        {checkedButtonsData.hasOwnProperty(data.cartName) ? (
+          checkedButtonsData[data.cartName] === true ? (
+            <FaCheckCircle onClick={() => setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }))} className={cn(styles.check, "unselectable")} />
+          ) : (
+            <ImRadioUnchecked className={cn(styles.check, "unselectable")} onClick={() => setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: true }))} />
+          )
         ) : (
-          <ImRadioUnchecked className={cn(styles.check, "unselectable")} onClick={() => setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: true }))} />
-        )
-      ) : (
-        <ImRadioUnchecked className={cn(styles.check, "unselectable")} />
-      )}
-      <div className="unselectable">
-        <Image src={data["images"][0]} width={150} height={150} draggable="false" />
-      </div>
+          <ImRadioUnchecked className={cn(styles.check, "unselectable")} />
+        )}
+        <div className="unselectable">
+          <Image src={data["images"][0]} width={130} height={130} draggable="false" />
+        </div>
       </div>
 
       {/* title etc */}
       <div className={styles.details}>
-        <div className={styles.title}>{data["title"]}</div>
-        <button className={styles.properties}>{Object.values(data["selectedProperties"]).map((el) => el.selected).join("/")} <span className={styles.arrowIcon}><SlArrowRight/></span> </button>
+        <div>
+          <div className={styles.titleDiv}>
+            <div className={styles.title}>{data["title"]}</div>
+
+            <Tippy className="customTippy" placement="top" duration={200}  theme="light-border" animation='scale' arrow={true} allowHTML={true} content={<div>Edit</div>}>
+              <button className={styles.editIcon}>
+                <FiEdit />
+              </button>
+            </Tippy>
+            
+            <Tippy className="customTippy" placement="top" duration={200}  theme="light-border" animation='scale' arrow={true} allowHTML={true} content={<div>Add to wishlist</div>}>
+              <button className={styles.heartIcon}>
+                <RiHeart2Line />
+              </button>
+            </Tippy>
+
+            <Tippy className="customTippy" placement="top" duration={200}  theme="light-border" animation='scale' arrow={true} allowHTML={true} content={<div>Delete</div>}>
+            <button className={styles.trashIcon}>
+              <HiOutlineTrash />
+            </button>
+            </Tippy>
+
+
+          </div>
+          <button className={styles.properties}>
+            {Object.values(data["selectedProperties"])
+              .map((el) => el.selected)
+              .join("/")}
+            <span className={styles.arrowIcon}>
+              <SlArrowRight />
+            </span>
+          </button>
+        </div>
+        <div className={styles.priceDiv}>
+          <div>
+            <div className={styles.price}>US ${data["selectedPrice"]}</div>
+            <div className={styles.quantityPrice}>Quantity: {data["selectedQuantity"]}</div>
+            <div className={styles.shippingPrice}>Shipping fee: {data["selectedShippingPrice"] == 0 ? "Free" : `$${data["selectedShippingPrice"]}`}</div>
+          </div>
+        </div>
       </div>
     </div>
   );

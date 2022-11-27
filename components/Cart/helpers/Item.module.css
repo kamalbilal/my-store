@@ -1,24 +1,57 @@
 .item {
   display: grid;
-  grid-template-columns: 190px auto;
+  grid-template-columns: 174px auto;
+  margin: 40px 0px;
+  width: 100%;
+  position: relative;
+  /* border-bottom: 1px solid red; */
+}
+.item:first-of-type:before {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: 100% !important;
+  background-color: var(--white-light);
+  z-index: 100;
+  top: -20px;
+}
+.item::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: 100% !important;
+  background-color: var(--white-light);
+  z-index: 100;
+  bottom: -20px;
 }
 .itemSelectDiv {
     display: flex;
     align-items: center;
 }
 .check {
-  transform: scale(3);
+  transform: scale(2.5);
   color: var(--blue-500);
   border-radius: 50%;
+  margin: 0px 5px;
   margin-right: 20px;
   cursor: pointer;
 }
-.details {
+.details, .details > *, .titleDiv {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: space-between;
   width: 100%;
   overflow: hidden;
+}
+.titleDiv {
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+.details {
+  padding: 5px 0px;
+
 }
 .title {
   width: 100%;
@@ -30,14 +63,68 @@
   font-size: 1.4rem;
   color: #3a3e4a;
 }
+.trashIcon, .heartIcon, .editIcon {
+  padding: 0;
+  margin: 0;
+  font-size: 1.6rem;
+  color: rgba(0, 0, 0, 0.7);
+  position: relative;
+}
+
+.heartIcon, .editIcon {
+  scale: 1.1;
+  margin-right: 5px;
+}
+.editIcon {
+  scale: 1.045;
+}
+.trashIcon:hover, .heartIcon:hover, .editIcon:hover {
+  color: var(--blue-500);
+}
 .properties {
   padding: 0;
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: #222;
+  margin-top: 6px;
+  margin-left: 10px;
+
 }
 .arrowIcon svg {
   color: #222;
-  transform: scale(1) translate(-1.5px, 3px) 
+  margin-left: 1px;
+  transform: scale(1) translate(-2px, 2.5px);
+}
+.price {
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+.shippingPrice, .quantityPrice {
+  color: #999;
+  margin-top: 5px;
+  font-size: 1.3rem;
+}
+.quantityPrice {
+  color: #222;
+}
+.priceDiv {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.quantityDiv {
+  display: flex;
+  align-items: center;
+}
+.quantityDiv input {
+  border: none;
+  outline: none;
+  width: 3rem;
+  text-align: center;
+}
+.test {
+  padding: 5px;
+  background-color: red;
 }

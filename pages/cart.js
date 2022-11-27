@@ -5,6 +5,9 @@ import styles from "../styles/cart.module.css";
 import cn from "classnames";
 import { ImRadioUnchecked } from "react-icons/im";
 import { FaCheckCircle } from "react-icons/fa";
+import { HiOutlineTrash } from "react-icons/hi";
+import { RiHeart2Line } from "react-icons/ri";
+import { FiEdit } from "react-icons/fi";
 
 function Cart() {
   const { cartNumber, setCartNumber } = useContext(CartContext);
@@ -72,7 +75,7 @@ function Cart() {
           </button>
         </div>
         <div className={cn(styles.content, styles.niceBox)}>
-          <CartItems cartData={{ cartNumber, setCartNumber }} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} cn={cn} checkedButton={{ checkedButtonsData, setCheckedButtonsData }} useEffect={useEffect} />
+          <CartItems cartData={{ cartNumber, setCartNumber }} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} cn={cn} checkedButton={{ checkedButtonsData, setCheckedButtonsData }} HiOutlineTrash={HiOutlineTrash} RiHeart2Line={RiHeart2Line} FiEdit={FiEdit} useEffect={useEffect} />
         </div>
       </div>
 

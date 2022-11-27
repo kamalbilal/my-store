@@ -4,7 +4,6 @@ import { useRef } from "react";
 import cn from "classnames";
 import { IoCloseSharp } from "react-icons/io5";
 import Tippy from "@tippyjs/react";
-import Tooltip from "../../Tooltip/Tooltip";
 
 function AllCategories({ HideOverlay_Func }) {
   const allCategoriesData = [
@@ -219,14 +218,16 @@ function AllCategories({ HideOverlay_Func }) {
         <div className={styles.header}>
           <h5 className={styles.title}>Products Preview</h5>
           <Tippy
-            duration={0}
+            duration={100}
+            
             placement="left"
+            allowHTML={true}
+            arrow={true}
+            theme="light-border"
             content={
-              <Tooltip Place="left">
                 <span>
                   Press <span style={{ color: "red" }}>ESC</span> To Close
                 </span>
-              </Tooltip>
             }
           >
             <button className={cn(styles.escBtn)} onClick={HideOverlay_Func}>

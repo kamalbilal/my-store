@@ -8,8 +8,7 @@ import { MdLocationPin } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { ImRadioUnchecked } from "react-icons/im";
-import Tippy from "@tippyjs/react";
-import Tooltip from "../Desktop/Tooltip/Tooltip";
+import Tippy  from "@tippyjs/react";
 import { useContext } from "react";
 import { CartContext, GiftContext, HeartContext } from "../../userContext";
 import { replaceAll } from "../../libs/replace";
@@ -60,6 +59,7 @@ function ProductLayout({ productData }) {
   const cartErrorRef = useRef();
   const cartAddedRef = useRef();
   const runUseEffect2 = useRef(true);
+  const autoClick = useRef(true);
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -446,6 +446,18 @@ function ProductLayout({ productData }) {
   }, [showAddedCartToast])
 
 
+  useEffect(() => {
+    if (autoClick.current === true) {
+      autoClick.current = false
+      document.querySelector("[data-attribute-third='EU Charger 1M Cable']").click()
+      document.querySelector("[data-attribute-third='White']").click()
+      console.log("Clicked");
+    }
+   
+  }, [sizeColorsSelectedData])
+  
+
+
   return (
     <div className={styles.container}>
       {/* left */}
@@ -454,14 +466,16 @@ function ProductLayout({ productData }) {
         {/* button */}
         <div>
           <Tippy
-            duration={0}
+            className="customTippy"
+            duration={200}
+            animation="scale"
+            theme="light-border"
+            allowHTML={true}
             placement="left"
             content={
-              <Tooltip Place="left">
                 <span>
                   Press <span style={{ color: "red" }}>ESC</span> To Close
                 </span>
-              </Tooltip>
             }
           >
             <button className={cn(styles.escBtn)} onClick={hideImageModal}>
@@ -758,13 +772,17 @@ function ProductLayout({ productData }) {
           </span>
           <div className={styles.shippingCountry}>
             <Tippy
-              duration={0}
-              placement="bottom"
+              className="customTippy"
+              duration={200}
+              theme="light-border"
+              allowHTML={true}
+              placement="right"
+              animation="scale"
+              trigger="click"
               content={
-                <Tooltip Place="bottom-shippingTo">
+                <>
                   <span className={styles.tooltip}>Currently we only ship to</span>
-                  <span className={cn(styles.shippingCountryName, styles.shippingCountryNameTooltip)}>United States</span>
-                </Tooltip>
+                  <span className={cn(styles.shippingCountryName, styles.shippingCountryNameTooltip)}>United States</span></>
               }
             >
               <button className={styles.shippingCountryName}>United States</button>

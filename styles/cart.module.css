@@ -17,6 +17,10 @@
     padding: 10px 30px;
     background-color: white;
 }
+.content {
+    padding: 30px;
+    padding-top: 30px;
+}
 .selectAllBtn {
     display: flex;
     align-items: center;
