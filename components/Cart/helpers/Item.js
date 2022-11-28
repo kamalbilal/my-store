@@ -1,8 +1,9 @@
 import styles from "./Item.module.css";
 import Tippy from "@tippyjs/react";
-
+import { useRouter } from "next/router";
 
 function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, checkedButtonsData, setCheckedButtonsData, HiOutlineTrash, RiHeart2Line, FiEdit, useEffect }) {
+  const router = useRouter();
   useEffect(() => {
     setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }));
   }, []);
@@ -30,25 +31,32 @@ function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, 
           <div className={styles.titleDiv}>
             <div className={styles.title}>{data["title"]}</div>
 
-            <Tippy className="customTippy" placement="top" duration={200}  theme="light-border" animation='scale' arrow={true} allowHTML={true} content={<div>Edit</div>}>
-              <button className={styles.editIcon}>
+            <Tippy className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Edit</div>}>
+              <button
+                onClick={() => {
+                  router.push(
+                    `/product/3256804589542025.html?select=${Object.values(data["selectedProperties"])
+                      .map((el) => el["Data"].replace(";", ""))
+                      .join("-")}`
+                  );
+                }}
+                className={styles.editIcon}
+              >
                 <FiEdit />
               </button>
             </Tippy>
-            
-            <Tippy className="customTippy" placement="top" duration={200}  theme="light-border" animation='scale' arrow={true} allowHTML={true} content={<div>Add to wishlist</div>}>
+
+            <Tippy className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Add to wishlist</div>}>
               <button className={styles.heartIcon}>
                 <RiHeart2Line />
               </button>
             </Tippy>
 
-            <Tippy className="customTippy" placement="top" duration={200}  theme="light-border" animation='scale' arrow={true} allowHTML={true} content={<div>Delete</div>}>
-            <button className={styles.trashIcon}>
-              <HiOutlineTrash />
-            </button>
+            <Tippy className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Delete</div>}>
+              <button className={styles.trashIcon}>
+                <HiOutlineTrash />
+              </button>
             </Tippy>
-
-
           </div>
           <button className={styles.properties}>
             {Object.values(data["selectedProperties"])

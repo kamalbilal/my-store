@@ -47,7 +47,6 @@ export async function getServerSideProps(ctx) {
   });
 
   res = await res.json();
-
   // if error then redirect to 404 page
   if (res["error"] === true) {
     return {

@@ -8,22 +8,25 @@ import { MdLocationPin } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { ImRadioUnchecked } from "react-icons/im";
-import Tippy  from "@tippyjs/react";
+import Tippy from "@tippyjs/react";
 import { useContext } from "react";
 import { CartContext, GiftContext, HeartContext } from "../../userContext";
 import { replaceAll } from "../../libs/replace";
 // require("dotenv").config();
 import axios from "axios";
-import Link from 'next/link';
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 function ProductLayout({ productData }) {
+  const router = useRouter();
+
   const { cartNumber, setCartNumber } = useContext(CartContext);
 
   useEffect(() => {
     console.log(cartNumber);
   }, [cartNumber]);
 
-  console.log(productData);
+  // console.log(productData);
   const allImagesRefs = useRef([]);
   const modalRef = useRef();
   const allImagesModalRefs = useRef([]);
@@ -379,7 +382,7 @@ function ProductLayout({ productData }) {
   }
 
   useEffect(() => {
-    setShowAddedCartToast(false)
+    setShowAddedCartToast(false);
     let test = "";
     let canRunFully = true;
     for (const key in sizeColorsSelectedData) {
@@ -397,7 +400,7 @@ function ProductLayout({ productData }) {
 
     let index = priceList["InNumbers"].indexOf(test);
     if (index === -1) {
-      index = priceList["InNumbers"].indexOf(test.slice(0, -1)); // slice ; from last 
+      index = priceList["InNumbers"].indexOf(test.slice(0, -1)); // slice ; from last
       if (index === -1) {
         setDefaultQuality(productData["quantityAvaliable"]);
         return setCurrentPrice(productData["maxPrice"]);
@@ -428,35 +431,60 @@ function ProductLayout({ productData }) {
   }
 
   function hideToastOnClickAnywhere(e) {
-    if(e.target.id === "addToCart_button") return
+    if (e.target.id === "addToCart_button") return;
     console.log("toast added to cart ==> hidden");
-    setShowAddedCartToast(false)
+    setShowAddedCartToast(false);
   }
   useEffect(() => {
     if (showAddedCartToast === true) {
       cartAddedRef.current.classList.add(styles.cartErrorDiv_show);
-        window.addEventListener("click", hideToastOnClickAnywhere)
+      window.addEventListener("click", hideToastOnClickAnywhere);
     } else {
       cartAddedRef.current.classList.remove(styles.cartErrorDiv_show);
     }
 
     return () => {
-      window.removeEventListener("click", hideToastOnClickAnywhere)
-    }
-  }, [showAddedCartToast])
-
+      window.removeEventListener("click", hideToastOnClickAnywhere);
+    };
+  }, [showAddedCartToast]);
 
   useEffect(() => {
-    if (autoClick.current === true) {
-      autoClick.current = false
-      document.querySelector("[data-attribute-third='EU Charger 1M Cable']").click()
-      document.querySelector("[data-attribute-third='White']").click()
+    if (autoClick.current === true && router.query.select && Object.keys(sizeColorsSelectedData).length == 0) {
+      autoClick.current = false;
+      let autoSelect = router.query.select;
+      autoSelect = autoSelect.includes("-") ? autoSelect : autoSelect + "-";
+      router.query.select.split("-").map((el) => {
+        if (!el) return;
+        el = el.split(":");
+        const first = el[0];
+        const second = el[1];
+        document.querySelector(`[data-attribute-first='${first}'][data-attribute-second='${second}']`).click();
+      });
       console.log("Clicked");
-    }
-   
-  }, [sizeColorsSelectedData])
-  
+    } else if (Object.keys(sizeColorsSelectedData).length > 0) {
+      let query = "";
+      const values = Object.values(sizeColorsSelectedData).filter((el) => el["isSelected"] === true);
+      for (let index = 0; index < values.length; index++) {
+        const element = values[index];
+        if (element["isSelected"] === true) {
+          query += element["Data"].replace(";", "");
+        }
+        console.log({ index, len: values.length });
+        if (index !== values.length - 1) {
+          query += "-";
+        }
+      }
 
+      // change both "Page Title" below with actual page title
+      if (query) {
+        window.history.pushState(null, "Page Title", `${router.asPath.split("?")[0]}?select=${query}`);
+      } else {
+        window.history.pushState(null, "Page Title", router.asPath.split("?")[0]);
+
+      }
+    }
+    console.log(sizeColorsSelectedData);
+  }, [sizeColorsSelectedData]);
 
   return (
     <div className={styles.container}>
@@ -473,9 +501,9 @@ function ProductLayout({ productData }) {
             allowHTML={true}
             placement="left"
             content={
-                <span>
-                  Press <span style={{ color: "red" }}>ESC</span> To Close
-                </span>
+              <span>
+                Press <span style={{ color: "red" }}>ESC</span> To Close
+              </span>
             }
           >
             <button className={cn(styles.escBtn)} onClick={hideImageModal}>
@@ -592,10 +620,7 @@ function ProductLayout({ productData }) {
           return (
             <div key={index}>
               <span className={styles.heading}>
-                {propertyName}:
-                <span className={styles.selectedValue}>
-                  {sizeColorsSelectedData.hasOwnProperty(index) ? sizeColorsSelectedData[index]["selected"] : ""}
-                </span>
+                {propertyName}:<span className={styles.selectedValue}>{sizeColorsSelectedData.hasOwnProperty(index) ? sizeColorsSelectedData[index]["selected"] : ""}</span>
               </span>
               <div className={styles.values}>
                 {element["skuPropertyValues"].map((element2, index2) => {
@@ -693,17 +718,7 @@ function ProductLayout({ productData }) {
                 type="text"
                 placeholder={quantity}
                 value={quantity}
-                disabled={
-                  maxPurchaseLimit > 0
-                    ? quantity >= maxPurchaseLimit
-                      ? true
-                      : quantity === 0
-                        ? true
-                        : false
-                    : quantity >= defaultQuality
-                      ? true
-                      : false
-                }
+                disabled={maxPurchaseLimit > 0 ? (quantity >= maxPurchaseLimit ? true : quantity === 0 ? true : false) : quantity >= defaultQuality ? true : false}
                 onBlur={() => {
                   setInputFocused(false);
                   if ((quantity === 0 && inputFocused === true) || quantity === "0" || quantity < 0) {
@@ -732,17 +747,7 @@ function ProductLayout({ productData }) {
             <button
               className={styles.counterBtn}
               ref={plusBtnRef}
-              disabled={
-                maxPurchaseLimit > 0
-                  ? quantity >= maxPurchaseLimit
-                    ? true
-                    : quantity === 0
-                      ? true
-                      : false
-                  : quantity >= defaultQuality
-                    ? true
-                    : false
-              }
+              disabled={maxPurchaseLimit > 0 ? (quantity >= maxPurchaseLimit ? true : quantity === 0 ? true : false) : quantity >= defaultQuality ? true : false}
               onClick={() => {
                 //console.log({ maxPurchaseLimit, quantity, defaultQuality });
                 quantityInput.current.focus();
@@ -755,8 +760,7 @@ function ProductLayout({ productData }) {
               {quantity === 0 && inputFocused === false ? (
                 <span className={(styles.colorName, styles.outOfStock)}>Out of Stock.</span>
               ) : maxPurchaseLimit > 0 ? (
-                `${maxPurchaseLimit} ${maxPurchaseLimit > 1 ? productData["multiUnitName"] || "pieces" : productData["oddUnitName"] || "piece"
-                }${productData["buyLimitText"] || " at most per customer"}`
+                `${maxPurchaseLimit} ${maxPurchaseLimit > 1 ? productData["multiUnitName"] || "pieces" : productData["oddUnitName"] || "piece"}${productData["buyLimitText"] || " at most per customer"}`
               ) : (
                 `${defaultQuality} ${productData["multiUnitName"]} Avaliable`
               )}
@@ -782,7 +786,8 @@ function ProductLayout({ productData }) {
               content={
                 <>
                   <span className={styles.tooltip}>Currently we only ship to</span>
-                  <span className={cn(styles.shippingCountryName, styles.shippingCountryNameTooltip)}>United States</span></>
+                  <span className={cn(styles.shippingCountryName, styles.shippingCountryNameTooltip)}>United States</span>
+                </>
               }
             >
               <button className={styles.shippingCountryName}>United States</button>
@@ -805,12 +810,7 @@ function ProductLayout({ productData }) {
             ${mainshippingFee["bizData"]["deliveryProviderName"]}`}
               </div>
               <div className={styles.moreOptions}>
-                <div>
-                  {`Estimated Date: ${mainshippingFee["bizData"].hasOwnProperty("deliveryDate") === true
-                    ? mainshippingFee["bizData"]["deliveryDate"]
-                    : mainshippingFee["bizData"]["deliveryTime"] + " Days"
-                    }`}
-                </div>
+                <div>{`Estimated Date: ${mainshippingFee["bizData"].hasOwnProperty("deliveryDate") === true ? mainshippingFee["bizData"]["deliveryDate"] : mainshippingFee["bizData"]["deliveryTime"] + " Days"}`}</div>
                 <button onClick={showShippingMethodModal} className={styles.showMoreOptions}>
                   More Options <IoIosArrowDown />
                 </button>
@@ -822,11 +822,7 @@ function ProductLayout({ productData }) {
         )}
 
         {/* shipping Method Modal */}
-        <div
-          ref={shippingMethodModalRef}
-          onClick={hideShippingMethodModal}
-          className={cn(styles.colors, styles.shippingModal, styles.shippingModalHide)}
-        >
+        <div ref={shippingMethodModalRef} onClick={hideShippingMethodModal} className={cn(styles.colors, styles.shippingModal, styles.shippingModalHide)}>
           <div className={styles.shippingModalDiv}>
             <div className={styles.shippingModalTitle}>
               <p>Shipping Method</p>
@@ -835,54 +831,42 @@ function ProductLayout({ productData }) {
               {/* Data */}
               {shippingData
                 ? Object.keys(shippingData).map((element, index) => {
-                  if (shippingData[element]["display"] === false) {
-                    return;
-                  }
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        for (let x in toggleCheckBtn) {
-                          setToggleCheckBtn((prev) => ({ ...prev, [x]: false }));
-                        }
-                        setToggleCheckBtn((prev) => ({ ...prev, [index]: true }));
-                        setMainshippingFee(shippingData[element]);
-                        if (shippingData[element]["oldPrice"] === "free") {
-                          setShippingDataSelected(null);
-                        } else {
-                          setShippingDataSelected(element);
-                        }
-
-                      }}
-                      className={styles.shippingDetailList}
-                    >
-                      <div className={styles.shippingFeeTitle}>
-                        {shippingData[element]["newPrice"] === "free" ? "Free" : ""} Shipping
-                        {shippingData[element]["newPrice"] !== "free" ? ": $" + round(shippingData[element]["newPrice"], 2) : ""}
-                      </div>
-                      <div className={cn(styles.shippingDetail, styles.shippingDetailLineHeight)}>
-                        <div>
-                          {`To ${shippingData[element]["bizData"]["shipTo"]} via
+                    if (shippingData[element]["display"] === false) {
+                      return;
+                    }
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          for (let x in toggleCheckBtn) {
+                            setToggleCheckBtn((prev) => ({ ...prev, [x]: false }));
+                          }
+                          setToggleCheckBtn((prev) => ({ ...prev, [index]: true }));
+                          setMainshippingFee(shippingData[element]);
+                          if (shippingData[element]["oldPrice"] === "free") {
+                            setShippingDataSelected(null);
+                          } else {
+                            setShippingDataSelected(element);
+                          }
+                        }}
+                        className={styles.shippingDetailList}
+                      >
+                        <div className={styles.shippingFeeTitle}>
+                          {shippingData[element]["newPrice"] === "free" ? "Free" : ""} Shipping
+                          {shippingData[element]["newPrice"] !== "free" ? ": $" + round(shippingData[element]["newPrice"], 2) : ""}
+                        </div>
+                        <div className={cn(styles.shippingDetail, styles.shippingDetailLineHeight)}>
+                          <div>
+                            {`To ${shippingData[element]["bizData"]["shipTo"]} via
                             ${shippingData[element]["bizData"]["deliveryProviderName"]}`}
+                          </div>
+                          <div>Estimated Date: {shippingData[element]["bizData"].hasOwnProperty("deliveryDate") === true ? shippingData[element]["bizData"]["deliveryDate"] : shippingData[element]["bizData"]["deliveryTime"] + " Days"}</div>
                         </div>
-                        <div>
-                          Estimated Date:{" "}
-                          {shippingData[element]["bizData"].hasOwnProperty("deliveryDate") === true
-                            ? (shippingData[element]["bizData"]["deliveryDate"])
-                            : (shippingData[element]["bizData"]["deliveryTime"]) + " Days"}
-                        </div>
-                      </div>
-                      {/* checkbox */}
-                      <div className={styles.checkBtn}>
-                        {toggleCheckBtn[index] !== true ? (
-                          <ImRadioUnchecked className={styles.check} />
-                        ) : (
-                          <FaCheckCircle className={styles.check} />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })
+                        {/* checkbox */}
+                        <div className={styles.checkBtn}>{toggleCheckBtn[index] !== true ? <ImRadioUnchecked className={styles.check} /> : <FaCheckCircle className={styles.check} />}</div>
+                      </button>
+                    );
+                  })
                 : ""}
 
               {/* Data End */}
@@ -893,10 +877,14 @@ function ProductLayout({ productData }) {
 
         {/* Add to cart */}
         <div ref={addToCardDiv_ref} className={styles.buyDiv}>
-          <button onClick={() => {
-            console.log(mainshippingFee);
-
-          }} disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
+          <button
+            onClick={() => {
+              console.log(mainshippingFee);
+            }}
+            disabled={quantity == 0 ? true : false}
+            ref={addToCart_BuyNow_ref}
+            className={cn(styles.buyButton, styles.buyNow)}
+          >
             Buy Now
           </button>
           <button
@@ -904,7 +892,7 @@ function ProductLayout({ productData }) {
             ref={addToCart_AddToCart_ref}
             disabled={quantity == 0 ? true : false}
             onMouseOver={() => {
-              if (showAddedCartToast === true) return
+              if (showAddedCartToast === true) return;
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
               // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
@@ -912,18 +900,17 @@ function ProductLayout({ productData }) {
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
 
-              const isAllSelected = !(numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false))
-              if (isAllSelected === false) {                
-                setShowAddedCartToast(false)
+              const isAllSelected = !numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false);
+              if (isAllSelected === false) {
+                setShowAddedCartToast(false);
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
-
               }
             }}
             onMouseLeave={() => {
               cartErrorRef.current.classList.remove(styles.cartErrorDiv_show);
             }}
             onClick={() => {
-              if (showAddedCartToast === true) return
+              if (showAddedCartToast === true) return;
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
               // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
@@ -931,66 +918,77 @@ function ProductLayout({ productData }) {
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
 
-              const isAllSelected = !(numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false))
+              const isAllSelected = !numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false);
               if (isAllSelected === true) {
-                  const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-")
-                  const shippingDetails = mainshippingFee["bizData"]
-                  const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"]
-                  const order_quantity = quantity
-                  const selectedProperties = sizeColorsSelectedData
-                  const selectedDiscount = 0
+                const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-");
+                const shippingDetails = mainshippingFee["bizData"];
+                const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"];
+                const order_quantity = quantity;
+                const selectedProperties = sizeColorsSelectedData;
+                const selectedDiscount = 0;
 
-                  const serverCartData = {
-                    productId: productData["productId"],
-                    cartName,
-                    quantity: order_quantity,
-                    price: Number(currentPrice),
-                    shippingPrice,
-                    discount: selectedDiscount,
-                    selectedProperties,
-                    shippingDetails,
+                const serverCartData = {
+                  productId: productData["productId"],
+                  cartName,
+                  quantity: order_quantity,
+                  price: Number(currentPrice),
+                  shippingPrice,
+                  discount: selectedDiscount,
+                  selectedProperties,
+                  shippingDetails,
+                };
+                addToCart_To_Server(serverCartData);
+
+                const cartDataLocalStorage = {
+                  title: productData["title"],
+                  productId: productData["productId"],
+                  cartName,
+                  selectedQuantity: order_quantity,
+                  selectedPrice: Number(currentPrice),
+                  selectedShippingPrice: shippingPrice,
+                  selectedDiscount,
+                  selectedProperties,
+                  selectedShippingDetails: shippingDetails,
+                  images: productData["images"],
+                  minPrice: productData["minPrice"],
+                  maxPrice: productData["maxPrice"],
+                  multiUnitName: productData["multiUnitName"],
+                  oddUnitName: productData["oddUnitName"],
+                  maxPurchaseLimit: productData["maxPurchaseLimit"],
+                  buyLimitText: productData["buyLimitText"],
+                  quantityAvaliable: productData["quantityAvaliable"],
+                  priceList_InNames: productData["priceList_InNames"],
+                  priceList_InNumbers: productData["priceList_InNumbers"],
+                  priceList_Data: productData["priceList_Data"],
+                };
+                setCartNumber((prev) => {
+                  if (prev.data.hasOwnProperty(cartName)) {
+                    return {
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        [cartName]: {
+                          ...cartDataLocalStorage,
+                        },
+                      },
+                    };
+                  } else {
+                    return {
+                      ...prev,
+                      count: prev.count + 1,
+                      data: {
+                        ...prev.data,
+                        [cartName]: {
+                          ...cartDataLocalStorage,
+                        },
+                      },
+                    };
                   }
-                  addToCart_To_Server(serverCartData)
-
-                  const cartDataLocalStorage = {
-                    title: productData["title"],
-                    productId: productData["productId"],
-                    cartName,
-                    selectedQuantity: order_quantity,
-                    selectedPrice: Number(currentPrice),
-                    selectedShippingPrice : shippingPrice,
-                    selectedDiscount,
-                    selectedProperties,
-                    selectedShippingDetails: shippingDetails,
-                    images: productData["images"],
-                    minPrice: productData["minPrice"],
-                    maxPrice: productData["maxPrice"],
-                    multiUnitName: productData["multiUnitName"],
-                    oddUnitName: productData["oddUnitName"],
-                    maxPurchaseLimit: productData["maxPurchaseLimit"],
-                    buyLimitText: productData["buyLimitText"],
-                    quantityAvaliable: productData["quantityAvaliable"],
-                    priceList_InNames: productData["priceList_InNames"],
-                    priceList_InNumbers: productData["priceList_InNumbers"],
-                    priceList_Data: productData["priceList_Data"]
-                  }
-                  setCartNumber((prev) => {
-                    if (prev.data.hasOwnProperty(cartName)) {
-                      return {...prev, data: {...prev.data, [cartName]: {
-                        ...cartDataLocalStorage
-                      }}}
-                    } else {
-                      return {...prev, count: prev.count+ 1, data: {...prev.data, [cartName]: {
-                        ...cartDataLocalStorage
-                      }}}
-                    }
-                  })
-                  setShowAddedCartToast(true)
-                  // api thing
-                
-
+                });
+                setShowAddedCartToast(true);
+                // api thing
               } else {
-                setShowAddedCartToast(false)
+                setShowAddedCartToast(false);
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
             }}
@@ -1004,12 +1002,13 @@ function ProductLayout({ productData }) {
                 </div>
               </div>
             </div>
-            
             <div ref={cartAddedRef} className={styles.cartErrorDiv}>
               <div className={cn(styles.cartError, styles.cartAdded)}>
-                Successfully Added To Cart 
+                Successfully Added To Cart
                 <br />
-              <div className={styles.viewCartBtn}><Link href="/cart">Go to Cart</Link></div>
+                <div className={styles.viewCartBtn}>
+                  <Link href="/cart">Go to Cart</Link>
+                </div>
               </div>
               <div className={styles.arrow}>
                 <div class={cn(styles.triangleLeft, styles.cartAddedTriangleLeft)}>
