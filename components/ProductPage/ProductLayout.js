@@ -63,6 +63,7 @@ function ProductLayout({ productData }) {
   const cartAddedRef = useRef();
   const runUseEffect2 = useRef(true);
   const autoClick = useRef(true);
+  const autoSelectShipping = useRef(true);
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -175,7 +176,7 @@ function ProductLayout({ productData }) {
           increment: getChangeShippingPricesValues(oldPrice),
           display: true,
           selected: false,
-          bizData: { ...bizData },
+          bizData: { ...bizData, index },
         },
       }));
 
@@ -186,7 +187,7 @@ function ProductLayout({ productData }) {
           increment: getChangeShippingPricesValues(oldPrice),
           display: true,
           selected: false,
-          bizData: { ...bizData },
+          bizData: { ...bizData, index },
         });
       }
     });
@@ -277,8 +278,6 @@ function ProductLayout({ productData }) {
 
   useEffect(() => {
     if (shippingData) {
-      // //console.log(toggleCheckBtn);
-
       const data = shippingData;
       const keys = Object.keys(data);
       if (shippingDataSelected === null) {
@@ -316,6 +315,34 @@ function ProductLayout({ productData }) {
             }
           });
         }
+      }
+
+      if (autoSelectShipping.current === true && router.query.hasOwnProperty("s") && router.query.s) {
+        const shippingIndex = router.query.s.split(":")[0];
+        const shippingCompany = router.query.s.split(":")[1];
+        let selectedShippingIndex = Object.values(shippingData).findIndex((el) => el["bizData"]["index"] == shippingIndex && el["bizData"]["company"] == shippingCompany);
+        console.log(selectedShippingIndex);
+        if (selectedShippingIndex == -1) {
+          selectedShippingIndex = Object.values(shippingData).findIndex((el) => el["bizData"]["index"] == shippingIndex);
+          if (selectedShippingIndex == -1) {
+            selectedShippingIndex = Object.values(shippingData).findIndex((el) => el["bizData"]["company"] == shippingCompany);
+            if (selectedShippingIndex == -1) {
+              selectedShippingIndex = 0;
+            }
+          }
+        }
+        setMainshippingFee(shippingData[selectedShippingIndex]);
+        const tempToggleCheckBtn = toggleCheckBtn
+        for (let x in tempToggleCheckBtn) {
+          if (x == selectedShippingIndex) {
+            tempToggleCheckBtn[x] = true
+          } else {
+            tempToggleCheckBtn[x] = false
+          }
+        }
+        setToggleCheckBtn(tempToggleCheckBtn);
+        setShippingDataSelected(selectedShippingIndex)
+        autoSelectShipping.current = false
       }
     }
   }, [shippingDataSelected, quantity]);
@@ -449,16 +476,23 @@ function ProductLayout({ productData }) {
   }, [showAddedCartToast]);
 
   useEffect(() => {
+    if (!mainshippingFee || !quantity) return;
     if (autoClick.current === true && router.query.select && Object.keys(sizeColorsSelectedData).length == 0) {
       autoClick.current = false;
       let autoSelect = router.query.select;
+      setQuantity(router.query.hasOwnProperty("q") ? parseInt(router.query.q) : 1);
       autoSelect = autoSelect.includes("-") ? autoSelect : autoSelect + "-";
       router.query.select.split("-").map((el) => {
         if (!el) return;
         el = el.split(":");
         const first = el[0];
         const second = el[1];
-        document.querySelector(`[data-attribute-first='${first}'][data-attribute-second='${second}']`).click();
+        try {
+          const element = document.querySelector(`[data-attribute-first='${first}'][data-attribute-second='${second}']`);
+          if (element) element.click();
+        } catch {
+          //
+        }
       });
       console.log("Clicked");
     } else if (Object.keys(sizeColorsSelectedData).length > 0) {
@@ -477,14 +511,13 @@ function ProductLayout({ productData }) {
 
       // change both "Page Title" below with actual page title
       if (query) {
-        window.history.pushState(null, "Page Title", `${router.asPath.split("?")[0]}?select=${query}`);
+        window.history.pushState(null, "Page Title", `${router.asPath.split("?")[0]}?select=${query}&q=${quantity == 0 ? 1 : quantity}&s=${mainshippingFee["bizData"]["index"] + ":" + mainshippingFee["bizData"]["company"]}`);
       } else {
         window.history.pushState(null, "Page Title", router.asPath.split("?")[0]);
-
       }
     }
     console.log(sizeColorsSelectedData);
-  }, [sizeColorsSelectedData]);
+  }, [sizeColorsSelectedData, mainshippingFee, quantity]);
 
   return (
     <div className={styles.container}>
@@ -838,6 +871,8 @@ function ProductLayout({ productData }) {
                       <button
                         key={index}
                         onClick={() => {
+                          console.log(shippingData);
+                          console.log(element);
                           for (let x in toggleCheckBtn) {
                             setToggleCheckBtn((prev) => ({ ...prev, [x]: false }));
                           }
@@ -877,14 +912,7 @@ function ProductLayout({ productData }) {
 
         {/* Add to cart */}
         <div ref={addToCardDiv_ref} className={styles.buyDiv}>
-          <button
-            onClick={() => {
-              console.log(mainshippingFee);
-            }}
-            disabled={quantity == 0 ? true : false}
-            ref={addToCart_BuyNow_ref}
-            className={cn(styles.buyButton, styles.buyNow)}
-          >
+          <button disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
             Buy Now
           </button>
           <button
@@ -892,11 +920,12 @@ function ProductLayout({ productData }) {
             ref={addToCart_AddToCart_ref}
             disabled={quantity == 0 ? true : false}
             onMouseOver={() => {
+              if (totalNumberOfProductDetails === 0) return setShowAddedCartToast(false); // no properties(sizeColors) are available
               if (showAddedCartToast === true) return;
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
               // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
-              if (numberOfSelectedProductsDetails.length === 0 || numberOfSelectedProductsDetails.length !== totalNumberOfProductDetails) {
+              if ((numberOfSelectedProductsDetails.length === 0 && totalNumberOfProductDetails > 0) || numberOfSelectedProductsDetails.length !== totalNumberOfProductDetails) {
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
 
@@ -914,15 +943,15 @@ function ProductLayout({ productData }) {
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
               // const totalNumberOfProductsDetails = totalNumberOfProductDetails;
-              if (numberOfSelectedProductsDetails.length === 0 || numberOfSelectedProductsDetails.length !== totalNumberOfProductDetails) {
+              if ((numberOfSelectedProductsDetails.length === 0 && totalNumberOfProductDetails > 0) || numberOfSelectedProductsDetails.length !== totalNumberOfProductDetails) {
                 return cartErrorRef.current.classList.add(styles.cartErrorDiv_show);
               }
 
               const isAllSelected = !numberOfSelectedProductsDetails.some((el) => sizeColorsSelectedData[el]["isSelected"] === false);
               if (isAllSelected === true) {
-                const cartName = numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-");
+                const cartName = productData["productId"] + "-" + numberOfSelectedProductsDetails.map((el) => sizeColorsSelectedData[el]["Data"].replaceAll(";", "")).join("-");
                 const shippingDetails = mainshippingFee["bizData"];
-                const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : mainshippingFee["newPrice"];
+                const shippingPrice = mainshippingFee["newPrice"] === "free" ? 0 : round(mainshippingFee["newPrice"], 2);
                 const order_quantity = quantity;
                 const selectedProperties = sizeColorsSelectedData;
                 const selectedDiscount = 0;
@@ -937,11 +966,13 @@ function ProductLayout({ productData }) {
                   selectedProperties,
                   shippingDetails,
                 };
+                console.log(serverCartData);
                 addToCart_To_Server(serverCartData);
 
                 const cartDataLocalStorage = {
                   title: productData["title"],
                   productId: productData["productId"],
+                  longProductId: productData["longProductId"],
                   cartName,
                   selectedQuantity: order_quantity,
                   selectedPrice: Number(currentPrice),

@@ -56,10 +56,10 @@ function Register() {
   return (
     <div>
       <div>
-        <input ref={emailRef} defaultValue="kamalbilalhuawei@gmail.com" type="email" name="" id="" />
+        <input ref={emailRef} defaultValue="kamalbilalhuawei@gmail.com" type="email" />
       </div>
       <div>
-        <input ref={passwordRef} defaultValue="kamal" type="password" name="" id="" />
+        <input ref={passwordRef} defaultValue="kamal" type="password" />
       </div>
       <button onClick={register}>Submit</button>
       <br />

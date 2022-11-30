@@ -11,7 +11,7 @@ function Product_query({ productData }) {
     "Data": productData.priceList_Data,
 
 }
-  // console.log(productData);
+  console.log(productData);
   const router = useRouter();
   const { product_query } = router.query; // contain product name from url
   return (

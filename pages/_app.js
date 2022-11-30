@@ -79,7 +79,7 @@ function MyApp({ Component, pageProps }) {
   }, [])
 
   useEffect(() => {
-    if (Object.values(userData).length === 0) {
+    if (userData && Object.values(userData).length === 0) {
       // when logout btn is clicked
       setCartNumber({
         count: 0,

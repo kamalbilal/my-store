@@ -35,9 +35,9 @@ function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, 
               <button
                 onClick={() => {
                   router.push(
-                    `/product/3256804589542025.html?select=${Object.values(data["selectedProperties"])
+                    `/product/${data["longProductId"]}.html?select=${Object.values(data["selectedProperties"])
                       .map((el) => el["Data"].replace(";", ""))
-                      .join("-")}`
+                      .join("-")}&q=${data["selectedQuantity"]}&s=${data["selectedShippingDetails"]["index"] + ":" + data["selectedShippingDetails"]["company"]}`
                   );
                 }}
                 className={styles.editIcon}

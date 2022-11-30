@@ -7,10 +7,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 function Dropdown({Router, userData, setUserData, router, hideDropDown, CartIcon, HeartIcon }) {
-  const [isUserLoggedIn, setisUserLoggedIn] = useState(userData.hasOwnProperty("email"));
+  const [isUserLoggedIn, setisUserLoggedIn] = useState(userData && userData.hasOwnProperty("email"));
   
   useEffect(() => {
-    setisUserLoggedIn(userData.hasOwnProperty("email"))
+    setisUserLoggedIn(userData && userData.hasOwnProperty("email"))
   }, [userData])
   
 
