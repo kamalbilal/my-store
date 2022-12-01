@@ -23,8 +23,14 @@ function Register() {
   //   return cookies;
   // };
 
+  useEffect(() => {
+    setGetUserData(false)
+
+  }, [])
+
   async function register(e) {
     e.preventDefault();
+    
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
@@ -45,7 +51,7 @@ function Register() {
     };
 
     const response = await axios(options);
-
+    console.log(response.data);
     if (response.data.success === true) {
       setGetUserData(true)
       const redirectToLink = visitedLinksArray.length > 0 ? visitedLinksArray[visitedLinksArray.length - 1] : "/";

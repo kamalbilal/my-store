@@ -12,6 +12,12 @@ function Login() {
   const emailRef = useRef();
   const passwordRef = useRef();  
 
+  useEffect(() => {
+    setGetUserData(false)
+
+  }, [])
+  
+
   async function login(e) {
     e.preventDefault();
     const email = emailRef.current.value;

@@ -21,7 +21,7 @@ function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, 
           <ImRadioUnchecked className={cn(styles.check, "unselectable")} />
         )}
         <div className="unselectable">
-          <Image src={data["images"][0]} width={130} height={130} draggable="false" />
+          <Image src={data["selectedImageUrl"]} width={130} height={130} draggable="false" />
         </div>
       </div>
 

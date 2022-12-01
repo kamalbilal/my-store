@@ -171,7 +171,7 @@ function MyApp({ Component, pageProps }) {
                           <Navbar />
                         </div>
                         <div className={styles.content}>
-                          <NextNProgress height={6} color="#3b82f6" options={{ showSpinner: false }} />
+                          <NextNProgress height={6} color="#3b82f6" options={{ showSpinner: false }} showOnShallow={false} />
                           <Component {...pageProps} />
                         </div>
                         <Footer />

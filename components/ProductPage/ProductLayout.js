@@ -509,11 +509,10 @@ function ProductLayout({ productData }) {
         }
       }
 
-      // change both "Page Title" below with actual page title
       if (query) {
-        window.history.pushState(null, "Page Title", `${router.asPath.split("?")[0]}?select=${query}&q=${quantity == 0 ? 1 : quantity}&s=${mainshippingFee["bizData"]["index"] + ":" + mainshippingFee["bizData"]["company"]}`);
+        router.push(`${router.asPath.split("?")[0]}?select=${query}&q=${quantity == 0 ? 1 : quantity}&s=${mainshippingFee["bizData"]["index"] + ":" + mainshippingFee["bizData"]["company"]}`, undefined, { shallow: true })
       } else {
-        window.history.pushState(null, "Page Title", router.asPath.split("?")[0]);
+        router.push(router.asPath.split("?")[0], undefined, { shallow: true })
       }
     }
     console.log(sizeColorsSelectedData);
@@ -912,7 +911,11 @@ function ProductLayout({ productData }) {
 
         {/* Add to cart */}
         <div ref={addToCardDiv_ref} className={styles.buyDiv}>
-          <button disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
+          <button
+          onClick={() => {
+            console.log(mainImage);
+          }}
+           disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
             Buy Now
           </button>
           <button
@@ -959,6 +962,7 @@ function ProductLayout({ productData }) {
                 const serverCartData = {
                   productId: productData["productId"],
                   cartName,
+                  selectedImageUrl: mainImage, 
                   quantity: order_quantity,
                   price: Number(currentPrice),
                   shippingPrice,
@@ -974,13 +978,14 @@ function ProductLayout({ productData }) {
                   productId: productData["productId"],
                   longProductId: productData["longProductId"],
                   cartName,
+                  selectedImageUrl: mainImage,
                   selectedQuantity: order_quantity,
                   selectedPrice: Number(currentPrice),
                   selectedShippingPrice: shippingPrice,
                   selectedDiscount,
                   selectedProperties,
                   selectedShippingDetails: shippingDetails,
-                  images: productData["images"],
+                  // images: productData["images"],
                   minPrice: productData["minPrice"],
                   maxPrice: productData["maxPrice"],
                   multiUnitName: productData["multiUnitName"],
