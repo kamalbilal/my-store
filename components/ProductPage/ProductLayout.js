@@ -30,8 +30,10 @@ function ProductLayout({ productData }) {
   const allImagesRefs = useRef([]);
   const modalRef = useRef();
   const allImagesModalRefs = useRef([]);
+  const allSizeColorsImagesModalRefs = useRef([]);
   const [allImages, setAllImages] = useState(productData["images"]);
   const [mainImage, setMainImage] = useState(productData["images"][0]);
+  const [allImagesSizeColors, setAllImagesSizeColors] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   let sizeColors_allRefs = useRef();
   sizeColors_allRefs = {};
@@ -52,9 +54,10 @@ function ProductLayout({ productData }) {
   const [allShippingCharges, setAllShippingCharges] = useState();
   const [toggleCheckBtn, setToggleCheckBtn] = useState({});
   const [productSelectedImageForCart, setProductSelectedImageForCart] = useState();
-  const [productDataContainImage, setProductDataContainImage] = useState(false);
+  const [showMainImageModal_OR_SizesColorsModal, setShowMainImageModal_OR_SizesColorsModal] = useState("mainImage"); // true for main image and false for sizeColors modal
   const [totalNumberOfProductDetails, setTotalNumberOfProductDetails] = useState(0);
   const [showAddedCartToast, setShowAddedCartToast] = useState(false);
+  const [sizeColorsImagePropertyIndex, setSizeColorsImagePropertyIndex] = useState(null);
   const shippingMethodModalRef = useRef();
   const addToCardDiv_ref = useRef();
   const addToCart_BuyNow_ref = useRef();
@@ -70,6 +73,17 @@ function ProductLayout({ productData }) {
   useEffect(() => {
     console.log(priceList);
   }, [priceList]);
+
+  useEffect(() => {
+    if (sizeColorsImagePropertyIndex === null) {
+     const index = productData["sizesColors"].findIndex((el) => el["skuPropertyValues"][0].hasOwnProperty("skuPropertyImagePath"))
+     if (index !== -1) {
+       setSizeColorsImagePropertyIndex(index)
+       setAllImagesSizeColors(productData["sizesColors"][index]["skuPropertyValues"].map((el) => el["skuPropertyImagePath"]))
+     }
+    }
+  }, [sizeColorsImagePropertyIndex])
+  
 
   useEffect(() => {
     if (defaultQuality > 0 && quantity === 0) {
@@ -195,7 +209,17 @@ function ProductLayout({ productData }) {
 
   function showImageModal() {
     modalRef.current.classList.add(styles.imageModalShow);
-    allImagesModalRefs.current[currentImageIndex].focus();
+    
+    if (showMainImageModal_OR_SizesColorsModal === "mainImage") {
+      allImagesModalRefs.current[currentImageIndex].focus(); 
+      
+    } else {
+      allSizeColorsImagesModalRefs.current.map((el) => {
+        el.classList.remove(styles.smallImagesOutline)
+      });
+      allSizeColorsImagesModalRefs.current[currentImageIndex].focus();
+    }
+
     setTimeout(() => {
       // setTimeout for animation
       document.querySelector("body").style.overflowY = "hidden";
@@ -225,11 +249,13 @@ function ProductLayout({ productData }) {
     allImagesRefs.current[id].focus();
 
     // modal
-    allImagesModalRefs.current.map((element) => {
-      element.classList.remove(styles.smallImagesOutline);
-    });
-    allImagesModalRefs.current[id].classList.add(styles.smallImagesOutline);
-    allImagesModalRefs.current[id].focus();
+    if (showMainImageModal_OR_SizesColorsModal === "mainImage") {
+      allImagesModalRefs.current.map((element) => {
+        element.classList.remove(styles.smallImagesOutline);
+      });
+      allImagesModalRefs.current[id].classList.add(styles.smallImagesOutline);
+      allImagesModalRefs.current[id].focus();
+    }
   }
   function smallImageModalFunctionality(e) {
     const id = e.target.id * 1;
@@ -245,6 +271,20 @@ function ProductLayout({ productData }) {
       element.classList.remove(styles.smallImagesOutline);
     });
     allImagesRefs.current[id].classList.add(styles.smallImagesOutline);
+  }
+  function smallImageSizeColorModalFunctionality(e) {
+    if(allImagesSizeColors.length === 0) return
+    const id = e.target.id * 1;
+    setMainImage(allImagesSizeColors[id * 1]);
+    setCurrentImageIndex(id * 1);
+
+    allSizeColorsImagesModalRefs.current.map((element) => {
+      element.classList.remove(styles.smallImagesOutline);
+    });
+    allSizeColorsImagesModalRefs.current[id].classList.add(styles.smallImagesOutline);
+    allSizeColorsImagesModalRefs.current[id].focus();
+
+    // (sizeColors_allRefs[productData["sizesColors"][sizeColorsImagePropertyIndex]["skuPropertyId"]][id]).click()
   }
 
   function showShippingMethodModal() {
@@ -332,20 +372,20 @@ function ProductLayout({ productData }) {
           }
         }
         setMainshippingFee(shippingData[selectedShippingIndex]);
-        const tempToggleCheckBtn = toggleCheckBtn
+        const tempToggleCheckBtn = toggleCheckBtn;
         for (let x in tempToggleCheckBtn) {
           if (x == selectedShippingIndex) {
-            tempToggleCheckBtn[x] = true
+            tempToggleCheckBtn[x] = true;
           } else {
-            tempToggleCheckBtn[x] = false
+            tempToggleCheckBtn[x] = false;
           }
         }
         setToggleCheckBtn(tempToggleCheckBtn);
-        setShippingDataSelected(selectedShippingIndex)
-        autoSelectShipping.current = false
+        setShippingDataSelected(selectedShippingIndex);
+        autoSelectShipping.current = false;
       }
     }
-  }, [shippingDataSelected, quantity]);
+  }, [quantity, shippingData]);
 
   useEffect(() => {
     if (runUseEffect2.current === true) {
@@ -510,9 +550,9 @@ function ProductLayout({ productData }) {
       }
 
       if (query) {
-        router.push(`${router.asPath.split("?")[0]}?select=${query}&q=${quantity == 0 ? 1 : quantity}&s=${mainshippingFee["bizData"]["index"] + ":" + mainshippingFee["bizData"]["company"]}`, undefined, { shallow: true })
+        router.push(`${router.asPath.split("?")[0]}?select=${query}&q=${quantity == 0 ? 1 : quantity}&s=${mainshippingFee["bizData"]["index"] + ":" + mainshippingFee["bizData"]["company"]}`, undefined, { shallow: true });
       } else {
-        router.push(router.asPath.split("?")[0], undefined, { shallow: true })
+        router.push(router.asPath.split("?")[0], undefined, { shallow: true });
       }
     }
     console.log(sizeColorsSelectedData);
@@ -559,7 +599,7 @@ function ProductLayout({ productData }) {
             />
           </div>
           <div className={cn(styles.smallImages, styles.smallImagesModal)} onClick={(event) => event.stopPropagation()}>
-            {productData["images"].map((element, index) => {
+            {sizeColorsImagePropertyIndex !== null && showMainImageModal_OR_SizesColorsModal === "sizeColorsModal" ? productData["sizesColors"][sizeColorsImagePropertyIndex]["skuPropertyValues"].map((element, index) => {
               let classnames;
               if (index === 0) {
                 classnames = cn(styles.smallImagesBtn, styles.smallImagesOutline);
@@ -571,23 +611,53 @@ function ProductLayout({ productData }) {
                   className={classnames}
                   key={index}
                   ref={(element) => {
-                    allImagesModalRefs.current[index] = element;
+                    allSizeColorsImagesModalRefs.current[index] = element;
                   }}
                   id={index}
                   onMouseOver={(e) => {
-                    smallImageModalFunctionality(e);
+                    smallImageSizeColorModalFunctionality(e);
                   }}
                   onClick={(e) => {
-                    smallImageModalFunctionality(e);
+                    // smallImageModalFunctionality(e);
                   }}
                   onFocus={(e) => {
-                    smallImageModalFunctionality(e);
+                    // smallImageModalFunctionality(e);
                   }}
                 >
-                  <Image key={index} id={index} src={element} className={styles.smallImage} width={50} height={50} draggable={false} />
+                  <Image key={index} id={index} src={element["skuPropertyImagePath"]} className={styles.smallImage} width={50} height={50} draggable={false} />
                 </button>
               );
-            })}
+            }) : (
+              productData["images"].map((element, index) => {
+                let classnames;
+                if (index === 0) {
+                  classnames = cn(styles.smallImagesBtn, styles.smallImagesOutline);
+                } else {
+                  classnames = styles.smallImagesBtn;
+                }
+                return (
+                  <button
+                    className={classnames}
+                    key={index}
+                    ref={(element) => {
+                      allImagesModalRefs.current[index] = element;
+                    }}
+                    id={index}
+                    onMouseOver={(e) => {
+                      smallImageModalFunctionality(e);
+                    }}
+                    onClick={(e) => {
+                      smallImageModalFunctionality(e);
+                    }}
+                    onFocus={(e) => {
+                      smallImageModalFunctionality(e);
+                    }}
+                  >
+                    <Image key={index} id={index} src={element} className={styles.smallImage} width={50} height={50} draggable={false} />
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
@@ -613,12 +683,15 @@ function ProductLayout({ productData }) {
                 }}
                 id={index}
                 onMouseOver={(e) => {
+                  setShowMainImageModal_OR_SizesColorsModal("mainImage")
                   smallImageFunctionality(e);
                 }}
                 onClick={(e) => {
+                  setShowMainImageModal_OR_SizesColorsModal("mainImage")
                   smallImageFunctionality(e);
                 }}
                 onFocus={(e) => {
+                  setShowMainImageModal_OR_SizesColorsModal("mainImage")
                   smallImageFunctionality(e);
                 }}
               >
@@ -667,10 +740,12 @@ function ProductLayout({ productData }) {
                       data-attribute-second={element2["propertyValueId"]}
                       data-attribute-third={element2["propertyValueDisplayName"]}
                       onClick={(e) => {
-                        if (containImage === true) {
-                          setProductDataContainImage(true);
-                        }
                         const id = e.target.id * 1;
+                        setCurrentImageIndex(id);
+                        if (containImage === true) {
+                          setShowMainImageModal_OR_SizesColorsModal("sizeColorsModal");
+                        }
+
                         const dataAttributeFirst = e.target.getAttribute("data-attribute-first");
                         const dataAttributeSecond = e.target.getAttribute("data-attribute-second");
                         const dataAttributeThird = e.target.getAttribute("data-attribute-third");
@@ -912,10 +987,13 @@ function ProductLayout({ productData }) {
         {/* Add to cart */}
         <div ref={addToCardDiv_ref} className={styles.buyDiv}>
           <button
-          onClick={() => {
-            console.log(mainImage);
-          }}
-           disabled={quantity == 0 ? true : false} ref={addToCart_BuyNow_ref} className={cn(styles.buyButton, styles.buyNow)}>
+            onClick={() => {
+              console.log(mainImage);
+            }}
+            disabled={quantity == 0 ? true : false}
+            ref={addToCart_BuyNow_ref}
+            className={cn(styles.buyButton, styles.buyNow)}
+          >
             Buy Now
           </button>
           <button
@@ -962,7 +1040,7 @@ function ProductLayout({ productData }) {
                 const serverCartData = {
                   productId: productData["productId"],
                   cartName,
-                  selectedImageUrl: mainImage, 
+                  selectedImageUrl: mainImage,
                   quantity: order_quantity,
                   price: Number(currentPrice),
                   shippingPrice,
