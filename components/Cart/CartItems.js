@@ -12,7 +12,7 @@ function CartItems({ cartData, ImRadioUnchecked, FaCheckCircle, cn, checkedButto
   return (
     <div>
       {cartNumber.hasOwnProperty("data")
-        ? Object.values(cartNumber.data).map((element, index) => {
+        ? Object.values(cartNumber.data).reverse().map((element, index) => {
             return <Item key={index} cn={cn} Image={Image} data={element} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} SlArrowRight={SlArrowRight} checkedButtonsData={checkedButtonsData} setCheckedButtonsData={setCheckedButtonsData} HiOutlineTrash={HiOutlineTrash} RiHeart2Line={RiHeart2Line} FiEdit={FiEdit} useEffect={useEffect} />;
           })
         : "Loading"}

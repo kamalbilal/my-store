@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: auto 65%;
   position: relative;
+  background-color: white;
 }
 .imageModal {
   position: fixed;

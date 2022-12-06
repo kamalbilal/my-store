@@ -1,7 +1,7 @@
 import styles from "./ProductLayout.module.css";
 import Image from "next/image";
 import cn from "classnames";
-import { useRef, useState, useEffect, memo } from "react";
+import { useRef, useState, useEffect, memo, useCallback } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { MdLocationPin } from "react-icons/md";
@@ -76,14 +76,13 @@ function ProductLayout({ productData }) {
 
   useEffect(() => {
     if (sizeColorsImagePropertyIndex === null) {
-     const index = productData["sizesColors"].findIndex((el) => el["skuPropertyValues"][0].hasOwnProperty("skuPropertyImagePath"))
-     if (index !== -1) {
-       setSizeColorsImagePropertyIndex(index)
-       setAllImagesSizeColors(productData["sizesColors"][index]["skuPropertyValues"].map((el) => el["skuPropertyImagePath"]))
-     }
+      const index = productData["sizesColors"].findIndex((el) => el["skuPropertyValues"][0].hasOwnProperty("skuPropertyImagePath"));
+      if (index !== -1) {
+        setSizeColorsImagePropertyIndex(index);
+        setAllImagesSizeColors(productData["sizesColors"][index]["skuPropertyValues"].map((el) => el["skuPropertyImagePath"]));
+      }
     }
-  }, [sizeColorsImagePropertyIndex])
-  
+  }, [sizeColorsImagePropertyIndex]);
 
   useEffect(() => {
     if (defaultQuality > 0 && quantity === 0) {
@@ -207,15 +206,28 @@ function ProductLayout({ productData }) {
     });
   }, []);
 
+  const onInputArrowKeys = useCallback((e) => {
+    if(e.keyCode === 39) {
+      console.log("Right Arrow");
+      console.log(showMainImageModal_OR_SizesColorsModal);
+    } else if(e.keyCode === 37) {
+      console.log("Left Arrow");
+
+    }
+    return () => {
+    document.removeEventListener("keydown", onInputArrowKeys);
+    }
+  }, [showMainImageModal_OR_SizesColorsModal]);
+
   function showImageModal() {
+    document.addEventListener("keydown", onInputArrowKeys);
     modalRef.current.classList.add(styles.imageModalShow);
-    
+
     if (showMainImageModal_OR_SizesColorsModal === "mainImage") {
-      allImagesModalRefs.current[currentImageIndex].focus(); 
-      
+      allImagesModalRefs.current[currentImageIndex].focus();
     } else {
       allSizeColorsImagesModalRefs.current.map((el) => {
-        el.classList.remove(styles.smallImagesOutline)
+        el.classList.remove(styles.smallImagesOutline);
       });
       allSizeColorsImagesModalRefs.current[currentImageIndex].focus();
     }
@@ -226,6 +238,7 @@ function ProductLayout({ productData }) {
     }, 200);
   }
   function hideImageModal() {
+    document.removeEventListener("keydown", onInputArrowKeys);
     modalRef.current.classList.remove(styles.imageModalShow);
     // allImagesRefs.current[currentImageIndex].focus();
     document.querySelector("body").style.overflowY = "visible";
@@ -273,7 +286,7 @@ function ProductLayout({ productData }) {
     allImagesRefs.current[id].classList.add(styles.smallImagesOutline);
   }
   function smallImageSizeColorModalFunctionality(e) {
-    if(allImagesSizeColors.length === 0) return
+    if (allImagesSizeColors.length === 0) return;
     const id = e.target.id * 1;
     setMainImage(allImagesSizeColors[id * 1]);
     setCurrentImageIndex(id * 1);
@@ -599,65 +612,65 @@ function ProductLayout({ productData }) {
             />
           </div>
           <div className={cn(styles.smallImages, styles.smallImagesModal)} onClick={(event) => event.stopPropagation()}>
-            {sizeColorsImagePropertyIndex !== null && showMainImageModal_OR_SizesColorsModal === "sizeColorsModal" ? productData["sizesColors"][sizeColorsImagePropertyIndex]["skuPropertyValues"].map((element, index) => {
-              let classnames;
-              if (index === 0) {
-                classnames = cn(styles.smallImagesBtn, styles.smallImagesOutline);
-              } else {
-                classnames = styles.smallImagesBtn;
-              }
-              return (
-                <button
-                  className={classnames}
-                  key={index}
-                  ref={(element) => {
-                    allSizeColorsImagesModalRefs.current[index] = element;
-                  }}
-                  id={index}
-                  onMouseOver={(e) => {
-                    smallImageSizeColorModalFunctionality(e);
-                  }}
-                  onClick={(e) => {
-                    // smallImageModalFunctionality(e);
-                  }}
-                  onFocus={(e) => {
-                    // smallImageModalFunctionality(e);
-                  }}
-                >
-                  <Image key={index} id={index} src={element["skuPropertyImagePath"]} className={styles.smallImage} width={50} height={50} draggable={false} />
-                </button>
-              );
-            }) : (
-              productData["images"].map((element, index) => {
-                let classnames;
-                if (index === 0) {
-                  classnames = cn(styles.smallImagesBtn, styles.smallImagesOutline);
-                } else {
-                  classnames = styles.smallImagesBtn;
-                }
-                return (
-                  <button
-                    className={classnames}
-                    key={index}
-                    ref={(element) => {
-                      allImagesModalRefs.current[index] = element;
-                    }}
-                    id={index}
-                    onMouseOver={(e) => {
-                      smallImageModalFunctionality(e);
-                    }}
-                    onClick={(e) => {
-                      smallImageModalFunctionality(e);
-                    }}
-                    onFocus={(e) => {
-                      smallImageModalFunctionality(e);
-                    }}
-                  >
-                    <Image key={index} id={index} src={element} className={styles.smallImage} width={50} height={50} draggable={false} />
-                  </button>
-                );
-              })
-            )}
+            {sizeColorsImagePropertyIndex !== null && showMainImageModal_OR_SizesColorsModal === "sizeColorsModal"
+              ? productData["sizesColors"][sizeColorsImagePropertyIndex]["skuPropertyValues"].map((element, index) => {
+                  let classnames;
+                  if (index === 0) {
+                    classnames = cn(styles.smallImagesBtn, styles.smallImagesOutline);
+                  } else {
+                    classnames = styles.smallImagesBtn;
+                  }
+                  return (
+                    <button
+                      className={classnames}
+                      key={index}
+                      ref={(element) => {
+                        allSizeColorsImagesModalRefs.current[index] = element;
+                      }}
+                      id={index}
+                      onMouseOver={(e) => {
+                        smallImageSizeColorModalFunctionality(e);
+                      }}
+                      onClick={(e) => {
+                        // smallImageModalFunctionality(e);
+                      }}
+                      onFocus={(e) => {
+                        // smallImageModalFunctionality(e);
+                      }}
+                    >
+                      <Image key={index} id={index} src={element["skuPropertyImagePath"]} className={styles.smallImage} width={50} height={50} draggable={false} />
+                    </button>
+                  );
+                })
+              : productData["images"].map((element, index) => {
+                  let classnames;
+                  if (index === 0) {
+                    classnames = cn(styles.smallImagesBtn, styles.smallImagesOutline);
+                  } else {
+                    classnames = styles.smallImagesBtn;
+                  }
+                  return (
+                    <button
+                      className={classnames}
+                      key={index}
+                      ref={(element) => {
+                        allImagesModalRefs.current[index] = element;
+                      }}
+                      id={index}
+                      onMouseOver={(e) => {
+                        smallImageModalFunctionality(e);
+                      }}
+                      onClick={(e) => {
+                        smallImageModalFunctionality(e);
+                      }}
+                      onFocus={(e) => {
+                        smallImageModalFunctionality(e);
+                      }}
+                    >
+                      <Image key={index} id={index} src={element} className={styles.smallImage} width={50} height={50} draggable={false} />
+                    </button>
+                  );
+                })}
           </div>
         </div>
       </div>
@@ -683,15 +696,15 @@ function ProductLayout({ productData }) {
                 }}
                 id={index}
                 onMouseOver={(e) => {
-                  setShowMainImageModal_OR_SizesColorsModal("mainImage")
+                  setShowMainImageModal_OR_SizesColorsModal("mainImage");
                   smallImageFunctionality(e);
                 }}
                 onClick={(e) => {
-                  setShowMainImageModal_OR_SizesColorsModal("mainImage")
+                  setShowMainImageModal_OR_SizesColorsModal("mainImage");
                   smallImageFunctionality(e);
                 }}
                 onFocus={(e) => {
-                  setShowMainImageModal_OR_SizesColorsModal("mainImage")
+                  setShowMainImageModal_OR_SizesColorsModal("mainImage");
                   smallImageFunctionality(e);
                 }}
               >
