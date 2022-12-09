@@ -1,6 +1,7 @@
 import { createContext } from "react";
 
 export const CartContext = createContext(null);
+export const WishLishContext = createContext(null);
 export const GiftContext = createContext(null);
 export const HeartContext = createContext(null);
 export const VisitedLinksArray = createContext(null);

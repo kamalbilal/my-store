@@ -38,5 +38,15 @@
     border-radius: 50%;
     color: white;
     /* cursor: pointer; */
+    animation: scale 200ms ease-in-out;
+
   }
   
+  @keyframes scale {
+    0%   {
+        scale: 0;
+    }
+    100% {
+        scale: 1;
+    }
+  }

@@ -8,6 +8,7 @@ import Navbar from "../components/Desktop/NavBar/Navbar";
 import Footer from "../components/Desktop/Footer/Footer";
 import {
   CartContext,
+  WishLishContext,
   GiftContext,
   HeartContext,
   VisitedLinksArray,
@@ -33,6 +34,7 @@ function MyApp({ Component, pageProps }) {
     count: 0,
     data: {},
   }); // default value
+  const [wishLishData, setWishLishData] = useState({})
   const [giftNumber, setGiftNumber] = useState({ count: 0 }); // dafault value
   const [heartNumber, setHeartNumber] = useState({ count: 0 }); // dafault value
   const [visitedLinksArray, setVisitedLinksArray] = useState([]); // dafault value
@@ -90,6 +92,7 @@ function MyApp({ Component, pageProps }) {
 
   async function getUserData_Func() {
     console.log("Getting user data");
+    console.time("User data")
     const url = "http://localhost:8000/getUserData";
     let options = {
       url: url,
@@ -105,8 +108,9 @@ function MyApp({ Component, pageProps }) {
       },
       // const response = await fetch(url, options);
     };
-
+    
     const response = await axios(options);
+    console.timeEnd("User data")
     console.log(response);
     if (response.data.success === true) {
       setGetUserData(false)
@@ -123,6 +127,28 @@ function MyApp({ Component, pageProps }) {
         count: count,
         data: cartData,
       })
+
+      // wishlist
+      if (response.data.data["userWishList"]["wishListNames"].length > 1) {
+        const wishListNames = response.data.data["userWishList"]["wishListNames"]
+        const wishListIds = response.data.data["userWishList"]["wishListIds"]
+        const firstName = wishListNames[0]
+        const firstId = wishListIds[0]
+        wishListNames.shift()
+        wishListIds.shift()
+        wishListNames.reverse()
+        wishListIds.reverse()
+
+        const data = {
+          wishListNames: [firstName, ...wishListNames],
+          wishListIds : [firstId, ...wishListIds]
+        }
+
+        setWishLishData(data)
+
+      } else {
+        setWishLishData(response.data.data["userWishList"])
+      }
 
     } else {
       setUserData({})
@@ -166,6 +192,7 @@ function MyApp({ Component, pageProps }) {
                 <VisitedLinksArray.Provider value={{ visitedLinksArray, setVisitedLinksArray }}>
                   <HeartContext.Provider value={{ heartNumber, setHeartNumber }}>
                     <GiftContext.Provider value={{ giftNumber, setGiftNumber }}>
+                      <WishLishContext.Provider value={{ wishLishData, setWishLishData}}>
                       <CartContext.Provider value={{ cartNumber, setCartNumber }}>
                         <div className={styles.navBar}>
                           <Navbar />
@@ -176,6 +203,7 @@ function MyApp({ Component, pageProps }) {
                         </div>
                         <Footer />
                       </CartContext.Provider>
+                      </WishLishContext.Provider>
                     </GiftContext.Provider>
                   </HeartContext.Provider>
                 </VisitedLinksArray.Provider>

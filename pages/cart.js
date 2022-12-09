@@ -1,4 +1,4 @@
-import { CartContext } from "../userContext";
+import { CartContext, WishLishContext } from "../userContext";
 import { useContext, useEffect, useState, useRef } from "react";
 import CartItems from "../components/Cart/CartItems";
 import styles from "../styles/cart.module.css";
@@ -11,6 +11,7 @@ import { FiEdit } from "react-icons/fi";
 
 function Cart() {
   const { cartNumber, setCartNumber } = useContext(CartContext);
+  const { wishLishData, setWishLishData} = useContext(WishLishContext);
   const [checkedButtonsData, setCheckedButtonsData] = useState({});
   const [selectAll, setSelectAll] = useState(false);
   const uncheckAllRef = useRef()
@@ -75,7 +76,7 @@ function Cart() {
           </button>
         </div>
         <div className={cn(styles.content, styles.niceBox)}>
-          <CartItems cartData={{ cartNumber, setCartNumber }} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} cn={cn} checkedButton={{ checkedButtonsData, setCheckedButtonsData }} HiOutlineTrash={HiOutlineTrash} RiHeart2Line={RiHeart2Line} FiEdit={FiEdit} useEffect={useEffect} />
+          <CartItems cartData={{ cartNumber, setCartNumber }} wishLishContent={{wishLishData, setWishLishData}} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} cn={cn} checkedButton={{ checkedButtonsData, setCheckedButtonsData }} HiOutlineTrash={HiOutlineTrash} RiHeart2Line={RiHeart2Line} FiEdit={FiEdit} useEffect={useEffect} useState={useState} />
         </div>
       </div>
 

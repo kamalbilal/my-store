@@ -35,6 +35,16 @@
   margin: 0px 5px;
   margin-right: 20px;
   cursor: pointer;
+  animation: scale 200ms ease-in-out;
+
+}
+@keyframes scale {
+  0%   {
+      scale: 0;
+  }
+  100% {
+      scale: 1;
+  }
 }
 .details, .details > *, .titleDiv {
   display: flex;
@@ -69,6 +79,8 @@
   font-size: 1.6rem;
   color: rgba(0, 0, 0, 0.7);
   position: relative;
+  border: none;
+  outline: none;
 }
 
 .heartIcon, .editIcon {

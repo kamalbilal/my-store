@@ -2,7 +2,7 @@ import styles from "./Item.module.css";
 import Tippy from "@tippyjs/react";
 import { useRouter } from "next/router";
 
-function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, checkedButtonsData, setCheckedButtonsData, HiOutlineTrash, RiHeart2Line, FiEdit, useEffect }) {
+function Item({ openWishListDialog, Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, checkedButtonsData, setCheckedButtonsData, HiOutlineTrash, RiHeart2Line, FiEdit, useEffect }) {
   const router = useRouter();
   useEffect(() => {
     setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }));
@@ -47,7 +47,7 @@ function Item({ Image, cn, data, ImRadioUnchecked, FaCheckCircle, SlArrowRight, 
             </Tippy>
 
             <Tippy className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Add to wishlist</div>}>
-              <button className={styles.heartIcon}>
+              <button onClick={openWishListDialog} className={styles.heartIcon}>
                 <RiHeart2Line />
               </button>
             </Tippy>

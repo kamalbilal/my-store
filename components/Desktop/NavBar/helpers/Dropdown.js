@@ -47,7 +47,7 @@ function Dropdown({Router, userData, setUserData, router, hideDropDown, CartIcon
   }
   return (
     <div>
-      {isUserLoggedIn === false ? (
+      {isUserLoggedIn === false || !userData ? (
         <div className={styles.noAccount}>
           <button onClick={register} className={styles.button}>
             Register

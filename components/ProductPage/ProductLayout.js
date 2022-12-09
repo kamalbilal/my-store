@@ -530,23 +530,26 @@ function ProductLayout({ productData }) {
 
   useEffect(() => {
     if (!mainshippingFee || !quantity) return;
-    if (autoClick.current === true && router.query.select && Object.keys(sizeColorsSelectedData).length == 0) {
+    if (autoClick.current === true && (router.query.select || router.query.q || router.query.s) && Object.keys(sizeColorsSelectedData).length == 0) {
       autoClick.current = false;
-      let autoSelect = router.query.select;
       setQuantity(router.query.hasOwnProperty("q") ? parseInt(router.query.q) : 1);
-      autoSelect = autoSelect.includes("-") ? autoSelect : autoSelect + "-";
-      router.query.select.split("-").map((el) => {
-        if (!el) return;
-        el = el.split(":");
-        const first = el[0];
-        const second = el[1];
-        try {
-          const element = document.querySelector(`[data-attribute-first='${first}'][data-attribute-second='${second}']`);
-          if (element) element.click();
-        } catch {
-          //
-        }
-      });
+      if (router.query.select) {
+        let autoSelect = router.query.select;
+        autoSelect = autoSelect.includes("-") ? autoSelect : autoSelect + "-";
+        router.query.select.split("-").map((el) => {
+          if (!el) return;
+          el = el.split(":");
+          const first = el[0];
+          const second = el[1];
+          try {
+            const element = document.querySelector(`[data-attribute-first='${first}'][data-attribute-second='${second}']`);
+            if (element) element.click();
+          } catch {
+            //
+          }
+        });
+        
+      }
       console.log("Clicked");
     } else if (Object.keys(sizeColorsSelectedData).length > 0) {
       let query = "";
@@ -567,7 +570,10 @@ function ProductLayout({ productData }) {
       } else {
         router.push(router.asPath.split("?")[0], undefined, { shallow: true });
       }
+    } else if(totalNumberOfProductDetails === 0) {
+      router.push(`${router.asPath.split("?")[0]}?q=${quantity == 0 ? 1 : quantity}&s=${mainshippingFee["bizData"]["index"] + ":" + mainshippingFee["bizData"]["company"]}`, undefined, { shallow: true });
     }
+    console.log(totalNumberOfProductDetails);
     console.log(sizeColorsSelectedData);
   }, [sizeColorsSelectedData, mainshippingFee, quantity]);
 
@@ -1014,7 +1020,7 @@ function ProductLayout({ productData }) {
             ref={addToCart_AddToCart_ref}
             disabled={quantity == 0 ? true : false}
             onMouseOver={() => {
-              if (totalNumberOfProductDetails === 0) return setShowAddedCartToast(false); // no properties(sizeColors) are available
+              if (totalNumberOfProductDetails === 0) return // no properties(sizeColors) are available
               if (showAddedCartToast === true) return;
               console.log(sizeColorsSelectedData);
               const numberOfSelectedProductsDetails = Object.keys(sizeColorsSelectedData);
