@@ -40,6 +40,9 @@
   margin-bottom: 10px;
   user-select: none !important;
 }
+.wishListItem > * {
+  pointer-events: none !important;
+}
 .wishListItem:hover, .selected {
   background-color: var(--blue-500);
   color: white;

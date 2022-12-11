@@ -120,3 +120,16 @@ button {
 .tippyMT-10 {
   margin-top: 1rem;
 }
+.Toastify__toast-theme--dark {
+  background-color: var(--blue-500) !important;
+  /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important; */
+  font-weight: bold;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px !important;
+  top: 40px;
+}
+.Toastify__toast-icon svg {
+  fill: white !important;
+}
+.Toastify__progress-bar-theme--dark {
+  background-color: white !important;
+}

@@ -73,6 +73,9 @@
   font-size: 1.4rem;
   color: #3a3e4a;
 }
+.trashIcon svg, .heartIcon svg, .editIcon svg { 
+  pointer-events: none;
+}
 .trashIcon, .heartIcon, .editIcon {
   padding: 0;
   margin: 0;

@@ -7,7 +7,7 @@ function Item({ openWishListDialog, Image, cn, data, ImRadioUnchecked, FaCheckCi
   useEffect(() => {
     setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }));
   }, []);
-
+  console.log(data);
   return (
     <div className={styles.item}>
       <div className={styles.itemSelectDiv}>
@@ -31,9 +31,7 @@ function Item({ openWishListDialog, Image, cn, data, ImRadioUnchecked, FaCheckCi
           <div className={styles.titleDiv}>
             <div className={styles.title}>{data["title"]}</div>
 
-            <Tippy 
-            trigger='mouseenter'
-            className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Edit</div>}>
+            <Tippy trigger="mouseenter" className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Edit</div>}>
               <button
                 onClick={() => {
                   router.push(
@@ -48,17 +46,13 @@ function Item({ openWishListDialog, Image, cn, data, ImRadioUnchecked, FaCheckCi
               </button>
             </Tippy>
 
-            <Tippy 
-            trigger='mouseenter'
-            className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Add to wishlist</div>}>
-              <button onClick={openWishListDialog} className={styles.heartIcon}>
+            <Tippy trigger="mouseenter" className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Add to wishlist</div>}>
+              <button data-attribute-productid={data["productId"]} data-attribute-imageurl={data["selectedImageUrl"]} data-attribute-cartid={data["cartId"]} data-attribute-cartname={data["cartName"]} onClick={openWishListDialog} className={styles.heartIcon}>
                 <RiHeart2Line />
               </button>
             </Tippy>
 
-            <Tippy 
-            trigger='mouseenter'
-            className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Delete</div>}>
+            <Tippy trigger="mouseenter" className="customTippy" placement="top" duration={200} theme="light-border" animation="scale" arrow={true} allowHTML={true} content={<div>Delete</div>}>
               <button className={styles.trashIcon}>
                 <HiOutlineTrash />
               </button>

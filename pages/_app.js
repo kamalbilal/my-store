@@ -51,7 +51,7 @@ function MyApp({ Component, pageProps }) {
   const [getUserData, setGetUserData] = useState(); // dafault value
 
   const router = useRouter();
-  const forbiddenLinks = ["/register", "/login", "/register/authentication", "/login/authentication"];
+  const forbiddenLinks = ["/register", "/login", "/register/authentication", "/login/authentication"];  
 
   useEffect(() => {
     // console.log(router);

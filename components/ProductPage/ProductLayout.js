@@ -459,6 +459,18 @@ function ProductLayout({ productData }) {
 
     const response = await axios(options).catch((error) => console.log(error));
     console.log(response);
+    if(response.data.success === true) {
+      setCartNumber((prev) => ({
+        ...prev,
+        data: {...prev["data"], [cartData.cartName] : {...prev["data"][cartData.cartName], cartId : response.data.id}}
+      }))
+    } else {
+      setCartNumber((prev) => {
+        const temp = {...prev}
+        delete temp["data"][cartData.cartName]
+        return temp
+      })
+    }
   }
 
   useEffect(() => {
