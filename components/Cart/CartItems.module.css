@@ -37,22 +37,22 @@
   border: none;
   outline: none;
   background-color: var(--white-light);
-  margin-bottom: 5px;
-  user-select: none;
+  margin-bottom: 10px;
+  user-select: none !important;
 }
-.wishListItem:hover {
+.wishListItem:hover, .selected {
   background-color: var(--blue-500);
   color: white;
 }
 
-.wishListItem:hover > .wishListCheckBox {
+.wishListItem:hover .wishListCheckBox, .selected .wishListCheckBox {
   color: white;
 }
 
 .wishListCheckBox {
   scale: 1.3;
   color: var(--blue-500);
-  /* transform: translateY(-1px); */
+  transform: translateY(-1px);
 }
 .scaleAnimate {
   animation: scale 50ms ease-in-out;
@@ -68,7 +68,7 @@
 
 .wishlistCategories {
     height: calc(100% - 125px);
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 .wishLishSaveButtonDiv {
     display: flex;
@@ -92,7 +92,7 @@
     top: 4%;
     transform: translateY(-50%);
     padding: 0.8rem;
-    background-color: var(--red-500);
+    background-color: var(--blue-500);
     border-radius: 20px;
     font-weight: bold;
     display: flex;
@@ -106,5 +106,6 @@
   }
   
   .escBtn > * { 
-    scale: 1.2;
+    scale: 1.5;
+    transform: translateX(0.4px);
   }

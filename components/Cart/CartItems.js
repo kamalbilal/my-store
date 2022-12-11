@@ -13,6 +13,7 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
 
   const [wishListCheckButtons, setWishListCheckButtons] = useState();
   const addToWishListDialog = useRef();
+  const allWishListCheckButtonsRef = useRef({});
 
   function openWishListDialog() {
     console.log(wishLishData);
@@ -49,8 +50,16 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
   useEffect(() => {
     console.log(wishListCheckButtons);
   }, [wishListCheckButtons]);
+  
+  async function onClickWishListCheckButtons(e, clickedName) {
+    console.log(allWishListCheckButtonsRef);
+    
+    // Object.keys(allWishListCheckButtonsRef.current).forEach((el) => {
+    //   allWishListCheckButtonsRef.current[el].classList.remove(styles.selected)
+    // })
+    // Object.values(allWishListCheckButtonsRef.current).forEach((el) => el.target.classList.remove(styles.selected))
+    // e.target.classList.add(styles.selected)
 
-  function onClickWishListCheckButtons(clickedName) {
     setWishListCheckButtons((prev) => {
       const temp = { ...prev };
       const keys = Object.keys(temp);
@@ -104,9 +113,11 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
           {wishLishData && wishListCheckButtons && wishLishData.hasOwnProperty("wishListNames")
             ? wishLishData["wishListNames"].map((name, index) => {
                 return (
-                  <div onClick={() => onClickWishListCheckButtons(name)} key={index} className={styles.wishListItem}>
+                  <div ref={(element) => {
+                    allWishListCheckButtonsRef.current[index] = (element);
+                  }} onClick={(e) => {onClickWishListCheckButtons(e, name)}} key={index} className={cn(styles.wishListItem, wishListCheckButtons[name] === true ? styles.selected : "")}>
                     {wishListCheckButtons[name] === true ? <FaCheckCircle className={cn(styles.wishListCheckBox, styles.scaleAnimate)} /> : <ImRadioUnchecked className={styles.wishListCheckBox} />}
-                    <div>{name}</div>
+                    <span>{name}</span>
                   </div>
                 );
               })
