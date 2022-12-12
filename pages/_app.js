@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps }) {
     count: 0,
     data: {},
   }); // default value
-  const [wishLishData, setWishLishData] = useState({})
+  const [wishListData, setWishListData] = useState({})
   const [giftNumber, setGiftNumber] = useState({ count: 0 }); // dafault value
   const [heartNumber, setHeartNumber] = useState({ count: 0 }); // dafault value
   const [visitedLinksArray, setVisitedLinksArray] = useState([]); // dafault value
@@ -144,10 +144,10 @@ function MyApp({ Component, pageProps }) {
           wishListIds : [firstId, ...wishListIds]
         }
 
-        setWishLishData(data)
+        setWishListData(data)
 
       } else {
-        setWishLishData(response.data.data["userWishList"])
+        setWishListData(response.data.data["userWishList"])
       }
 
     } else {
@@ -163,6 +163,11 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     console.log(visitedLinksArray);
   }, [visitedLinksArray, router]);
+
+  useEffect(() => {
+    console.log(wishListData);
+  }, [wishListData])
+  
 
   function app(path) {
     if (path.includes("/admin/")) {
@@ -192,7 +197,7 @@ function MyApp({ Component, pageProps }) {
                 <VisitedLinksArray.Provider value={{ visitedLinksArray, setVisitedLinksArray }}>
                   <HeartContext.Provider value={{ heartNumber, setHeartNumber }}>
                     <GiftContext.Provider value={{ giftNumber, setGiftNumber }}>
-                      <WishLishContext.Provider value={{ wishLishData, setWishLishData}}>
+                      <WishLishContext.Provider value={{ wishListData, setWishListData}}>
                       <CartContext.Provider value={{ cartNumber, setCartNumber }}>
                         <div className={styles.navBar}>
                           <Navbar />

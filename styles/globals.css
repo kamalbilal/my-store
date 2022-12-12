@@ -112,7 +112,12 @@ button {
 }
 
 /* Loader end */
-
+.niceBox {
+  border-radius: 5px;
+  box-shadow: 0 4px 6px 0 rgb(0 0 0 / 6%);
+  padding: 10px 30px;
+  background-color: white;
+}
 .customTippy {
   padding: 5px 10px;
   font-weight: bold;

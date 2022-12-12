@@ -11,7 +11,7 @@ import { FiEdit } from "react-icons/fi";
 
 function Cart() {
   const { cartNumber, setCartNumber } = useContext(CartContext);
-  const { wishLishData, setWishLishData} = useContext(WishLishContext);
+  const { wishListData, setWishListData} = useContext(WishLishContext);
   const [checkedButtonsData, setCheckedButtonsData] = useState({});
   const [selectAll, setSelectAll] = useState(false);
   const uncheckAllRef = useRef()
@@ -64,7 +64,7 @@ function Cart() {
   return (
     <div className={styles.cart}>
       <div>
-        <div className={cn(styles.shoppingTitleDiv, styles.niceBox)}>
+        <div className={cn(styles.shoppingTitleDiv, "niceBox")}>
           <h1>My Shopping Cart ({cartNumber.count || 0})</h1>
           <button className={styles.selectAllBtn} onClick={() => {uncheckAllRef.current = true;setSelectAll((prev) => !prev)}}>
             {selectAll === true ? (
@@ -75,8 +75,8 @@ function Cart() {
             Select all
           </button>
         </div>
-        <div className={cn(styles.content, styles.niceBox)}>
-          <CartItems cartData={{ cartNumber, setCartNumber }} wishLishContent={{wishLishData, setWishLishData}} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} cn={cn} checkedButton={{ checkedButtonsData, setCheckedButtonsData }} HiOutlineTrash={HiOutlineTrash} RiHeart2Line={RiHeart2Line} FiEdit={FiEdit} useEffect={useEffect} useState={useState} />
+        <div className={cn(styles.content, "niceBox")}>
+          <CartItems cartData={{ cartNumber, setCartNumber }} wishLishContent={{wishListData, setWishListData}} ImRadioUnchecked={ImRadioUnchecked} FaCheckCircle={FaCheckCircle} cn={cn} checkedButton={{ checkedButtonsData, setCheckedButtonsData }} HiOutlineTrash={HiOutlineTrash} RiHeart2Line={RiHeart2Line} FiEdit={FiEdit} useEffect={useEffect} useState={useState} />
         </div>
       </div>
 

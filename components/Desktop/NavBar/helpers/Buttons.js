@@ -40,7 +40,7 @@ function Buttons({ Router, Value, Name, Icon, Count, Color, Show_hide_dropdown_F
   } else if (Name === "Heart") {
     return (
       <Tippy className="customTippy tippyMT-10" duration={200} animation="scale"  placement="bottom" theme="light-border" content="Wishlist">
-        <button className={Color}>
+        <button onClick={() => Router.push("/wishlist")} className={Color}>
           {count(Value.count)}
           {<Icon className={cn(IconColor, styles.heart)} />}
         </button>

@@ -5,30 +5,31 @@ import { SlArrowRight } from "react-icons/sl";
 import { useRef } from "react";
 import Tippy from "@tippyjs/react";
 import { IoCloseSharp } from "react-icons/io5";
-import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css'
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
+import MyAxios from "../../libs/MyAxios";
 
 function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle, cn, checkedButton, HiOutlineTrash, RiHeart2Line, FiEdit, useEffect, useState }) {
   const { cartNumber, setCartNumber } = cartData;
-  const { wishLishData, setWishLishData } = wishLishContent;
+  const { wishListData, setWishListData } = wishLishContent;
   const { checkedButtonsData, setCheckedButtonsData } = checkedButton;
 
   const [wishListCheckButtons, setWishListCheckButtons] = useState();
   const [wishListSelectedAttributes, setWishListSelectedAttributes] = useState();
   const addToWishListDialog = useRef();
   const allWishListCheckButtonsRef = useRef({});
+  const wishListToastRef = useRef(null);
 
   function openWishListDialog(event) {
     console.log(cartNumber);
-    setWishListSelectedAttributes((prev) => ({ 
-      ...prev, 
+    setWishListSelectedAttributes((prev) => ({
+      ...prev,
       cartName: event.target.getAttribute("data-attribute-cartname"),
       cartId: parseInt(event.target.getAttribute("data-attribute-cartid")),
       selectedProductId: parseInt(event.target.getAttribute("data-attribute-productid")),
-      selectedimageurl: event.target.getAttribute("data-attribute-imageurl")
+      selectedimageurl: event.target.getAttribute("data-attribute-imageurl"),
     }));
-    console.log(wishLishData);
+    console.log(wishListData);
     addToWishListDialog.current.showModal();
     setTimeout(() => {
       document.body.style.overflow = "hidden";
@@ -44,10 +45,10 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
   }
 
   useEffect(() => {
-    if (wishLishData && wishLishData.hasOwnProperty("wishListNames")) {
+    if (wishListData && wishListData.hasOwnProperty("wishListNames")) {
       const temp = {};
-      for (let index = 0; index < wishLishData["wishListNames"].length; index++) {
-        const element = wishLishData["wishListNames"][index];
+      for (let index = 0; index < wishListData["wishListNames"].length; index++) {
+        const element = wishListData["wishListNames"][index];
         if (element == "default") {
           temp[element] = true;
         } else {
@@ -58,11 +59,11 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
       setWishListCheckButtons(temp);
       setWishListSelectedAttributes((prev) => ({
         ...prev,
-        name: wishLishData["wishListNames"][0],
-        id: parseInt(wishLishData["wishListIds"][0]),
+        name: wishListData["wishListNames"][0],
+        id: parseInt(wishListData["wishListIds"][0]),
       }));
     }
-  }, [wishLishData]);
+  }, [wishListData]);
 
   useEffect(() => {
     console.log(wishListCheckButtons);
@@ -111,37 +112,36 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
       data: {
         pwd: "Kamal",
         cartId: wishListSelectedAttributes["cartId"],
-        productId : wishListSelectedAttributes["selectedProductId"],
-        wishListNameId : wishListSelectedAttributes["id"],
-        selectedImageUrl : wishListSelectedAttributes["selectedimageurl"]
+        productId: wishListSelectedAttributes["selectedProductId"],
+        wishListNameId: wishListSelectedAttributes["id"],
+        selectedImageUrl: wishListSelectedAttributes["selectedimageurl"],
       },
       // const response = await fetch(url, options);
     };
-    
-    addToWishListDialog.current.close();
-    const temp2 = {count: cartNumber["count"], data: {...cartNumber["data"]}}
 
-    
-    toast("Successfully moved to wishlist", {
+    addToWishListDialog.current.close();
+    const temp2 = { count: cartNumber["count"], data: { ...cartNumber["data"] } };
+
+    wishListToastRef.current = toast("Successfully moved to wishlist", {
       theme: "dark",
       type: "success",
       position: "top-right",
       pauseOnHover: true,
       pauseOnFocusLoss: false,
       autoClose: 5000,
-      
-    })
+      limit: 1,
+    });
     setCartNumber((prev) => {
-      const temp = {...prev}
-      temp["count"] = temp["count"] - 1
-      delete temp["data"][wishListSelectedAttributes["cartName"]]
-      return temp
-    })
+      const temp = { ...prev };
+      temp["count"] = temp["count"] - 1;
+      delete temp["data"][wishListSelectedAttributes["cartName"]];
+      return temp;
+    });
 
-   try {
-    const response = await axios(options);
-    if (response.data.success !== true) {
-      setCartNumber(temp)
+    const response = await MyAxios(options);
+    if (response["success"] === false || response.data.success !== true) {
+      setCartNumber(temp2);
+      toast.dismiss(wishListToastRef.current);
       toast("Somethings goes wrong!", {
         theme: "colored",
         type: "error",
@@ -149,29 +149,14 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
         pauseOnHover: true,
         pauseOnFocusLoss: false,
         autoClose: 5000,
-      })
+        limit: 1,
+      });
     }
-    console.log(response);
-
-   } catch {
-    console.log(temp2);
-      setCartNumber(temp2)
-      toast("Somethings goes wrong!", {
-        theme: "colored",
-        type: "error",
-        position: "top-right",
-        pauseOnHover: true,
-        pauseOnFocusLoss: false,
-        autoClose: 5000,
-      })
-    }
-
-    
   }
 
   return (
     <div>
-      <ToastContainer style={{fontSize: "1.4rem"}} />
+      <ToastContainer style={{ fontSize: "1.4rem" }} />
       <dialog
         onClick={(event) => {
           const rect = addToWishListDialog.current.getBoundingClientRect();
@@ -208,12 +193,12 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
         </div>
         <p>Please select the category</p>
         <div className={styles.wishlistCategories}>
-          {wishLishData && wishListCheckButtons && wishLishData.hasOwnProperty("wishListNames")
-            ? wishLishData["wishListNames"].map((name, index) => {
+          {wishListData && wishListCheckButtons && wishListData.hasOwnProperty("wishListNames")
+            ? wishListData["wishListNames"].map((name, index) => {
                 return (
                   <div
                     data-attribute-name={name}
-                    data-attribute-id={wishLishData["wishListIds"][index]}
+                    data-attribute-id={wishListData["wishListIds"][index]}
                     ref={(element) => {
                       allWishListCheckButtonsRef.current[index] = element;
                     }}
@@ -240,7 +225,7 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
             .map((element, index) => {
               return (
                 <Item
-                  wishLishData={wishLishData}
+                  wishListData={wishListData}
                   openWishListDialog={openWishListDialog}
                   key={index}
                   cn={cn}

@@ -1,0 +1,45 @@
+.main {
+    display: grid;
+    grid-template-columns: 75% auto;
+}
+.left {
+    margin: 15px;
+}
+.title {
+    margin-bottom: 10px;
+}
+.wishlistContent {
+    padding: 0 !important;
+}
+.buttons {
+    border-bottom: 1px solid var(--white-light);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+.buttons button {
+    font-size: 1.4rem;
+    padding: 15px;
+    flex: 10;
+}
+.buttons button:first-of-type {
+    border-right: 1px solid var(--white-light);
+    flex: 1;
+    border-top-left-radius: inherit;
+}
+.active {
+    background-color: var(--blue-500);
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem !important;
+
+}
+.alllist {
+    padding: 10px 15px;
+}
+.itemNameDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
