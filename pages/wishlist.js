@@ -3,6 +3,11 @@ import { useContext, useEffect } from "react";
 import MyAxios from "../libs/MyAxios";
 import { WishLishContext } from "../userContext";
 import styles from "../styles/wishlist.module.css";
+import { HiOutlineTrash } from "react-icons/hi";
+import { FiEdit3 } from "react-icons/fi";
+import { IoEyeOutline } from "react-icons/io5";
+import { IoIosArrowDropupCircle } from "react-icons/io";
+import Image from "next/image";
 
 function Wishlist() {
   const { wishListData, setWishListData } = useContext(WishLishContext);
@@ -47,25 +52,64 @@ function Wishlist() {
           <h1>My Wishlist</h1>
         </div>
 
-        <div className={cn(styles.wishlistContent, "niceBox")}>
-            <div className={styles.buttons}>
-                <button className={styles.active}>All Lists</button>
-                <button>Default</button>
+        <div className={cn(styles.wishlistContent)}>
+          <div className={styles.buttons}>
+            <button className={cn(styles.active, "niceBox")}>All Lists</button>
+            <button className={"niceBox"}>Default</button>
+          </div>
+        </div>
+        <div className={cn(styles.alllist, "niceBox")}>
+          <div className={styles.itemNameDiv}>
+            <p className={styles.itemName}>Default</p>
+            <div className={styles.itemButtons}>
+              <button>
+                <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
+              </button>
+              <button>
+                <FiEdit3 /> <span>Rename</span>
+              </button>
+              <button>
+                <HiOutlineTrash />
+                <span>Delete</span>
+              </button>
+              <button
+                onClick={(event) => {
+                  const parentDiv = event.target.parentNode.parentNode.parentNode;
+                  if (parentDiv.classList.contains(styles.collapse)) {
+                    parentDiv.classList.add(styles.expand);
+                    parentDiv.classList.remove(styles.collapse);
+                    
+                  } else {
+                    parentDiv.classList.add(styles.collapse);
+                    parentDiv.classList.remove(styles.expand);
+
+                  }
+                }}
+                className={styles.arrowIconBtn}
+              >
+                <IoIosArrowDropupCircle className={styles.arrowIcon} />
+              </button>
             </div>
-            <div className={styles.alllist}>
-                <div className={styles.itemNameDiv}>
-                    <h2>Name</h2>
-                    <div>
-                        <button>Rename</button>
-                        <button>Delete</button>
-                    </div>
-                </div>
-            </div>
+          </div>
+          <div className={styles.imagesDiv}>
+            <EmptyList/>
+            {/* <Image className={styles.image} src="https://ae01.alicdn.com/kf/Hc7b15264d0fa4ccebf8b7ba9f27eaca7L/For-PS5-Controller-Charger-Dual-USB-Fast-Charging-Dock-Station-Stand-with-USB-A-Ouput-for.jpg" width={150} height={150} /> */}
+          </div>
         </div>
       </div>
 
       {/* right */}
       <div></div>
+    </div>
+  );
+}
+
+function EmptyList() {
+  return (
+    <div className={styles.emptyList}>
+      <img src="/wishlist.png" alt="" />
+      <h3>This list is empty</h3>
+      <p>To add items tap the heart icon and pick a list</p>
     </div>
   );
 }

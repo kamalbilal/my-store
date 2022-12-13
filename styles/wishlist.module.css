@@ -1,45 +1,191 @@
 .main {
-    display: grid;
-    grid-template-columns: 75% auto;
+  display: grid;
+  grid-template-columns: 75% auto;
 }
 .left {
-    margin: 15px;
+  margin: 15px;
 }
 .title {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 .wishlistContent {
-    padding: 0 !important;
+  padding: 0 !important;
+  width: 100%;
 }
 .buttons {
-    border-bottom: 1px solid var(--white-light);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    display: flex;
-    align-items: center;
+  /* border-bottom: 1px solid var(--white-light); */
+  /* border-top-left-radius: 5px;
+    border-top-right-radius: 5px; */
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 5px;
 }
 .buttons button {
-    font-size: 1.4rem;
-    padding: 15px;
-    flex: 10;
+  font-size: 1.4rem;
+  padding: 15px;
+  /* flex: 10; */
+  width: 100%;
 }
 .buttons button:first-of-type {
-    border-right: 1px solid var(--white-light);
-    flex: 1;
-    border-top-left-radius: inherit;
+  /* border-right: 1px solid var(--white-light); */
+  /* flex: 1; */
+  /* border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit; */
+  border-radius: inherit;
 }
 .active {
-    background-color: var(--blue-500);
-    color: white;
-    font-weight: bold;
-    font-size: 1.5rem !important;
-
+  background-color: var(--blue-500);
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem !important;
 }
 .alllist {
-    padding: 10px 15px;
+  padding: 0px 15px;
+  margin-top: 10px;
 }
 .itemNameDiv {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  /* border-bottom: 1px solid var(--white-light); */
+}
+.itemButtons {
+  display: flex;
+  align-items: center;
+  transform: translateX(5px);
+}
+.itemButtons button {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 1.6rem;
+  font-weight: normal;
+  padding: 10px 10px;
+  border-radius: 5px;
+  letter-spacing: 1px;
+}
+.itemButtons button:not(.arrowIconBtn):hover {
+  background-color: var(--blue-500);
+  color: white;
+}
+.itemName {
+  font-size: 1.9rem;
+  margin-left: 5px;
+}
+.imagesDiv {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 1px;
+  padding-bottom: 15px;
+}
+.image {
+  border-radius: 5px;
+  cursor: pointer;
+}
+.image:hover {
+  filter: brightness(1.1);
+}
+.eyeIcon {
+  scale: 1.2;
+  margin-right: 2px;
+}
+.emptyList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  margin-top: 55px;
+  margin-bottom: 55px;
+}
+.emptyList img {
+    width: 100px;
+}
+.emptyList h3 {
+  font-size: 1.5rem;
+  padding: 0;
+  margin: 0;
+  color: rgb(34, 34, 34);
+}
+.emptyList p {
+  padding: 0;
+  margin: 0;
+  color: rgb(34, 34, 34);
+  margin-top: 5px;
+  font-size: 1.2rem;
+}
+.arrowIconBtn {
+    padding: 0;
+    margin: 0;
+}
+.arrowIconBtn > * {
+    pointer-events: none;
+}
+.arrowIcon {
+  scale: 1.8;
+  color: var(--blue-500);
+}
+.collapse {
+  height: 60px;
+  overflow: hidden !important;
+  animation-name: heightAnimation;
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+.collapse .arrowIcon {
+    transform: rotate(180deg);
+    animation-name: rotateAnimation;
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
+}
+
+@keyframes rotateAnimation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);  }
+}
+@keyframes heightAnimation {
+  0% {
+    height: 200px;
+  }
+  100% {
+    height: 60px;
+  }
+}
+
+.expand {
+  animation-name: heightAnimationExpand;
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+.expand .arrowIcon {
+    transform: rotate(0deg);
+    animation-name: rotateAnimationExpand;
+    animation-duration: 200ms;
+    animation-timing-function: ease-in;
+}
+
+@keyframes rotateAnimationExpand {
+  0% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(0deg);  }
+}
+@keyframes heightAnimationExpand {
+  0% {
+    height: 70px;
+    overflow: hidden;
+}
+100% {
+    height: 240px;
+    overflow: hidden;
+  }
 }
