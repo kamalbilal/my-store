@@ -1,7 +1,7 @@
 import "../styles/globals.css";
-import 'tippy.js/dist/tippy.css';
-import 'tippy.js/themes/light-border.css';
-import 'tippy.js/animations/scale.css';
+import "tippy.js/dist/tippy.css";
+import "tippy.js/themes/light-border.css";
+import "tippy.js/animations/scale.css";
 import NextNProgress from "nextjs-progressbar";
 import styles from "./index.module.css";
 import Navbar from "../components/Desktop/NavBar/Navbar";
@@ -28,13 +28,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 
-
 function MyApp({ Component, pageProps }) {
   const [cartNumber, setCartNumber] = useState({
     count: 0,
     data: {},
   }); // default value
-  const [wishListData, setWishListData] = useState({})
+  const [wishListData, setWishListData] = useState({});
   const [giftNumber, setGiftNumber] = useState({ count: 0 }); // dafault value
   const [heartNumber, setHeartNumber] = useState({ count: 0 }); // dafault value
   const [visitedLinksArray, setVisitedLinksArray] = useState([]); // dafault value
@@ -51,7 +50,7 @@ function MyApp({ Component, pageProps }) {
   const [getUserData, setGetUserData] = useState(); // dafault value
 
   const router = useRouter();
-  const forbiddenLinks = ["/register", "/login", "/register/authentication", "/login/authentication"];  
+  const forbiddenLinks = ["/register", "/login", "/register/authentication", "/login/authentication"];
 
   useEffect(() => {
     // console.log(router);
@@ -67,18 +66,17 @@ function MyApp({ Component, pageProps }) {
       tempArray.push(router.asPath);
       setVisitedLinksArray(tempArray);
     }
-
-  }, [router]);  
+  }, [router]);
 
   useEffect(() => {
     if (getUserData === true) {
-      getUserData_Func()
+      getUserData_Func();
     }
-  }, [getUserData])
+  }, [getUserData]);
 
   useEffect(() => {
-      getUserData_Func()
-  }, [])
+    getUserData_Func();
+  }, []);
 
   useEffect(() => {
     if (userData && Object.values(userData).length === 0) {
@@ -86,13 +84,13 @@ function MyApp({ Component, pageProps }) {
       setCartNumber({
         count: 0,
         data: {},
-      })
+      });
     }
-  }, [userData])
+  }, [userData]);
 
   async function getUserData_Func() {
     console.log("Getting user data");
-    console.time("User data")
+    console.time("User data");
     const url = "http://localhost:8000/getUserData";
     let options = {
       url: url,
@@ -108,56 +106,40 @@ function MyApp({ Component, pageProps }) {
       },
       // const response = await fetch(url, options);
     };
-    
+
     const response = await axios(options);
-    console.timeEnd("User data")
+    console.timeEnd("User data");
     console.log(response);
     if (response.data.success === true) {
-      setGetUserData(false)
-      setUserData(response.data.data["userData"])
+      setGetUserData(false);
+      setUserData(response.data.data["userData"]);
 
       // cart
-      const count = response.data.data["userCart"].length
-      const cartData = {}
+      const count = response.data.data["userCart"].length;
+      const cartData = {};
       response.data.data["userCart"].map((el) => {
-        cartData[el.cartName] = el
-      })
+        cartData[el.cartName] = el;
+      });
 
       setCartNumber({
         count: count,
         data: cartData,
-      })
+      });
 
       // wishlist
-      if (response.data.data["userWishList"]["wishListNames"].length > 1) {
-        const wishListNames = response.data.data["userWishList"]["wishListNames"]
-        const wishListIds = response.data.data["userWishList"]["wishListIds"]
-        const firstName = wishListNames[0]
-        const firstId = wishListIds[0]
-        wishListNames.shift()
-        wishListIds.shift()
-        wishListNames.reverse()
-        wishListIds.reverse()
-
-        const data = {
-          wishListNames: [firstName, ...wishListNames],
-          wishListIds : [firstId, ...wishListIds]
-        }
-
-        setWishListData(data)
-
-      } else {
-        setWishListData(response.data.data["userWishList"])
-      }
-
+      setWishListData((prev) => {
+        const temp = { ...prev };
+        temp["wishListNames"] = [...response.data.data["userWishList"]["wishListNames"]].reverse();
+        temp["wishListIds"] = [...response.data.data["userWishList"]["wishListIds"]].reverse();
+        return temp;
+      });
     } else {
-      setUserData({})
+      setUserData({});
       setCartNumber({
         count: 0,
         data: {},
-      })
+      });
     }
-
   }
 
   useEffect(() => {
@@ -166,8 +148,7 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     console.log(wishListData);
-  }, [wishListData])
-  
+  }, [wishListData]);
 
   function app(path) {
     if (path.includes("/admin/")) {
@@ -190,32 +171,32 @@ function MyApp({ Component, pageProps }) {
     } else {
       return (
         <getUserData_context.Provider value={{ getUserData, setGetUserData }}>
-        <UserData_context.Provider value={{ userData, setUserData }}>
-          <SearchPageNumberHistory_context.Provider value={{ searchPageNumberHistory, setSearchPageNumberHistory }}>
-            <SearchPageNumber_context.Provider value={{ pageNumber, setPageNumber }}>
-              <SearchedPageData_context.Provider value={{ searchedData, setSearchedData }}>
-                <VisitedLinksArray.Provider value={{ visitedLinksArray, setVisitedLinksArray }}>
-                  <HeartContext.Provider value={{ heartNumber, setHeartNumber }}>
-                    <GiftContext.Provider value={{ giftNumber, setGiftNumber }}>
-                      <WishLishContext.Provider value={{ wishListData, setWishListData}}>
-                      <CartContext.Provider value={{ cartNumber, setCartNumber }}>
-                        <div className={styles.navBar}>
-                          <Navbar />
-                        </div>
-                        <div className={styles.content}>
-                          <NextNProgress height={6} color="#3b82f6" options={{ showSpinner: false }} showOnShallow={false} />
-                          <Component {...pageProps} />
-                        </div>
-                        <Footer />
-                      </CartContext.Provider>
-                      </WishLishContext.Provider>
-                    </GiftContext.Provider>
-                  </HeartContext.Provider>
-                </VisitedLinksArray.Provider>
-              </SearchedPageData_context.Provider>
-            </SearchPageNumber_context.Provider>
-          </SearchPageNumberHistory_context.Provider>
-        </UserData_context.Provider>
+          <UserData_context.Provider value={{ userData, setUserData }}>
+            <SearchPageNumberHistory_context.Provider value={{ searchPageNumberHistory, setSearchPageNumberHistory }}>
+              <SearchPageNumber_context.Provider value={{ pageNumber, setPageNumber }}>
+                <SearchedPageData_context.Provider value={{ searchedData, setSearchedData }}>
+                  <VisitedLinksArray.Provider value={{ visitedLinksArray, setVisitedLinksArray }}>
+                    <HeartContext.Provider value={{ heartNumber, setHeartNumber }}>
+                      <GiftContext.Provider value={{ giftNumber, setGiftNumber }}>
+                        <WishLishContext.Provider value={{ wishListData, setWishListData }}>
+                          <CartContext.Provider value={{ cartNumber, setCartNumber }}>
+                            <div className={styles.navBar}>
+                              <Navbar />
+                            </div>
+                            <div className={styles.content}>
+                              <NextNProgress height={6} color="#3b82f6" options={{ showSpinner: false }} showOnShallow={false} />
+                              <Component {...pageProps} />
+                            </div>
+                            <Footer />
+                          </CartContext.Provider>
+                        </WishLishContext.Provider>
+                      </GiftContext.Provider>
+                    </HeartContext.Provider>
+                  </VisitedLinksArray.Provider>
+                </SearchedPageData_context.Provider>
+              </SearchPageNumber_context.Provider>
+            </SearchPageNumberHistory_context.Provider>
+          </UserData_context.Provider>
         </getUserData_context.Provider>
       );
     }

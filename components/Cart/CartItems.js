@@ -49,7 +49,8 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
       const temp = {};
       for (let index = 0; index < wishListData["wishListNames"].length; index++) {
         const element = wishListData["wishListNames"][index];
-        if (element == "default") {
+        // if (element == "default") {
+        if (index === 0) {
           temp[element] = true;
         } else {
           temp[element] = false;
@@ -97,8 +98,23 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
     });
   }
 
+  function checkIfProductIsAlreadyInWishListData(longProductId) {
+    const keys = Object.keys(wishListData["wishListData"]);
+    let foundIndex = { index: null, keyName: null };
+    for (let index = 0; index < keys.length; index++) {
+      const element = wishListData["wishListData"][keys[index]];
+      const temp = element.findIndex((el) => el.longProductId == longProductId);
+      if (temp >= 0) {
+        foundIndex["index"] = temp;
+        foundIndex["keyName"] = keys[index];
+        break;
+      }
+    }
+
+    return foundIndex;
+  }
+
   async function saveToWishList() {
-    console.log(wishListSelectedAttributes);
     const url = "http://localhost:8000/addtowishlist";
     let options = {
       url: url,
@@ -139,6 +155,7 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
     });
 
     const response = await MyAxios(options);
+    console.log(response);
     if (response["success"] === false || response.data.success !== true) {
       setCartNumber(temp2);
       toast.dismiss(wishListToastRef.current);
@@ -151,6 +168,37 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
         autoClose: 5000,
         limit: 1,
       });
+    } else if (response["success"] === true && response.data.success === true) {
+      if (wishListData && wishListData.hasOwnProperty("wishListData")) {
+        console.log("ndmdnm");
+        const selectedElementData = temp2["data"][wishListSelectedAttributes["cartName"]];
+        const foundIndex = checkIfProductIsAlreadyInWishListData(selectedElementData["longProductId"]);
+        const newWishlistData = {
+          longProductId: selectedElementData["longProductId"],
+          maxPrice: selectedElementData["maxPrice"],
+          minPrice: selectedElementData["minPrice"],
+          productId: selectedElementData["productId"],
+          selectedImageUrl: selectedElementData["selectedImageUrl"],
+          title: selectedElementData["title"],
+          wishListId: response.data["id"],
+          wishListName: wishListSelectedAttributes["name"],
+        };
+        setWishListData((prev) => {
+          const temp = { ...prev };
+          if (foundIndex["index"] !== null) {
+            temp["wishListData"][foundIndex["keyName"]].splice(foundIndex["index"], 1);
+            if (temp["wishListData"][foundIndex["keyName"]].length === 0) {
+              delete temp["wishListData"][foundIndex["keyName"]] 
+            }
+          }
+          if (temp["wishListData"].hasOwnProperty(wishListSelectedAttributes["name"])) {
+            temp["wishListData"][wishListSelectedAttributes["name"]].push(newWishlistData);
+          } else {
+            temp["wishListData"][wishListSelectedAttributes["name"]] = [newWishlistData];
+          }
+          return temp;
+        });
+      }
     }
   }
 
