@@ -6,21 +6,18 @@ import Tabs from "../../components/ProductPage/Tabs";
 
 function Product_query({ productData }) {
   productData["priceList"] = {
-    "InNames": productData.priceList_InNames,
-    "InNumbers": productData.priceList_InNumbers,
-    "Data": productData.priceList_Data,
-
-}
+    InNames: productData.priceList_InNames ? productData.priceList_InNames : [],
+    InNumbers: productData.priceList_InNumbers ? productData.priceList_InNumbers : [],
+    Data: productData.priceList_Data,
+  };
+  productData["sizesColors"] = productData["sizesColors"] ? productData["sizesColors"] : []
   console.log(productData);
   const router = useRouter();
   const { product_query } = router.query; // contain product name from url
   return (
     <>
       <ProductLayout productData={productData} />
-      <Tabs
-        Specifications_Array={productData["specs"]}
-        Description_content={productData["modified_description_content"]}
-      />
+      <Tabs Specifications_Array={productData["specs"]} Description_content={productData["modified_description_content"]} />
     </>
   );
 }
@@ -55,7 +52,6 @@ export async function getServerSideProps(ctx) {
   }
 
   // res["productId"] = "";
-
   return {
     props: { productData: res }, // will be passed to the page component as props
   };
