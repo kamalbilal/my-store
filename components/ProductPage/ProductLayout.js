@@ -900,7 +900,7 @@ function ProductLayout({ productData }) {
               ) : maxPurchaseLimit > 0 ? (
                 `${maxPurchaseLimit} ${maxPurchaseLimit > 1 ? productData["multiUnitName"] || "pieces" : productData["oddUnitName"] || "piece"}${productData["buyLimitText"] || " at most per customer"}`
               ) : (
-                `${defaultQuality} ${productData["multiUnitName"]} Avaliable`
+                `${defaultQuality <= 10 && defaultQuality > 0 ? "Only" : ""} ${defaultQuality} ${defaultQuality > 1 ? productData["multiUnitName"]: productData["oddUnitName"]} Available`
               )}
             </div>
           </div>

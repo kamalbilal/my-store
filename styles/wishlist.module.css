@@ -137,13 +137,13 @@
   overflow: hidden !important;
   animation-name: heightAnimation;
   animation-duration: 300ms;
-  animation-timing-function: ease;
+  animation-timing-function: ease-in-out;
 }
 .collapse .arrowIcon {
     transform: rotate(180deg);
     animation-name: rotateAnimation;
     animation-duration: 300ms;
-    animation-timing-function: ease;
+    animation-timing-function: ease-in-out;
 }
 
 @keyframes rotateAnimation {
@@ -165,13 +165,13 @@
 .expand {
   animation-name: heightAnimationExpand;
   animation-duration: 300ms;
-  animation-timing-function: ease;
+  animation-timing-function: ease-in-out;
 }
 .expand .arrowIcon {
     transform: rotate(0deg);
     animation-name: rotateAnimationExpand;
     animation-duration: 300ms;
-    animation-timing-function: ease;
+    animation-timing-function: ease-in-out;
 }
 
 @keyframes rotateAnimationExpand {

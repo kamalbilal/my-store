@@ -141,7 +141,7 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
     wishListToastRef.current = toast("Successfully moved to wishlist", {
       theme: "dark",
       type: "success",
-      position: "top-right",
+      position: "top-center",
       pauseOnHover: true,
       pauseOnFocusLoss: false,
       autoClose: 5000,
