@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import MyAxios from "../libs/MyAxios";
 import { WishLishContext } from "../userContext";
 import styles from "../styles/wishlist.module.css";
@@ -11,6 +11,16 @@ import Image from "next/image";
 
 function Wishlist() {
   const { wishListData, setWishListData } = useContext(WishLishContext);
+  const [nextTabData, setNextTabData] = useState({});
+
+  const allListsRef = useRef([]);
+  const defaultListRef = useRef()
+
+  const allListBtn = useRef();
+  const nextListBtn = useRef();
+
+  const allListDiv = useRef();
+  const nextListDiv = useRef();
 
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
@@ -44,6 +54,35 @@ function Wishlist() {
     }
   }, []);
 
+  useEffect(() => {
+    if (wishListData && wishListData.hasOwnProperty("wishListData")) {
+      setNextTabData({ wishListName: "Default", data: wishListData["wishListData"].hasOwnProperty("Default") ? wishListData["wishListData"]["Default"] : [] });
+    }
+  }, [wishListData]);
+
+  useEffect(() => {
+    console.log(nextTabData);
+  }, [nextTabData]);
+
+  function toggleAllListTab() {
+    nextListBtn.current.classList.remove(styles.active);
+    allListBtn.current.classList.add(styles.active);
+
+    allListDiv.current.classList.remove(styles.hide);
+    nextListDiv.current.classList.add(styles.hide);
+
+    defaultListRef.current.classList.add(styles.noAnimation)
+  }
+  function toggleDefaultTab() {
+    allListBtn.current.classList.remove(styles.active);
+    nextListBtn.current.classList.add(styles.active);
+
+    nextListDiv.current.classList.remove(styles.hide);
+    allListDiv.current.classList.add(styles.hide);
+
+    allListsRef.current.map((el) => el.classList.add(styles.noAnimation))
+  }
+
   console.log(wishListData);
 
   return (
@@ -54,100 +93,130 @@ function Wishlist() {
           <h1>My Wishlist</h1>
         </div>
 
-        <div className={cn(styles.wishlistContent)}>
+        <div className={cn(styles.wishlistContent, "niceBox")}>
           <div className={styles.buttons}>
-            <button className={cn(styles.active, "niceBox")}>All Lists</button>
-            <button className={"niceBox"}>Default</button>
+            <button onClick={toggleAllListTab} ref={allListBtn} className={styles.active}>
+              All Lists
+            </button>
+            <button onClick={toggleDefaultTab} ref={nextListBtn} className={styles.nextListBtn}>
+              Default
+            </button>
+          </div>
+
+          <div ref={allListDiv}>
+            {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
+              ? wishListData["wishListNames"].map((el, index) => {
+                  return (
+                    <div
+                      ref={(element) => {
+                        allListsRef.current[index] = element;
+                      }}
+                      key={index}
+                      className={cn(styles.alllist, "niceBox")}
+                    >
+                      <div className={styles.itemNameDiv}>
+                        <p className={styles.itemName}>{el}</p>
+                        <div className={styles.itemButtons}>
+                          <button
+                            onClick={() => {
+                              nextListBtn.current.innerHTML = el;
+                              toggleDefaultTab();
+                            }}
+                          >
+                            <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
+                          </button>
+                          <button>
+                            <FiEdit3 /> <span>Rename</span>
+                          </button>
+                          <button>
+                            <HiOutlineTrash />
+                            <span>Delete</span>
+                          </button>
+                          <button
+                            onClick={(event) => {
+                              const parentDiv = event.target.parentNode.parentNode.parentNode;
+                              parentDiv.classList.remove(styles.noAnimation);
+                              if (parentDiv.classList.contains(styles.collapse)) {
+                                parentDiv.classList.add(styles.expand);
+                                parentDiv.classList.remove(styles.collapse);
+                              } else {
+                                parentDiv.classList.add(styles.collapse);
+                                parentDiv.classList.remove(styles.expand);
+                              }
+                            }}
+                            className={styles.arrowIconBtn}
+                          >
+                            <IoIosArrowDropupCircle className={styles.arrowIcon} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className={styles.imagesDiv}>
+                        {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
+                          Object.values(wishListData["wishListData"][el])
+                            .reverse()
+                            .map((item, index2) => {
+                              return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
+                            })
+                        ) : (
+                          <EmptyList />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              : "loading"}
+          </div>
+
+          <div ref={nextListDiv} className={styles.hide}>
+            {nextTabData.hasOwnProperty("data")
+              ? nextTabData["data"].map((el, index) => {
+                  return (
+                    <div ref={defaultListRef} key={index} className={cn(styles.alllist, "niceBox", styles.noAnimation)}>
+                      <div className={styles.itemNameDiv}>
+                        <p className={styles.itemName}>{nextTabData["wishListName"]}</p>
+                        <div className={styles.itemButtons}>
+                          <button>
+                            <FiEdit3 /> <span>Rename</span>
+                          </button>
+                          <button>
+                            <HiOutlineTrash />
+                            <span>Delete</span>
+                          </button>
+                          <button
+                            onClick={(event) => {
+                              const parentDiv = event.target.parentNode.parentNode.parentNode;
+                              parentDiv.classList.remove(styles.noAnimation);
+                              if (parentDiv.classList.contains(styles.collapse)) {
+                                parentDiv.classList.add(styles.expand);
+                                parentDiv.classList.remove(styles.collapse);
+                              } else {
+                                parentDiv.classList.add(styles.collapse);
+                                parentDiv.classList.remove(styles.expand);
+                              }
+                            }}
+                            className={styles.arrowIconBtn}
+                          >
+                            <IoIosArrowDropupCircle className={styles.arrowIcon} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className={styles.imagesDiv}>
+                        {nextTabData["data"].length > 0 ? (
+                          Object.values(nextTabData["data"])
+                            .reverse()
+                            .map((item, index2) => {
+                              return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
+                            })
+                        ) : (
+                          <EmptyList />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              : "loading"}
           </div>
         </div>
-
-        {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
-          ? wishListData["wishListNames"].map((el, index) => {
-              return (
-                <div key={index} className={cn(styles.alllist, "niceBox")}>
-                  <div className={styles.itemNameDiv}>
-                    <p className={styles.itemName}>{el}</p>
-                    <div className={styles.itemButtons}>
-                      <button>
-                        <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
-                      </button>
-                      <button>
-                        <FiEdit3 /> <span>Rename</span>
-                      </button>
-                      <button>
-                        <HiOutlineTrash />
-                        <span>Delete</span>
-                      </button>
-                      <button
-                        onClick={(event) => {
-                          const parentDiv = event.target.parentNode.parentNode.parentNode;
-                          if (parentDiv.classList.contains(styles.collapse)) {
-                            parentDiv.classList.add(styles.expand);
-                            parentDiv.classList.remove(styles.collapse);
-                          } else {
-                            parentDiv.classList.add(styles.collapse);
-                            parentDiv.classList.remove(styles.expand);
-                          }
-                        }}
-                        className={styles.arrowIconBtn}
-                      >
-                        <IoIosArrowDropupCircle className={styles.arrowIcon} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className={styles.imagesDiv}>
-                    {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
-                      Object.values(wishListData["wishListData"][el]).reverse().map((item, index2) => {
-                        return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} />;
-                      })
-                    ) : (
-                      <EmptyList />
-                    )}
-                  </div>
-                </div>
-              );
-            })
-          : "loading"}
-
-        {/* <div className={cn(styles.alllist, "niceBox")}>
-          <div className={styles.itemNameDiv}>
-            <p className={styles.itemName}>Default</p>
-            <div className={styles.itemButtons}>
-              <button>
-                <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
-              </button>
-              <button>
-                <FiEdit3 /> <span>Rename</span>
-              </button>
-              <button>
-                <HiOutlineTrash />
-                <span>Delete</span>
-              </button>
-              <button
-                onClick={(event) => {
-                  const parentDiv = event.target.parentNode.parentNode.parentNode;
-                  if (parentDiv.classList.contains(styles.collapse)) {
-                    parentDiv.classList.add(styles.expand);
-                    parentDiv.classList.remove(styles.collapse);
-                    
-                  } else {
-                    parentDiv.classList.add(styles.collapse);
-                    parentDiv.classList.remove(styles.expand);
-
-                  }
-                }}
-                className={styles.arrowIconBtn}
-              >
-                <IoIosArrowDropupCircle className={styles.arrowIcon} />
-              </button>
-            </div>
-          </div>
-          <div className={styles.imagesDiv}>
-            <EmptyList/>
-            <Image className={styles.image} src="https://ae01.alicdn.com/kf/Hc7b15264d0fa4ccebf8b7ba9f27eaca7L/For-PS5-Controller-Charger-Dual-USB-Fast-Charging-Dock-Station-Stand-with-USB-A-Ouput-for.jpg" width={150} height={150} />
-            <Image className={styles.image} src="https://ae01.alicdn.com/kf/Hc7b15264d0fa4ccebf8b7ba9f27eaca7L/For-PS5-Controller-Charger-Dual-USB-Fast-Charging-Dock-Station-Stand-with-USB-A-Ouput-for.jpg" width={150} height={150} />
-          </div>
-        </div> */}
       </div>
 
       {/* right */}
