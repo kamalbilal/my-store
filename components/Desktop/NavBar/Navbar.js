@@ -87,7 +87,7 @@ function Navbar() {
         <p className={styles.logo}>Logo</p>
       </div>
 
-      <div className={styles.inputWrapper}>
+      <div className={cn(styles.inputWrapper, "searchBar")}>
         <button ref={allCategoriesOverlayBtn} onClick={showAllCategoriesOverlay} className={styles.allCategories_Btn}>
           All Categories <MdKeyboardArrowDown />
         </button>
