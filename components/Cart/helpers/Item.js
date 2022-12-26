@@ -7,7 +7,7 @@ function Item({ openWishListDialog, Image, cn, data, ImRadioUnchecked, FaCheckCi
   useEffect(() => {
     setCheckedButtonsData((prev) => ({ ...prev, [data.cartName]: false }));
   }, []);
-  console.log(data);
+  // console.log(data);
   return (
     <div className={styles.item}>
       <div className={styles.itemSelectDiv}>

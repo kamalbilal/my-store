@@ -4,6 +4,7 @@
 }
 .left {
   margin: 15px;
+  width: 100%;
 }
 .title {
   margin-bottom: 10px;
@@ -102,10 +103,10 @@
   padding-left: 5px;
 }
 .emptyList img {
-    width: 100px;
-    margin-bottom: 20px;
-    scale: 1.02;
-    transform: translateX(13px);
+  width: 100px;
+  margin-bottom: 20px;
+  scale: 1.02;
+  transform: translateX(13px);
 }
 .emptyList h3 {
   font-size: 1.6rem;
@@ -122,11 +123,11 @@
   margin-bottom: 10px;
 }
 .arrowIconBtn {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 .arrowIconBtn > * {
-    pointer-events: none;
+  pointer-events: none;
 }
 .arrowIcon {
   scale: 1.8;
@@ -140,10 +141,10 @@
   animation-timing-function: ease-in-out;
 }
 .collapse .arrowIcon {
-    transform: rotate(180deg);
-    animation-name: rotateAnimation;
-    animation-duration: 300ms;
-    animation-timing-function: ease-in-out;
+  transform: rotate(180deg);
+  animation-name: rotateAnimation;
+  animation-duration: 300ms;
+  animation-timing-function: ease-in-out;
 }
 
 @keyframes rotateAnimation {
@@ -151,7 +152,8 @@
     transform: rotate(0deg);
   }
   100% {
-    transform: rotate(180deg);  }
+    transform: rotate(180deg);
+  }
 }
 @keyframes heightAnimation {
   0% {
@@ -168,10 +170,10 @@
   animation-timing-function: ease-in-out;
 }
 .expand .arrowIcon {
-    transform: rotate(0deg);
-    animation-name: rotateAnimationExpand;
-    animation-duration: 300ms;
-    animation-timing-function: ease-in-out;
+  transform: rotate(0deg);
+  animation-name: rotateAnimationExpand;
+  animation-duration: 300ms;
+  animation-timing-function: ease-in-out;
 }
 
 @keyframes rotateAnimationExpand {
@@ -179,14 +181,15 @@
     transform: rotate(180deg);
   }
   100% {
-    transform: rotate(0deg);  }
+    transform: rotate(0deg);
+  }
 }
 @keyframes heightAnimationExpand {
   0% {
     height: 60px;
     overflow: hidden;
-}
-100% {
+  }
+  100% {
     height: 240px;
     overflow: hidden;
   }
@@ -227,7 +230,8 @@
     top: -20px;
   }
   100% {
-    top: 0px;  }
+    top: 0px;
+  }
 }
 
 .scrollToTop {
@@ -245,24 +249,63 @@
   box-shadow: 0 4px 6px 0 rgb(0 0 0 / 6%);
   outline: 1px solid white;
 }
+.nextTabProductsDiv {
+  padding: 15px 0;
+}
+.nextTabProductsDiv:not(:last-of-type) {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--white-light);
+}
 
 .nextTabProducts {
-  display: grid;
-  grid-template-columns: 150px 65% auto;
+  /* display: grid;
+  grid-template-columns: 150px auto; */
+  display: flex;
   gap: 10px;
   user-select: text;
+  overflow: hidden;
+}
+.nextTabProductsImage {
+  min-width: 150px;
 }
 .nextTabProducts_right {
   padding: 5px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  width: 82%;
 }
 .nextTabProductsTitle {
   font-size: 1.6rem;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
+  overflow: hidden !important;
   text-overflow: ellipsis;
+  white-space: nowrap !important;
 }
 .nextTabProductsPrice {
   margin-top: 8px;
   font-size: 1.7rem;
+}
+.nextTabProductsButtons {
+  display: flex;
+  gap: 10px;
+}
+.nextTabProductsButtons button {
+  background-color: var(--blue-500);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 1.3rem;
+}
+.nextTabProductsButtons button:hover {
+  background-color: white;
+  outline: 2px solid var(--blue-500);
+  color: var(--blue-500);
+
+}
+.nextTabProductsButtons button:active {
+ scale: 0.95;
+ transition: all;
+ transition-duration: 200ms;
 }

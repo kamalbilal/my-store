@@ -49,7 +49,10 @@ function Wishlist() {
             pwd: "Kamal",
           },
         };
+
+        console.time("Getting wishlist data");
         const response = await MyAxios(options);
+        console.timeEnd("Getting wishlist data");
         console.log(response);
         if (response["success"] === true && response["data"].hasOwnProperty("wishListData")) {
           console.log({ ...wishListData });
@@ -108,13 +111,13 @@ function Wishlist() {
 
     if (rect.top > 0 && rect.top != 0) {
       stickyDivRef.current.classList.remove(styles.sticky);
-      dummyheightRef.current.style.height = "0px"
+      dummyheightRef.current.style.height = "0px";
       const searchBar = document.querySelector(".searchBar");
       if (searchBar) {
         searchBar.style.visibility = "visible";
       }
     } else if (rect.top < -25) {
-      dummyheightRef.current.style.height = "25px"
+      dummyheightRef.current.style.height = "25px";
       stickyDivRef.current.classList.add(styles.sticky);
       const searchBar = document.querySelector(".searchBar");
       if (searchBar) {
@@ -239,11 +242,9 @@ function Wishlist() {
                       </div>
                       <div className={styles.imagesDiv}>
                         {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
-                          Object.values(wishListData["wishListData"][el])
-                            .slice(0, 5)
-                            .map((item, index2) => {
-                              return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
-                            })
+                          [...Object.values(wishListData["wishListData"][el])].reverse().slice(0, 6).map((item, index2) => {
+                            return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
+                          })
                         ) : (
                           <EmptyList />
                         )}
@@ -287,18 +288,24 @@ function Wishlist() {
                 </div>
                 <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
                   {wishListData && wishListData.hasOwnProperty("wishListData") && wishListData["wishListData"].hasOwnProperty(nextTabData) && wishListData["wishListData"][nextTabData].length > 0 ? (
-                    wishListData["wishListData"][nextTabData].map((item, index2) => {
+                    [...wishListData["wishListData"][nextTabData]].reverse().map((item, index2) => {
                       return (
-                        <div key={index2} style={{ width: "100%" }}>
+                        <div className={styles.nextTabProductsDiv} key={index2} style={{ width: "100%" }}>
                           <div className={styles.nextTabProducts}>
                             <div className={styles.nextTabProductsImage}>
                               <Image className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />
                             </div>
                             <div className={styles.nextTabProducts_right}>
-                              <div className={styles.nextTabProductsTitle}>{item["title"]}</div>
-                              <div className={styles.nextTabProductsPrice}>$1500</div>
+                              <div style={{ width: "100%" }}>
+                                <div className={styles.nextTabProductsTitle}>{item["title"]}</div>
+                                <div className={styles.nextTabProductsPrice}>$1500</div>
+                              </div>
+                              <div className={styles.nextTabProductsButtons}>
+                                <button>Open</button>
+                                <button>Move</button>
+                                <button>Delete</button>
+                              </div>
                             </div>
-                            <div>fhhfh</div>
                           </div>
                         </div>
                       );
