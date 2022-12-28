@@ -19,6 +19,7 @@ function Wishlist() {
   const [scrollToAllListTab, setScrollToAllListTab] = useState(0);
   const [scrollToAllDefaultTab, setScrollToAllDefaultTab] = useState(0);
   const [changeTabs, setChangeTabs] = useState({ allList: true, default: false });
+  const [pagination, setPagination] = useState({});
 
   const allListsRef = useRef([]);
   const defaultListRef = useRef();
@@ -55,17 +56,63 @@ function Wishlist() {
         console.timeEnd("Getting wishlist data");
         console.log(response);
         if (response["success"] === true && response["data"].hasOwnProperty("wishListData")) {
-          console.log({ ...wishListData });
+          // console.log({ ...wishListData });
           setWishListData((prev) => {
             const temp = { ...prev };
             temp["wishListData"] = response["data"]["wishListData"];
             return temp;
           });
+
+          const indexOfDefaultList = response["data"]["wishListNames"].indexOf("Default");
+          nextListDiv.current.id = "wishListId-" + response["data"]["wishListIds"][indexOfDefaultList];
         }
       }
       getWishListData();
     }
   }, []);
+
+  useEffect(() => {
+    if (wishListData.hasOwnProperty("wishListNames") && wishListData.hasOwnProperty("wishListIds")) {
+      setPagination((prev) => {
+        const temp = { ...prev };
+        temp["pagesByName"] = {};
+        temp["pagesById"] = {};
+        for (let index = 0; index < wishListData["wishListIds"].length; index++) {
+          const wishListName = wishListData["wishListNames"][index];
+          const wishListId = wishListData["wishListIds"][index];
+          temp["pagesById"][wishListId] = 1;
+          temp["pagesByName"][wishListName] = 1;
+        }
+        return temp;
+      });
+    }
+  }, [wishListData]);
+
+  useEffect(() => {
+    console.log(pagination);
+  }, [pagination]);
+
+  async function getMoreWishListData() {
+    const options = {
+      url: "http://localhost:8000/getMoreWishlist",
+      method: "POST",
+      credentials: "include",
+      withCredentials: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      data: {
+        pwd: "Kamal",
+        wishListId: "",
+        pageNumber: 2,
+      },
+    };
+
+    console.time("Getting more wishlist data");
+    const response = await MyAxios(options);
+    console.timeEnd("Getting more wishlist data");
+  }
 
   function toggleAllListTab() {
     if (changeTabs["allList"] === true) return;
@@ -211,6 +258,8 @@ function Wishlist() {
                               // setScrollToAllListTab(0);
                               // setScrollToAllDefaultTab(0)
                               toggleDefaultTab(true);
+                              const id = wishListData["wishListIds"][wishListData["wishListNames"].indexOf(el)];
+                              nextListDiv.current.id = "wishListId-" + id;
                             }}
                           >
                             <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
@@ -242,7 +291,7 @@ function Wishlist() {
                       </div>
                       <div className={styles.imagesDiv}>
                         {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
-                          [...Object.values(wishListData["wishListData"][el])].reverse().slice(0, 6).map((item, index2) => {
+                          [...Object.values(wishListData["wishListData"][el])].slice(0, 6).map((item, index2) => {
                             return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
                           })
                         ) : (
@@ -255,7 +304,7 @@ function Wishlist() {
               : "loading"}
           </div>
 
-          <div ref={nextListDiv} className={styles.hide}>
+          <div ref={nextListDiv} className={cn(styles.hide, "nextListDiv")}>
             {nextTabData ? (
               <div ref={defaultListRef} className={cn(styles.alllist, "niceBox", styles.noAnimation)}>
                 <div className={styles.itemNameDiv}>
@@ -288,7 +337,7 @@ function Wishlist() {
                 </div>
                 <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
                   {wishListData && wishListData.hasOwnProperty("wishListData") && wishListData["wishListData"].hasOwnProperty(nextTabData) && wishListData["wishListData"][nextTabData].length > 0 ? (
-                    [...wishListData["wishListData"][nextTabData]].reverse().map((item, index2) => {
+                    wishListData["wishListData"][nextTabData].map((item, index2) => {
                       return (
                         <div className={styles.nextTabProductsDiv} key={index2} style={{ width: "100%" }}>
                           <div className={styles.nextTabProducts}>
