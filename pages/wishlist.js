@@ -20,6 +20,7 @@ function Wishlist() {
   const [scrollToAllDefaultTab, setScrollToAllDefaultTab] = useState(0);
   const [changeTabs, setChangeTabs] = useState({ allList: true, default: false });
   const [pagination, setPagination] = useState({});
+  const [nextTabDataObject, setNextTabDataObject] = useState({});
 
   const allListsRef = useRef([]);
   const defaultListRef = useRef();
@@ -32,6 +33,9 @@ function Wishlist() {
   const nextListDiv = useRef();
   const stickyDivRef = useRef();
   const scrollTopArrowRef = useRef();
+
+  const observer = useRef(null);
+  const lastDivRef = useRef(null);
 
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
@@ -72,7 +76,10 @@ function Wishlist() {
   }, []);
 
   useEffect(() => {
-    if (wishListData.hasOwnProperty("wishListNames") && wishListData.hasOwnProperty("wishListIds")) {
+    if (pagination && pagination.hasOwnProperty("pagesByName")) {
+      return;
+    }
+    if (wishListData && wishListData.hasOwnProperty("wishListNames") && wishListData.hasOwnProperty("wishListIds")) {
       setPagination((prev) => {
         const temp = { ...prev };
         temp["pagesByName"] = {};
@@ -80,8 +87,8 @@ function Wishlist() {
         for (let index = 0; index < wishListData["wishListIds"].length; index++) {
           const wishListName = wishListData["wishListNames"][index];
           const wishListId = wishListData["wishListIds"][index];
-          temp["pagesById"][wishListId] = 1;
-          temp["pagesByName"][wishListName] = 1;
+          temp["pagesById"][wishListId] = { page: 1, isCompleted: false };
+          temp["pagesByName"][wishListName] = { page: 1, isCompleted: false };
         }
         return temp;
       });
@@ -93,6 +100,11 @@ function Wishlist() {
   }, [pagination]);
 
   async function getMoreWishListData() {
+    const wishlistId = lastDivRef.current.getAttribute("data-attribute-parentwishlistid");
+    const wishlistName = lastDivRef.current.getAttribute("data-attribute-wishlistname");
+
+    console.log(pagination["pagesById"]);
+
     const options = {
       url: "http://localhost:8000/getMoreWishlist",
       method: "POST",
@@ -104,19 +116,55 @@ function Wishlist() {
       },
       data: {
         pwd: "Kamal",
-        wishListId: "",
-        pageNumber: 2,
+        wishlistId: wishlistId,
+        wishlistName: wishlistName,
+        pageNumber: pagination["pagesById"][wishlistId]["page"] + 1,
       },
     };
 
     console.time("Getting more wishlist data");
     const response = await MyAxios(options);
+    setWishListData((prev) => {
+      const temp = { ...prev };
+      console.log(temp["wishListData"]["test"]);
+      temp["wishListData"]["test"] = [...temp["wishListData"]["test"], ...response.data.data];
+      return temp;
+    });
+    setPagination((prev) => {
+      const temp = { ...prev };
+      temp["pagesById"] = { ...temp["pagesById"], [response.data.wishlistId]: { ...temp["pagesById"][response.data.wishListId], page: response.data.pageNumber, isCompleted: response.data.data.length > 0 ? false : true } };
+      temp["pagesByName"] = { ...temp["pagesByName"], [response.data.wishlistName]: { ...temp["pagesByName"][response.data.wishlistName], page: response.data.pageNumber, isCompleted: response.data.data.length > 0 ? false : true } };
+      return temp;
+    });
+    console.log(response);
     console.timeEnd("Getting more wishlist data");
   }
+
+  useEffect(() => {
+    function handleKeyPress(event) {
+      if (event.key === "y") {
+        console.log('You pressed the "y" key!');
+        console.log(document.body.scrollTop || document.documentElement.scrollTop);
+        // getMoreWishListData();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    // This is a clean-up function that runs when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
 
   function toggleAllListTab() {
     if (changeTabs["allList"] === true) return;
     setChangeTabs((prev) => ({ allList: true, default: false }));
+    setScrollToAllDefaultTab(document.body.scrollTop || document.documentElement.scrollTop);
+    console.log({ scrollToAllListTab });
+    window.scrollTo({
+      top: scrollToAllListTab,
+    });
 
     nextListBtn.current.classList.remove(styles.active);
     allListBtn.current.classList.add(styles.active);
@@ -125,28 +173,22 @@ function Wishlist() {
     nextListDiv.current.classList.add(styles.hide);
 
     defaultListRef.current.classList.add(styles.noAnimation);
-
-    setScrollToAllDefaultTab(document.body.scrollTop || document.documentElement.scrollTop);
-    console.log({ scrollToAllListTab });
-    window.scrollTo({
-      top: scrollToAllListTab,
-    });
   }
 
   function toggleDefaultTab(scrollToTop = false) {
     if (changeTabs["default"] === true) return;
     setChangeTabs((prev) => ({ allList: false, default: true }));
 
-    setScrollToAllListTab(document.body.scrollTop || document.documentElement.scrollTop);
-    window.scrollTo({
-      top: scrollToTop != false ? 0 : scrollToAllDefaultTab,
-    });
-
     allListBtn.current.classList.remove(styles.active);
     nextListBtn.current.classList.add(styles.active);
 
     nextListDiv.current.classList.remove(styles.hide);
     allListDiv.current.classList.add(styles.hide);
+
+    setScrollToAllListTab(document.body.scrollTop || document.documentElement.scrollTop);
+    window.scrollTo({
+      top: scrollToTop != false ? 0 : scrollToAllDefaultTab,
+    });
 
     allListsRef.current.map((el) => el.classList.add(styles.noAnimation));
   }
@@ -204,6 +246,32 @@ function Wishlist() {
       router.events.off("routeChangeStart", handleRouteChange);
     };
   }, []);
+
+  useEffect(() => {
+    if (pagination && pagination.hasOwnProperty("pagesByName") && pagination["pagesByName"][Object.keys(nextTabDataObject)[0]]["isCompleted"] === true) {
+      console.log("data completed");
+      return;
+    }
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        console.log("Getting more wishlistdata");
+        getMoreWishListData();
+        observer.current.disconnect();
+      }
+    });
+    if (lastDivRef.current) observer.current.observe(lastDivRef.current);
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, [nextTabDataObject, wishListData["wishListData"]]);
+
+  useEffect(() => {
+    console.log("snksb");
+    if (wishListData["wishListData"] && wishListData["wishListData"].hasOwnProperty(nextTabData)) {
+      setNextTabDataObject({ [nextTabData]: [...wishListData["wishListData"][nextTabData]] });
+    }
+  }, [nextTabData, wishListData]);
 
   return (
     <div className={styles.main}>
@@ -317,29 +385,20 @@ function Wishlist() {
                       <HiOutlineTrash />
                       <span>Delete</span>
                     </button>
-                    {/* <button
-                      onClick={(event) => {
-                        const parentDiv = event.target.parentNode.parentNode.parentNode;
-                        parentDiv.classList.remove(styles.noAnimation);
-                        if (parentDiv.classList.contains(styles.collapse)) {
-                          parentDiv.classList.add(styles.expand);
-                          parentDiv.classList.remove(styles.collapse);
-                        } else {
-                          parentDiv.classList.add(styles.collapse);
-                          parentDiv.classList.remove(styles.expand);
-                        }
-                      }}
-                      className={styles.arrowIconBtn}
-                    >
-                      <IoIosArrowDropupCircle className={styles.arrowIcon} />
-                    </button> */}
                   </div>
                 </div>
                 <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                  {wishListData && wishListData.hasOwnProperty("wishListData") && wishListData["wishListData"].hasOwnProperty(nextTabData) && wishListData["wishListData"][nextTabData].length > 0 ? (
-                    wishListData["wishListData"][nextTabData].map((item, index2) => {
+                  {nextTabDataObject && nextTabDataObject.hasOwnProperty(nextTabData) ? (
+                    nextTabDataObject[nextTabData].map((item, index2) => {
                       return (
-                        <div className={styles.nextTabProductsDiv} key={index2} style={{ width: "100%" }}>
+                        <div
+                          ref={index2 === nextTabDataObject[nextTabData].length - 1 ? lastDivRef : null}
+                          data-attribute-parentwishlistid={item["parentWishListId"]}
+                          data-attribute-wishlistname={item["wishListName"]}
+                          className={styles.nextTabProductsDiv}
+                          key={index2}
+                          style={{ width: "100%" }}
+                        >
                           <div className={styles.nextTabProducts}>
                             <div className={styles.nextTabProductsImage}>
                               <Image className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />
