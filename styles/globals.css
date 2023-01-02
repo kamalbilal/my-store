@@ -7,6 +7,8 @@
   --blue-light: rgba(60, 131, 246, 0.1);
   --outlineSize: 4px;
   --dropdownBackgroundColor: rgba(0, 0, 0, 0.85);
+  --wishlist-expand-collapse-max-height: 240px;
+  --wishlist-expand-collapse-min-height: 60px;
 }
 
 html,

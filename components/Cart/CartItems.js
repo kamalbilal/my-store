@@ -204,7 +204,7 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
 
   return (
     <div>
-      <ToastContainer style={{ fontSize: "1.4rem" }} />
+      <ToastContainer limit={1} style={{ fontSize: "1.4rem" }} />
       <dialog
         onClick={(event) => {
           const rect = addToWishListDialog.current.getBoundingClientRect();

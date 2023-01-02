@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import MyAxios from "../libs/MyAxios";
 import { WishLishContext } from "../userContext";
 import styles from "../styles/wishlist.module.css";
@@ -10,6 +10,7 @@ import { IoIosArrowDropupCircle } from "react-icons/io";
 import { BsFillArrowUpCircleFill } from "react-icons/bs";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { Oval } from "react-loader-spinner";
 
 function Wishlist() {
   const router = useRouter();
@@ -36,6 +37,8 @@ function Wishlist() {
 
   const observer = useRef(null);
   const lastDivRef = useRef(null);
+  const loaderRef = useRef();
+  const imagesDivRef = useRef();
 
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
@@ -99,7 +102,16 @@ function Wishlist() {
     console.log(pagination);
   }, [pagination]);
 
+  function showLoader() {
+    loaderRef.current.style.display = "flex";
+  }
+
+  function hideLoader() {
+    loaderRef.current.style.display = "none";
+  }
+
   async function getMoreWishListData() {
+    showLoader();
     const wishlistId = lastDivRef.current.getAttribute("data-attribute-parentwishlistid");
     const wishlistName = lastDivRef.current.getAttribute("data-attribute-wishlistname");
 
@@ -126,8 +138,8 @@ function Wishlist() {
     const response = await MyAxios(options);
     setWishListData((prev) => {
       const temp = { ...prev };
-      console.log(temp["wishListData"]["test"]);
-      temp["wishListData"]["test"] = [...temp["wishListData"]["test"], ...response.data.data];
+      console.log(temp["wishListData"][wishlistName]);
+      temp["wishListData"][wishlistName] = [...temp["wishListData"][wishlistName], ...response.data.data];
       return temp;
     });
     setPagination((prev) => {
@@ -138,6 +150,7 @@ function Wishlist() {
     });
     console.log(response);
     console.timeEnd("Getting more wishlist data");
+    hideLoader();
   }
 
   useEffect(() => {
@@ -248,7 +261,7 @@ function Wishlist() {
   }, []);
 
   useEffect(() => {
-    if (pagination && pagination.hasOwnProperty("pagesByName") && pagination["pagesByName"][Object.keys(nextTabDataObject)[0]]["isCompleted"] === true) {
+    if (pagination && pagination.hasOwnProperty("pagesByName") && pagination["pagesByName"].hasOwnProperty(Object.keys(nextTabDataObject)[0]) && pagination["pagesByName"][Object.keys(nextTabDataObject)[0]]["isCompleted"] === true) {
       console.log("data completed");
       return;
     }
@@ -267,11 +280,20 @@ function Wishlist() {
   }, [nextTabDataObject, wishListData["wishListData"]]);
 
   useEffect(() => {
-    console.log("snksb");
     if (wishListData["wishListData"] && wishListData["wishListData"].hasOwnProperty(nextTabData)) {
       setNextTabDataObject({ [nextTabData]: [...wishListData["wishListData"][nextTabData]] });
     }
   }, [nextTabData, wishListData]);
+
+  useEffect(() => {
+    if (imagesDivRef.current) {
+      const height = imagesDivRef.current.clientHeight
+      console.log(height);
+      const root = document.documentElement;
+      // Set the value of the --my-variable CSS variable
+      root.style.setProperty('--wishlist-expand-collapse-max-height', `${height + 70}px`);
+    }
+  }, [imagesDivRef.current]);
 
   return (
     <div className={styles.main}>
@@ -307,6 +329,7 @@ function Wishlist() {
           <div ref={allListDiv}>
             {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
               ? wishListData["wishListNames"].map((el, index) => {
+                
                   return (
                     <div
                       ref={(element) => {
@@ -319,6 +342,7 @@ function Wishlist() {
                         <p className={styles.itemName}>{el}</p>
                         <div className={styles.itemButtons}>
                           <button
+                          id={"button-" + index + "-" + el}
                             onClick={() => {
                               nextListBtn.current.innerHTML = el;
                               defaultListRef.current.classList.remove(styles.collapse);
@@ -357,10 +381,15 @@ function Wishlist() {
                           </button>
                         </div>
                       </div>
-                      <div className={styles.imagesDiv}>
+                      <div ref={imagesDivRef} id="images-div" className={styles.imagesDiv}>
                         {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
                           [...Object.values(wishListData["wishListData"][el])].slice(0, 6).map((item, index2) => {
-                            return <Image key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
+                            return <Image onClick={() => {
+                              const button = document.getElementById("button-" + index + "-" + el)
+                              if (button) {
+                                button.click()
+                              }
+                            }} key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
                           })
                         ) : (
                           <EmptyList />
@@ -390,6 +419,7 @@ function Wishlist() {
                 <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
                   {nextTabDataObject && nextTabDataObject.hasOwnProperty(nextTabData) ? (
                     nextTabDataObject[nextTabData].map((item, index2) => {
+                      const isLastDiv = index2 === nextTabDataObject[nextTabData].length - 1;
                       return (
                         <div
                           ref={index2 === nextTabDataObject[nextTabData].length - 1 ? lastDivRef : null}
@@ -415,6 +445,13 @@ function Wishlist() {
                               </div>
                             </div>
                           </div>
+                          {isLastDiv === true ? (
+                            <div ref={loaderRef} className={styles.loaderDiv}>
+                              <Oval height={45} width={45} color="#3b82f6" wrapperStyle={{}} wrapperClass="" visible={true} ariaLabel="oval-loading" secondaryColor="3b83f67c" strokeWidth={6} strokeWidthSecondary={6} />
+                            </div>
+                          ) : (
+                            ""
+                          )}
                         </div>
                       );
                     })

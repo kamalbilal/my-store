@@ -90,6 +90,7 @@
 .image:hover {
   filter: brightness(1.1);
 }
+
 .eyeIcon {
   scale: 1.2;
   margin-right: 2px;
@@ -157,10 +158,10 @@
 }
 @keyframes heightAnimation {
   0% {
-    height: 240px;
+    height: var(--wishlist-expand-collapse-max-height);
   }
   100% {
-    height: 60px;
+    height: var(--wishlist-expand-collapse-min-height);
   }
 }
 
@@ -186,11 +187,11 @@
 }
 @keyframes heightAnimationExpand {
   0% {
-    height: 60px;
+    height: var(--wishlist-expand-collapse-min-height);
     overflow: hidden;
   }
   100% {
-    height: 240px;
+    height: var(--wishlist-expand-collapse-max-height);
     overflow: hidden;
   }
 }
@@ -302,10 +303,25 @@
   background-color: white;
   outline: 2px solid var(--blue-500);
   color: var(--blue-500);
-
 }
 .nextTabProductsButtons button:active {
- scale: 0.95;
- transition: all;
- transition-duration: 200ms;
+  scale: 0.95;
+  transition: all;
+  transition-duration: 200ms;
+}
+.loaderDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0px;
+  display: none;
+}
+@media only screen and (max-width: 1000px) {
+  .main {
+  display: block;
+  padding-right: 30px;
+  }
+  .right {
+    display: none;
+  }
 }
