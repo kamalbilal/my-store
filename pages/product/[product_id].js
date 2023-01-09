@@ -6,18 +6,34 @@ import Tabs from "../../components/ProductPage/Tabs";
 
 function Product_query({ productData }) {
   productData["priceList"] = {
-    InNames: productData.priceList_InNames ? productData.priceList_InNames : [],
-    InNumbers: productData.priceList_InNumbers ? productData.priceList_InNumbers : [],
-    Data: productData.priceList_Data,
+    InNames: productData.priceList_InNames ? JSON.parse(productData.priceList_InNames) : [],
+    InNumbers: productData.priceList_InNumbers ? JSON.parse(productData.priceList_InNumbers) : [],
+    Data: productData.priceList_Data ? JSON.parse(productData.priceList_Data) : []
   };
-  productData["sizesColors"] = productData["sizesColors"] ? productData["sizesColors"] : []
+  // if (productData["sizesColors"]) {
+  //   productData["sizesColors"] = JSON.parse(productData["sizesColors"])
+  // } else {
+  //   productData["sizesColors"] = []
+  // }
+  if (productData["images"]) {
+    productData["images"] = JSON.parse(productData["images"])
+  } 
+  if (productData["shipping"]) {
+    productData["shipping"] = JSON.parse(productData["shipping"])
+  } 
+  if (productData["specs"]) {
+    productData["specs"] = JSON.parse(productData["specs"])
+  } else {
+    productData["specs"] = []
+  }
+
   console.log(productData);
   const router = useRouter();
   const { product_query } = router.query; // contain product name from url
   return (
     <>
-      <ProductLayout productData={productData} />
-      <Tabs Specifications_Array={productData["specs"]} Description_content={productData["modified_description_content"]} />
+      {/* <ProductLayout productData={productData} />
+      <Tabs Specifications_Array={productData["specs"]} Description_content={productData["modified_description_content"]} /> */}
     </>
   );
 }
@@ -32,16 +48,15 @@ export async function getServerSideProps(ctx) {
     };
   }
 
-  let res = await fetch(`http://localhost:8000/getProductData`, {
+  let res = await fetch(`http://0.0.0.0:8080/getProductData`, {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    // body: JSON.stringify({ pwd: "Kamal", id: "62cf310e8ff23aa4147f2c17" }),
-    // body: JSON.stringify({ pwd: "Kamal", id: "62cf310f8ff23aa4147f2c26" }),
-    body: JSON.stringify({ pwd: "Kamal", id: product_id.split(".html")[0], product_name: "product_name" }),
+    body: JSON.stringify({ id: parseInt(product_id.split(".html")[0])}),
   });
+  // body: JSON.stringify({ pwd: "Kamal", id: product_id.split(".html")[0], product_name: "product_name" }),
 
   res = await res.json();
   // if error then redirect to 404 page
