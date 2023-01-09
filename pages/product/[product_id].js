@@ -6,34 +6,18 @@ import Tabs from "../../components/ProductPage/Tabs";
 
 function Product_query({ productData }) {
   productData["priceList"] = {
-    InNames: productData.priceList_InNames ? JSON.parse(productData.priceList_InNames) : [],
-    InNumbers: productData.priceList_InNumbers ? JSON.parse(productData.priceList_InNumbers) : [],
-    Data: productData.priceList_Data ? JSON.parse(productData.priceList_Data) : []
+    InNames: productData.priceList_InNames ? productData.priceList_InNames : [],
+    InNumbers: productData.priceList_InNumbers ? productData.priceList_InNumbers : [],
+    Data: productData.priceList_Data ? productData.priceList_Data : []
   };
-  // if (productData["sizesColors"]) {
-  //   productData["sizesColors"] = JSON.parse(productData["sizesColors"])
-  // } else {
-  //   productData["sizesColors"] = []
-  // }
-  if (productData["images"]) {
-    productData["images"] = JSON.parse(productData["images"])
-  } 
-  if (productData["shipping"]) {
-    productData["shipping"] = JSON.parse(productData["shipping"])
-  } 
-  if (productData["specs"]) {
-    productData["specs"] = JSON.parse(productData["specs"])
-  } else {
-    productData["specs"] = []
-  }
 
   console.log(productData);
   const router = useRouter();
   const { product_query } = router.query; // contain product name from url
   return (
     <>
-      {/* <ProductLayout productData={productData} />
-      <Tabs Specifications_Array={productData["specs"]} Description_content={productData["modified_description_content"]} /> */}
+      <ProductLayout productData={productData} />
+      <Tabs Specifications_Array={productData["specs"]} Description_content={productData["modified_description_content"]} />
     </>
   );
 }
