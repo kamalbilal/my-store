@@ -26,7 +26,7 @@ function LoggedIn({ admin }) {
 
   async function getAllOffers() {
     let options = {
-      url: "http://localhost:8000/getalloffers",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/getalloffers",
       method: "Get",
       headers: {
         Accept: "application/json",

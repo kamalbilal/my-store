@@ -63,7 +63,7 @@ function ModifyShowingProducts({
   async function addOfferToServer(productId, newDiscount) {
     toast.success(`Changing...`, toastOptions);
     let options = {
-      url: "http://localhost:8000/addoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/addoffer",
       method: "POST",
       // credentials: "include",
       // withCredentials: true,
@@ -121,7 +121,7 @@ function ModifyShowingProducts({
   async function removeProductFromOffer(e) {
     const productId = e.target.id;
     let options = {
-      url: "http://localhost:8000/removeproductfromoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/removeproductfromoffer",
       method: "POST",
       // credentials: "include",
       // withCredentials: true,

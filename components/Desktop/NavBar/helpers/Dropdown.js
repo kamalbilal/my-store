@@ -25,7 +25,7 @@ function Dropdown({Router, userData, setUserData, router, hideDropDown, CartIcon
   }
   async function logout() {
     // hideDropDown();
-    const url = "http://localhost:8000/logout";
+    const url = process.env.NEXT_PUBLIC_DB_HOST + "/logout";
     let options = {
       url: url,
       method: "POST",

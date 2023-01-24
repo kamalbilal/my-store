@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 function db_tester() {
   async function getSearchedProducts(testDiv) {
     let options = {
-      url: "http://localhost:8000/test",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/test",
       method: "GET",
       credentials: "include",
       withCredentials: true,

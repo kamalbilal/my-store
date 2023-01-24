@@ -115,7 +115,7 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
   }
 
   async function saveToWishList() {
-    const url = "http://localhost:8000/addtowishlist";
+    const url = process.env.NEXT_PUBLIC_DB_HOST + "/addtowishlist";
     let options = {
       url: url,
       method: "POST",
@@ -126,10 +126,9 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
         "Content-Type": "application/json",
       },
       data: {
-        pwd: "Kamal",
         cartId: wishListSelectedAttributes["cartId"],
         productId: wishListSelectedAttributes["selectedProductId"],
-        wishListNameId: wishListSelectedAttributes["id"],
+        wishListId: wishListSelectedAttributes["id"],
         selectedImageUrl: wishListSelectedAttributes["selectedimageurl"],
       },
       // const response = await fetch(url, options);
@@ -192,7 +191,8 @@ function CartItems({ cartData, wishLishContent, ImRadioUnchecked, FaCheckCircle,
             }
           }
           if (temp["wishListData"].hasOwnProperty(wishListSelectedAttributes["name"])) {
-            temp["wishListData"][wishListSelectedAttributes["name"]].push(newWishlistData);
+            // temp["wishListData"][wishListSelectedAttributes["name"]].push(newWishlistData);
+            temp["wishListData"][wishListSelectedAttributes["name"]] = [newWishlistData, ...temp["wishListData"][wishListSelectedAttributes["name"]]]
           } else {
             temp["wishListData"][wishListSelectedAttributes["name"]] = [newWishlistData];
           }

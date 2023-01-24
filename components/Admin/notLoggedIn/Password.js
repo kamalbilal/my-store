@@ -12,7 +12,7 @@ function Password({ admin }) {
     const password = passwordRef.current.value;
     setLoginText("Logging In...");
     let options = {
-      url: "http://localhost:8000/admin",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/admin",
       method: "POST",
       credentials: "include",
       withCredentials: true,

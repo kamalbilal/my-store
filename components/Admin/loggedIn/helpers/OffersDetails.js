@@ -60,7 +60,7 @@ function OffersDetails({ adminPageData, setAdminPageData, modifyOfferData, toast
       offers = null;
     }
     let options = {
-      url: "http://localhost:8000/deleteoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/deleteoffer",
       method: "POST",
       credentials: "include",
       withCredentials: true,
@@ -90,7 +90,7 @@ function OffersDetails({ adminPageData, setAdminPageData, modifyOfferData, toast
   async function on_Off(offerId, on, index) {
     toast.success("Turning...", toastOptions);
     let options = {
-      url: "http://localhost:8000/offertoggle",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/offertoggle",
       method: "POST",
       credentials: "include",
       withCredentials: true,

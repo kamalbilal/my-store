@@ -35,7 +35,7 @@ function Register() {
     const password = passwordRef.current.value;
 
     let options = {
-      url: "http://localhost:8000/signup",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/signup",
       method: "POST",
       credentials: "include",
       withCredentials: true,

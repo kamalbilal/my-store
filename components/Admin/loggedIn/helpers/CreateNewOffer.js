@@ -23,7 +23,7 @@ function CreateNewOffer({ toast, toastOptions, setAdminPageData }) {
       toast.success("Creating...", toastOptions);
 
       let options = {
-        url: "http://localhost:8000/createnewoffers",
+        url: process.env.NEXT_PUBLIC_DB_HOST + "/createnewoffers",
         method: "POST",
         credentials: "include",
         withCredentials: true,

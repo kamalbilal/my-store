@@ -26,7 +26,7 @@ function ModifyOffer({
 
   async function getOfferData() {
     let options = {
-      url: "http://localhost:8000/getofferdata",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/getofferdata",
       method: "POST",
       // credentials: "include",
       // withCredentials: true,
@@ -87,7 +87,7 @@ function ModifyOffer({
 
   async function on_off_request(on) {
     let options = {
-      url: "http://localhost:8000/offertoggle",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/offertoggle",
       method: "POST",
       // credentials: "include",
       // withCredentials: true,
@@ -165,7 +165,7 @@ function ModifyOffer({
       activeOffers = modifyOfferData.modifyOfferData[offerId].offers;
     }
     let options = {
-      url: "http://localhost:8000/deleteoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/deleteoffer",
       method: "POST",
       credentials: "include",
       withCredentials: true,
@@ -234,7 +234,7 @@ function ModifyOffer({
       activeOffers = modifyOfferData.modifyOfferData[offerId].offers;
     }
     let options = {
-      url: "http://localhost:8000/renameoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/renameoffer",
       method: "POST",
       credentials: "include",
       withCredentials: true,

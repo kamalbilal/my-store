@@ -29,7 +29,7 @@ export async function getServerSideProps({ req, res, query }) {
     };
   }
 
-  let response = await fetch(`http://localhost:8000/signup`, {
+  let response = await fetch(`process.env.NEXT_PUBLIC_DB_HOST/signup`, {
     method: "POST",
     headers: {
       Accept: "application/json",

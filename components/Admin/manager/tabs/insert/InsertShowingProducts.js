@@ -77,7 +77,7 @@ function InsertShowingProducts({
     }
     toast.success(`Changing...`, toastOptions);
     let options = {
-      url: "http://localhost:8000/addoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/addoffer",
       method: "POST",
       // credentials: "include",
       // withCredentials: true,
@@ -151,7 +151,7 @@ function InsertShowingProducts({
     const productId = e.target.id;
     toast.success(`Deleting...`, toastOptions);
     let options = {
-      url: "http://localhost:8000/removeproductfromoffer",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/removeproductfromoffer",
       method: "POST",
       // credentials: "include",
       // withCredentials: true,

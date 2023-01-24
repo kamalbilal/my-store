@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useContext } from "react";
 import { VisitedLinksArray, getUserData_context } from "../userContext";
 import axios from "axios";
+const https = require('https');
 // import { deleteCookie } from "cookies-next";
 
 function Login() {
@@ -24,7 +25,7 @@ function Login() {
     const password = passwordRef.current.value;
 
     
-    const url = "http://localhost:8000/login";
+    const url = process.env.NEXT_PUBLIC_DB_HOST + "/login";
     let options = {
       url: url,
       method: "POST",
@@ -34,6 +35,7 @@ function Login() {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      httpsAgent: new https.Agent({ rejectUnauthorized: false }),
       data: {
         email,
         password,

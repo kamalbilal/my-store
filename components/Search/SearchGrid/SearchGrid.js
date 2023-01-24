@@ -21,7 +21,7 @@ function SearchGrid({ data, displayInGrid, titlePageSort, page, title, showNextP
 
   async function getSearchedProducts(pagenumber) {
     let options = {
-      url: "http://localhost:8000/getsearchedproducts",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/getsearchedproducts",
       method: "POST",
       credentials: "include",
       withCredentials: true,

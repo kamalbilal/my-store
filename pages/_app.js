@@ -26,7 +26,7 @@ import {
 } from "../userContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
+import MyAxios from "../libs/MyAxios";
 
 function MyApp({ Component, pageProps }) {
   const [cartNumber, setCartNumber] = useState({
@@ -89,32 +89,28 @@ function MyApp({ Component, pageProps }) {
   }, [userData]);
 
   async function getUserData_Func() {
+    // return
     console.log("Getting user data");
     console.time("User data");
-    const url = "http://localhost:8000/getUserData";
+    const url = process.env.NEXT_PUBLIC_DB_HOST + "/getUserData";
     let options = {
       url: url,
       method: "POST",
       credentials: "include",
       withCredentials: true,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      data: {
-        pwd: "Kamal",
-      },
-      // const response = await fetch(url, options);
     };
 
-    const response = await axios(options);
+    const response = await MyAxios(options);
     console.timeEnd("User data");
     console.log(response);
-    if (response.data.success === true) {
+    if (response["success"] === true && response.data.success === true) {
       setGetUserData(false);
       setUserData(response.data.data["userData"]);
 
       // cart
+      if (response.data.data["userCart"] === null) {
+        response.data.data["userCart"] = []
+      }
       const count = response.data.data["userCart"].length;
       const cartData = {};
       response.data.data["userCart"].map((el) => {
@@ -180,6 +176,7 @@ function MyApp({ Component, pageProps }) {
                       <GiftContext.Provider value={{ giftNumber, setGiftNumber }}>
                         <WishLishContext.Provider value={{ wishListData, setWishListData }}>
                           <CartContext.Provider value={{ cartNumber, setCartNumber }}>
+                            <title>My page title</title>
                             <div className={styles.navBar}>
                               <Navbar />
                             </div>

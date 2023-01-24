@@ -442,8 +442,9 @@ function ProductLayout({ productData }) {
   }, [mainImage]);
 
   async function addToCart_To_Server(cartData) {
+    console.log(cartData);
     let options = {
-      url: "http://localhost:8000/addtocart",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/addtocart",
       method: "POST",
       credentials: "include",
       withCredentials: true,

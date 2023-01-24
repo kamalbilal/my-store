@@ -43,7 +43,7 @@ function ProductQuery({
       limit,
     }));
     let options = {
-      url: "http://localhost:8000/getallproducts",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/getallproducts",
       method: "Post",
       headers: {
         Accept: "application/json",

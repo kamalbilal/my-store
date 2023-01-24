@@ -151,7 +151,7 @@ export async function getServerSideProps({ query, req }) {
     sort = "bestMatch";
   }
 
-  let response = await fetch(`http://localhost:8000/getsearchedproducts`, {
+  let response = await fetch(`process.env.NEXT_PUBLIC_DB_HOST/getsearchedproducts`, {
     method: "POST",
     headers: {
       Accept: "application/json",

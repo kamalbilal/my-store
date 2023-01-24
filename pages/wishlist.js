@@ -11,6 +11,8 @@ import { BsFillArrowUpCircleFill } from "react-icons/bs";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Oval } from "react-loader-spinner";
+import Tippy from "@tippyjs/react";
+import { IoCloseSharp } from "react-icons/io5";
 
 function Wishlist() {
   const router = useRouter();
@@ -39,13 +41,15 @@ function Wishlist() {
   const lastDivRef = useRef(null);
   const loaderRef = useRef();
   const imagesDivRef = useRef();
+  const createListDialogRef = useRef();
+  const createListInputRef = useRef();
 
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
       //
       async function getWishListData() {
         const options = {
-          url: "http://localhost:8000/getwishlist",
+          url: process.env.NEXT_PUBLIC_DB_HOST + "/getwishlist",
           method: "POST",
           credentials: "include",
           withCredentials: true,
@@ -115,10 +119,14 @@ function Wishlist() {
     const wishlistId = lastDivRef.current.getAttribute("data-attribute-parentwishlistid");
     const wishlistName = lastDivRef.current.getAttribute("data-attribute-wishlistname");
 
-    console.log(pagination["pagesById"]);
+    console.log({
+      wishlistId: parseInt(wishlistId),
+      wishlistName: wishlistName,
+      pageNumber: pagination["pagesById"][wishlistId]["page"] + 1,
+    });
 
     const options = {
-      url: "http://localhost:8000/getMoreWishlist",
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/getMoreWishlist",
       method: "POST",
       credentials: "include",
       withCredentials: true,
@@ -127,8 +135,7 @@ function Wishlist() {
         "Content-Type": "application/json",
       },
       data: {
-        pwd: "Kamal",
-        wishlistId: wishlistId,
+        wishlistId: parseInt(wishlistId),
         wishlistName: wishlistName,
         pageNumber: pagination["pagesById"][wishlistId]["page"] + 1,
       },
@@ -136,6 +143,7 @@ function Wishlist() {
 
     console.time("Getting more wishlist data");
     const response = await MyAxios(options);
+    console.log(response);
     setWishListData((prev) => {
       const temp = { ...prev };
       console.log(temp["wishListData"][wishlistName]);
@@ -287,16 +295,78 @@ function Wishlist() {
 
   useEffect(() => {
     if (imagesDivRef.current) {
-      const height = imagesDivRef.current.clientHeight
+      const height = imagesDivRef.current.clientHeight;
       console.log(height);
       const root = document.documentElement;
       // Set the value of the --my-variable CSS variable
-      root.style.setProperty('--wishlist-expand-collapse-max-height', `${height + 70}px`);
+      root.style.setProperty("--wishlist-expand-collapse-max-height", `${height + 70}px`);
     }
   }, [imagesDivRef.current]);
 
   return (
     <div className={styles.main}>
+      <dialog
+        onClick={(event) => {
+          const rect = createListDialogRef.current.getBoundingClientRect();
+          if (event.clientY < rect.top || event.clientY > rect.bottom || event.clientX < rect.left || event.clientX > rect.right) {
+            createListDialogRef.current.close();
+          }
+        }}
+        ref={createListDialogRef}
+        className={styles.createListDialog}
+      >
+        <div>
+          <h1>Create a list</h1>
+          <div>
+            <Tippy
+              className={cn("customTippy", styles.tippy)}
+              duration={200}
+              animation="scale"
+              theme="light-border"
+              allowHTML={true}
+              delay={[1000, 0]}
+              placement="right"
+              trigger="mouseenter"
+              appendTo={createListDialogRef.current}
+              zIndex={99999}
+              content={
+                <span>
+                  Press <span style={{ color: "red" }}>ESC</span> To Close
+                </span>
+              }
+            >
+              <button className={cn(styles.escBtn)} onClick={() => createListDialogRef.current.close()}>
+                <IoCloseSharp className={styles.closeIcon} />
+              </button>
+            </Tippy>
+          </div>
+        </div>
+        <div className={styles.listnameDiv}>
+          <h4>Enter list name</h4>
+          <input
+            ref={createListInputRef}
+            type="text"
+            onInput={(event) => {
+              if (event.target.classList.contains(styles.errorInput)) {
+                event.target.classList.remove(styles.errorInput);
+              }
+            }}
+          />
+        </div>
+        <button
+        className={styles.createButton}
+          onClick={() => {
+            if (!createListInputRef.current.value) {
+              createListInputRef.current.classList.add(styles.errorInput);
+              createListInputRef.current.focus();
+              return;
+            }
+          }}
+        >
+          Create
+        </button>
+      </dialog>
+
       <div
         onClick={() => {
           window.scrollTo({
@@ -312,14 +382,23 @@ function Wishlist() {
       {/* left */}
       <div className={styles.left}>
         <div className={cn("niceBox", styles.title)}>
-          <h1>My Wishlist</h1>
+          <h1>My wishlist</h1>
+          <button
+            className={styles.newButton}
+            onClick={() => {
+              createListDialogRef.current.showModal();
+              createListInputRef.current.focus();
+            }}
+          >
+            Create a list
+          </button>
         </div>
 
         <div className={cn(styles.wishlistContent, "niceBox")}>
           <div ref={dummyheightRef}></div>
           <div ref={stickyDivRef} className={styles.buttons}>
             <button onClick={toggleAllListTab} ref={allListBtn} className={styles.active}>
-              All Lists
+              All lists
             </button>
             <button onClick={() => toggleDefaultTab()} ref={nextListBtn} className={styles.nextListBtn}>
               Default
@@ -329,7 +408,6 @@ function Wishlist() {
           <div ref={allListDiv}>
             {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
               ? wishListData["wishListNames"].map((el, index) => {
-                
                   return (
                     <div
                       ref={(element) => {
@@ -342,7 +420,7 @@ function Wishlist() {
                         <p className={styles.itemName}>{el}</p>
                         <div className={styles.itemButtons}>
                           <button
-                          id={"button-" + index + "-" + el}
+                            id={"button-" + index + "-" + el}
                             onClick={() => {
                               nextListBtn.current.innerHTML = el;
                               defaultListRef.current.classList.remove(styles.collapse);
@@ -384,12 +462,22 @@ function Wishlist() {
                       <div ref={imagesDivRef} id="images-div" className={styles.imagesDiv}>
                         {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
                           [...Object.values(wishListData["wishListData"][el])].slice(0, 6).map((item, index2) => {
-                            return <Image onClick={() => {
-                              const button = document.getElementById("button-" + index + "-" + el)
-                              if (button) {
-                                button.click()
-                              }
-                            }} key={index2} className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />;
+                            return (
+                              <Image
+                                onClick={() => {
+                                  const button = document.getElementById("button-" + index + "-" + el);
+                                  if (button) {
+                                    button.click();
+                                  }
+                                }}
+                                key={index2}
+                                className={styles.image}
+                                src={item["selectedImageUrl"]}
+                                width={150}
+                                height={150}
+                                draggable={false}
+                              />
+                            );
                           })
                         ) : (
                           <EmptyList />
@@ -434,7 +522,7 @@ function Wishlist() {
                               <Image className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />
                             </div>
                             <div className={styles.nextTabProducts_right}>
-                              <div style={{ width: "100%" }}>
+                              <div style={{ width: "95%" }}>
                                 <div className={styles.nextTabProductsTitle}>{item["title"]}</div>
                                 <div className={styles.nextTabProductsPrice}>$1500</div>
                               </div>
