@@ -19,6 +19,7 @@ function Wishlist() {
   const router = useRouter();
 
   const { wishListData, setWishListData } = useContext(WishLishContext);
+  const [canRunAnimations, setCanRunAnimations] = useState(false);
   const [nextTabData, setNextTabData] = useState("Default");
   const [scrollToAllListTab, setScrollToAllListTab] = useState(0);
   const [scrollToAllDefaultTab, setScrollToAllDefaultTab] = useState(0);
@@ -330,10 +331,19 @@ function Wishlist() {
     if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
       createListDuplicateNameErrorRef.current.style.display = "flex"
     } else {
+      createListInputRef.current.value = ""
       createListDialogRef.current.close();
       setWishListData((prev) => ({...prev, "wishListNames" : [...prev["wishListNames"], capitalizedValue], "collapsedDivs": {...prev["collapsedDivs"], [capitalizedValue] : false}}))
     }
   }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setCanRunAnimations(true)
+    }, 600);
+  
+    return () => clearTimeout(timeout);
+  }, [])
 
   return (
     <div className={styles.main}>
@@ -444,7 +454,7 @@ function Wishlist() {
                       }}
                       key={index}
                       className={cn(styles.alllist, 
-                        // styles.noAnimation,
+                        canRunAnimations === true ? "" : styles.noAnimation,
                         wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand,
                         )}
                     >
