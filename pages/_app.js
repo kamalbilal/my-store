@@ -127,6 +127,11 @@ function MyApp({ Component, pageProps }) {
         const temp = { ...prev };
         temp["wishListNames"] = [...response.data.data["userWishList"]["wishListNames"]].reverse();
         temp["wishListIds"] = [...response.data.data["userWishList"]["wishListIds"]].reverse();
+        temp["collapsedDivs"] = {}
+        for (let index = 0; index < temp["wishListNames"].length; index++) {
+          const element = temp["wishListNames"][index];
+          temp["collapsedDivs"][element] = false
+        }
         return temp;
       });
     } else {

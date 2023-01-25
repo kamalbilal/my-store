@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useContext, useEffect, memo, useRef, useState, useLayoutEffect } from "react";
 import MyAxios from "../libs/MyAxios";
 import { WishLishContext } from "../userContext";
 import styles from "../styles/wishlist.module.css";
@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { Oval } from "react-loader-spinner";
 import Tippy from "@tippyjs/react";
 import { IoCloseSharp } from "react-icons/io5";
+import { RxCross2 } from "react-icons/rx";
 
 function Wishlist() {
   const router = useRouter();
@@ -43,6 +44,9 @@ function Wishlist() {
   const imagesDivRef = useRef();
   const createListDialogRef = useRef();
   const createListInputRef = useRef();
+  const createListButtonRef = useRef();
+  const createListNoInputErrorRef = useRef();
+  const createListDuplicateNameErrorRef = useRef();
 
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
@@ -80,6 +84,7 @@ function Wishlist() {
       }
       getWishListData();
     }
+
   }, []);
 
   useEffect(() => {
@@ -303,6 +308,33 @@ function Wishlist() {
     }
   }, [imagesDivRef.current]);
 
+  function resetNewListDialog() {
+    if (createListInputRef.current.classList.contains(styles.errorInput) || createListDuplicateNameErrorRef.current.style.display === "flex") {
+      createListInputRef.current.classList.remove(styles.errorInput);
+      createListNoInputErrorRef.current.style.display = "none";
+      createListDuplicateNameErrorRef.current.style.display = "none"
+    }
+  }
+
+  function onCreateNewList() {
+    const value = createListInputRef.current.value
+    if (!value) {
+      createListInputRef.current.classList.add(styles.errorInput);
+      createListInputRef.current.focus();
+      createListNoInputErrorRef.current.style.display = "flex";
+      return;
+    }
+
+    // check for duplicate name
+    const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
+    if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
+      createListDuplicateNameErrorRef.current.style.display = "flex"
+    } else {
+      createListDialogRef.current.close();
+      setWishListData((prev) => ({...prev, "wishListNames" : [...prev["wishListNames"], capitalizedValue], "collapsedDivs": {...prev["collapsedDivs"], [capitalizedValue] : false}}))
+    }
+  }
+
   return (
     <div className={styles.main}>
       <dialog
@@ -335,7 +367,13 @@ function Wishlist() {
                 </span>
               }
             >
-              <button className={cn(styles.escBtn)} onClick={() => createListDialogRef.current.close()}>
+              <button
+                className={cn(styles.escBtn)}
+                onClick={() => {
+                  resetNewListDialog();
+                  createListDialogRef.current.close();
+                }}
+              >
                 <IoCloseSharp className={styles.closeIcon} />
               </button>
             </Tippy>
@@ -343,26 +381,17 @@ function Wishlist() {
         </div>
         <div className={styles.listnameDiv}>
           <h4>Enter list name</h4>
-          <input
-            ref={createListInputRef}
-            type="text"
-            onInput={(event) => {
-              if (event.target.classList.contains(styles.errorInput)) {
-                event.target.classList.remove(styles.errorInput);
-              }
-            }}
-          />
+          <input ref={createListInputRef} type="text" 
+          onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)} 
+          onInput={resetNewListDialog} />
+          <p ref={createListNoInputErrorRef} className={styles.noListError}>
+            <RxCross2 /> Please enter a new list name.
+          </p>
+          <p ref={createListDuplicateNameErrorRef} className={styles.noListError}>
+            <RxCross2 /> Duplicate list name is not allowed.
+          </p>
         </div>
-        <button
-        className={styles.createButton}
-          onClick={() => {
-            if (!createListInputRef.current.value) {
-              createListInputRef.current.classList.add(styles.errorInput);
-              createListInputRef.current.focus();
-              return;
-            }
-          }}
-        >
+        <button ref={createListButtonRef} className={styles.createButton} onClick={onCreateNewList}>
           Create
         </button>
       </dialog>
@@ -407,14 +436,17 @@ function Wishlist() {
 
           <div ref={allListDiv}>
             {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
-              ? wishListData["wishListNames"].map((el, index) => {
+              ? [...wishListData["wishListNames"]].reverse().map((el, index) => {
                   return (
                     <div
                       ref={(element) => {
                         allListsRef.current[index] = element;
                       }}
                       key={index}
-                      className={cn(styles.alllist, "niceBox")}
+                      className={cn(styles.alllist, 
+                        // styles.noAnimation,
+                        wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand,
+                        )}
                     >
                       <div className={styles.itemNameDiv}>
                         <p className={styles.itemName}>{el}</p>
@@ -448,9 +480,11 @@ function Wishlist() {
                               if (parentDiv.classList.contains(styles.collapse)) {
                                 parentDiv.classList.add(styles.expand);
                                 parentDiv.classList.remove(styles.collapse);
+                                setWishListData((prev) => ({...prev, "collapsedDivs": {...prev["collapsedDivs"], [el]: false}}))
                               } else {
                                 parentDiv.classList.add(styles.collapse);
                                 parentDiv.classList.remove(styles.expand);
+                                setWishListData((prev) => ({...prev, "collapsedDivs": {...prev["collapsedDivs"], [el]: true}}))
                               }
                             }}
                             className={styles.arrowIconBtn}
@@ -571,4 +605,4 @@ function EmptyList() {
   );
 }
 
-export default Wishlist;
+export default memo(Wishlist);
