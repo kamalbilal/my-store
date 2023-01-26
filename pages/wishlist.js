@@ -187,24 +187,25 @@ function Wishlist() {
 
   function toggleAllListTab() {
     if (changeTabs["allList"] === true) return;
-    setChangeTabs((prev) => ({ allList: true, default: false }));
     setScrollToAllDefaultTab(document.body.scrollTop || document.documentElement.scrollTop);
+    setChangeTabs((prev) => ({ allList: true, default: false }));
     console.log({ scrollToAllListTab });
+    
+    nextListBtn.current.classList.remove(styles.active);
+    allListBtn.current.classList.add(styles.active);
+    
+    allListDiv.current.classList.remove(styles.hide);
+    nextListDiv.current.classList.add(styles.hide);
+    
+    defaultListRef.current.classList.add(styles.noAnimation);
     window.scrollTo({
       top: scrollToAllListTab,
     });
-
-    nextListBtn.current.classList.remove(styles.active);
-    allListBtn.current.classList.add(styles.active);
-
-    allListDiv.current.classList.remove(styles.hide);
-    nextListDiv.current.classList.add(styles.hide);
-
-    defaultListRef.current.classList.add(styles.noAnimation);
   }
 
   function toggleDefaultTab(scrollToTop = false) {
     if (changeTabs["default"] === true) return;
+    setScrollToAllListTab(document.body.scrollTop || document.documentElement.scrollTop);
     setChangeTabs((prev) => ({ allList: false, default: true }));
 
     allListBtn.current.classList.remove(styles.active);
@@ -213,7 +214,6 @@ function Wishlist() {
     nextListDiv.current.classList.remove(styles.hide);
     allListDiv.current.classList.add(styles.hide);
 
-    setScrollToAllListTab(document.body.scrollTop || document.documentElement.scrollTop);
     window.scrollTo({
       top: scrollToTop != false ? 0 : scrollToAllDefaultTab,
     });
