@@ -14,6 +14,8 @@ import { Oval } from "react-loader-spinner";
 import Tippy from "@tippyjs/react";
 import { IoCloseSharp } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 
 function Wishlist() {
   const router = useRouter();
@@ -85,7 +87,6 @@ function Wishlist() {
       }
       getWishListData();
     }
-
   }, []);
 
   useEffect(() => {
@@ -313,12 +314,12 @@ function Wishlist() {
     if (createListInputRef.current.classList.contains(styles.errorInput) || createListDuplicateNameErrorRef.current.style.display === "flex") {
       createListInputRef.current.classList.remove(styles.errorInput);
       createListNoInputErrorRef.current.style.display = "none";
-      createListDuplicateNameErrorRef.current.style.display = "none"
+      createListDuplicateNameErrorRef.current.style.display = "none";
     }
   }
 
   function onCreateNewList() {
-    const value = createListInputRef.current.value
+    const value = createListInputRef.current.value;
     if (!value) {
       createListInputRef.current.classList.add(styles.errorInput);
       createListInputRef.current.focus();
@@ -329,24 +330,80 @@ function Wishlist() {
     // check for duplicate name
     const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
     if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
-      createListDuplicateNameErrorRef.current.style.display = "flex"
+      createListDuplicateNameErrorRef.current.style.display = "flex";
     } else {
-      createListInputRef.current.value = ""
+      createListInputRef.current.value = "";
       createListDialogRef.current.close();
-      setWishListData((prev) => ({...prev, "wishListNames" : [...prev["wishListNames"], capitalizedValue], "collapsedDivs": {...prev["collapsedDivs"], [capitalizedValue] : false}}))
+      setWishListData((prev) => ({ ...prev, wishListIds: [capitalizedValue, ...prev["wishListIds"]], wishListNames: [capitalizedValue, ...prev["wishListNames"]], collapsedDivs: { ...prev["collapsedDivs"], [capitalizedValue]: false } }));
+      createNewWishlist(capitalizedValue);
+    }
+  }
+
+  async function createNewWishlist(name) {
+    const options = {
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/createNewList",
+      method: "POST",
+      credentials: "include",
+      withCredentials: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      data: {
+        wishListName: name,
+      },
+    };
+
+    const response = await MyAxios(options);
+    if (response.success === true) {
+      setWishListData((prev) => {
+        const temp = { ...prev };
+        const index = temp["wishListIds"].indexOf(name);
+        if (index != -1) {
+          temp["wishListIds"][index] = response.data.id;
+        }
+        return temp;
+      });
+    } else {
+      setWishListData((prev) => {
+        const temp = { ...prev };
+        const index = temp["wishListIds"].indexOf(name);
+        if (index != -1) {
+          temp["wishListIds"].splice(index, 1);
+        }
+
+        const index2 = temp["wishListNames"];
+        if (index2 != -1) {
+          temp["wishListNames"].splice(index2, 1);
+        }
+
+        return temp;
+      });
+      toast("Could not create a new list!", {
+        theme: "colored",
+        type: "error",
+        position: "top-right",
+        pauseOnHover: true,
+        pauseOnFocusLoss: false,
+        autoClose: 5000,
+        limit: 1,
+      });
     }
   }
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setCanRunAnimations(true)
+      setCanRunAnimations(true);
     }, 600);
-  
+
     return () => clearTimeout(timeout);
-  }, [])
+  }, []);
 
   return (
+    <> 
+    <ToastContainer limit={1} style={{ fontSize: "1.4rem" }} />
     <div className={styles.main}>
+
       <dialog
         onClick={(event) => {
           const rect = createListDialogRef.current.getBoundingClientRect();
@@ -391,9 +448,7 @@ function Wishlist() {
         </div>
         <div className={styles.listnameDiv}>
           <h4>Enter list name</h4>
-          <input ref={createListInputRef} type="text" 
-          onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)} 
-          onInput={resetNewListDialog} />
+          <input ref={createListInputRef} type="text" onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)} onInput={resetNewListDialog} />
           <p ref={createListNoInputErrorRef} className={styles.noListError}>
             <RxCross2 /> Please enter a new list name.
           </p>
@@ -446,17 +501,14 @@ function Wishlist() {
 
           <div ref={allListDiv}>
             {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
-              ? [...wishListData["wishListNames"]].reverse().map((el, index) => {
+              ? wishListData["wishListNames"].map((el, index) => {
                   return (
                     <div
                       ref={(element) => {
                         allListsRef.current[index] = element;
                       }}
                       key={index}
-                      className={cn(styles.alllist, 
-                        canRunAnimations === true ? "" : styles.noAnimation,
-                        wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand,
-                        )}
+                      className={cn(styles.alllist, canRunAnimations === true ? "" : styles.noAnimation, wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand)}
                     >
                       <div className={styles.itemNameDiv}>
                         <p className={styles.itemName}>{el}</p>
@@ -490,11 +542,11 @@ function Wishlist() {
                               if (parentDiv.classList.contains(styles.collapse)) {
                                 parentDiv.classList.add(styles.expand);
                                 parentDiv.classList.remove(styles.collapse);
-                                setWishListData((prev) => ({...prev, "collapsedDivs": {...prev["collapsedDivs"], [el]: false}}))
+                                setWishListData((prev) => ({ ...prev, collapsedDivs: { ...prev["collapsedDivs"], [el]: false } }));
                               } else {
                                 parentDiv.classList.add(styles.collapse);
                                 parentDiv.classList.remove(styles.expand);
-                                setWishListData((prev) => ({...prev, "collapsedDivs": {...prev["collapsedDivs"], [el]: true}}))
+                                setWishListData((prev) => ({ ...prev, collapsedDivs: { ...prev["collapsedDivs"], [el]: true } }));
                               }
                             }}
                             className={styles.arrowIconBtn}
@@ -602,6 +654,7 @@ function Wishlist() {
       {/* right */}
       <div></div>
     </div>
+    </>
   );
 }
 
