@@ -51,6 +51,13 @@ function Wishlist() {
   const createListNoInputErrorRef = useRef();
   const createListDuplicateNameErrorRef = useRef();
 
+  const renameListDialogRef = useRef();
+  const renameListInputRef = useRef();
+  const renameListButtonRef = useRef();
+  const renameListNoInputErrorRef = useRef();
+  const renameListDuplicateNameErrorRef = useRef();
+  const selectedRenameInputNameRef = useRef();
+
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
       //
@@ -190,13 +197,13 @@ function Wishlist() {
     setScrollToAllDefaultTab(document.body.scrollTop || document.documentElement.scrollTop);
     setChangeTabs((prev) => ({ allList: true, default: false }));
     console.log({ scrollToAllListTab });
-    
+
     nextListBtn.current.classList.remove(styles.active);
     allListBtn.current.classList.add(styles.active);
-    
+
     allListDiv.current.classList.remove(styles.hide);
     nextListDiv.current.classList.add(styles.hide);
-    
+
     defaultListRef.current.classList.add(styles.noAnimation);
     window.scrollTo({
       top: scrollToAllListTab,
@@ -318,6 +325,7 @@ function Wishlist() {
     }
   }
 
+
   function onCreateNewList() {
     const value = createListInputRef.current.value;
     if (!value) {
@@ -391,6 +399,49 @@ function Wishlist() {
     }
   }
 
+  function resetRenameListDialog() {
+    if (renameListInputRef.current.classList.contains(styles.errorInput) || renameListDuplicateNameErrorRef.current.style.display === "flex") {
+      renameListInputRef.current.classList.remove(styles.errorInput);
+      renameListNoInputErrorRef.current.style.display = "none";
+      renameListDuplicateNameErrorRef.current.style.display = "none";
+    }
+  }
+
+  function onRenameList() {
+    const value = renameListInputRef.current.value;
+    if (!value) {
+      renameListInputRef.current.classList.add(styles.errorInput);
+      renameListInputRef.current.focus();
+      renameListNoInputErrorRef.current.style.display = "flex";
+      return;
+    }
+
+    // check if name is same as before 
+    if (value === selectedRenameInputNameRef.current) {
+      renameListInputRef.current.value = "";
+      renameListDialogRef.current.close();
+      return
+    }
+
+    // check for duplicate name
+    const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
+    if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
+      renameListDuplicateNameErrorRef.current.style.display = "flex";
+    } else {
+      renameListInputRef.current.value = "";
+      renameListDialogRef.current.close();
+      setWishListData((prev) => {
+        const temp = {...prev}
+        const indexOf = temp["wishListNames"].indexOf(selectedRenameInputNameRef.current)
+        if (indexOf !== -1) {
+          temp["wishListNames"][indexOf] = value
+        }
+        return temp
+      });
+      // createNewWishlist(capitalizedValue);
+    }
+  }
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setCanRunAnimations(true);
@@ -400,260 +451,323 @@ function Wishlist() {
   }, []);
 
   return (
-    <> 
-    <ToastContainer limit={1} style={{ fontSize: "1.4rem" }} />
-    <div className={styles.main}>
-
-      <dialog
-        onClick={(event) => {
-          const rect = createListDialogRef.current.getBoundingClientRect();
-          if (event.clientY < rect.top || event.clientY > rect.bottom || event.clientX < rect.left || event.clientX > rect.right) {
-            createListDialogRef.current.close();
-          }
-        }}
-        ref={createListDialogRef}
-        className={styles.createListDialog}
-      >
-        <div>
-          <h1>Create a list</h1>
+    <>
+      <ToastContainer limit={1} style={{ fontSize: "1.4rem" }} />
+      <div className={styles.main}>
+        <dialog
+          onClick={(event) => {
+            const rect = createListDialogRef.current.getBoundingClientRect();
+            if (event.clientY < rect.top || event.clientY > rect.bottom || event.clientX < rect.left || event.clientX > rect.right) {
+              createListDialogRef.current.close();
+            }
+          }}
+          ref={createListDialogRef}
+          className={styles.createListDialog}
+        >
           <div>
-            <Tippy
-              className={cn("customTippy", styles.tippy)}
-              duration={200}
-              animation="scale"
-              theme="light-border"
-              allowHTML={true}
-              delay={[1000, 0]}
-              placement="right"
-              trigger="mouseenter"
-              appendTo={createListDialogRef.current}
-              zIndex={99999}
-              content={
-                <span>
-                  Press <span style={{ color: "red" }}>ESC</span> To Close
-                </span>
-              }
-            >
-              <button
-                className={cn(styles.escBtn)}
-                onClick={() => {
-                  resetNewListDialog();
-                  createListDialogRef.current.close();
-                }}
+            <h1>Create a list</h1>
+            <div>
+              <Tippy
+                className={cn("customTippy", styles.tippy)}
+                duration={200}
+                animation="scale"
+                theme="light-border"
+                allowHTML={true}
+                delay={[1000, 0]}
+                placement="right"
+                trigger="mouseenter"
+                appendTo={createListDialogRef.current}
+                zIndex={99999}
+                content={
+                  <span>
+                    Press <span style={{ color: "red" }}>ESC</span> To Close
+                  </span>
+                }
               >
-                <IoCloseSharp className={styles.closeIcon} />
-              </button>
-            </Tippy>
+                <button
+                  className={cn(styles.escBtn)}
+                  onClick={() => {
+                    resetNewListDialog();
+                    createListDialogRef.current.close();
+                  }}
+                >
+                  <IoCloseSharp className={styles.closeIcon} />
+                </button>
+              </Tippy>
+            </div>
           </div>
-        </div>
-        <div className={styles.listnameDiv}>
-          <h4>Enter list name</h4>
-          <input ref={createListInputRef} type="text" onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)} onInput={resetNewListDialog} />
-          <p ref={createListNoInputErrorRef} className={styles.noListError}>
-            <RxCross2 /> Please enter a new list name.
-          </p>
-          <p ref={createListDuplicateNameErrorRef} className={styles.noListError}>
-            <RxCross2 /> Duplicate list name is not allowed.
-          </p>
-        </div>
-        <button ref={createListButtonRef} className={styles.createButton} onClick={onCreateNewList}>
-          Create
-        </button>
-      </dialog>
-
-      <div
-        onClick={() => {
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
-        ref={scrollTopArrowRef}
-        className={cn(styles.scrollToTop, styles.hide)}
-      >
-        <BsFillArrowUpCircleFill />
-      </div>
-      {/* left */}
-      <div className={styles.left}>
-        <div className={cn("niceBox", styles.title)}>
-          <h1>My wishlist</h1>
-          <button
-            className={styles.newButton}
-            onClick={() => {
-              createListDialogRef.current.showModal();
-              createListInputRef.current.focus();
-            }}
-          >
-            Create a list
+          <div className={styles.listnameDiv}>
+            <h4>Enter list name</h4>
+            <input ref={createListInputRef} type="text" onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)} onInput={resetNewListDialog} />
+            <p ref={createListNoInputErrorRef} className={styles.noListError}>
+              <RxCross2 /> Please enter a new list name.
+            </p>
+            <p ref={createListDuplicateNameErrorRef} className={styles.noListError}>
+              <RxCross2 /> Duplicate list name is not allowed.
+            </p>
+          </div>
+          <button ref={createListButtonRef} className={styles.createButton} onClick={onCreateNewList}>
+            Create
           </button>
+        </dialog>
+
+        <dialog
+          onClick={(event) => {
+            const rect = renameListDialogRef.current.getBoundingClientRect();
+            if (event.clientY < rect.top || event.clientY > rect.bottom || event.clientX < rect.left || event.clientX > rect.right) {
+              renameListDialogRef.current.close();
+            }
+          }}
+          ref={renameListDialogRef}
+          className={styles.createListDialog}
+        >
+          <div>
+            <h1>Rename a list</h1>
+            <div>
+              <Tippy
+                className={cn("customTippy", styles.tippy)}
+                duration={200}
+                animation="scale"
+                theme="light-border"
+                allowHTML={true}
+                delay={[1000, 0]}
+                placement="right"
+                trigger="mouseenter"
+                appendTo={renameListDialogRef.current}
+                zIndex={99999}
+                content={
+                  <span>
+                    Press <span style={{ color: "red" }}>ESC</span> To Close
+                  </span>
+                }
+              >
+                <button
+                  className={cn(styles.escBtn)}
+                  onClick={() => {
+                    resetRenameListDialog()
+                    renameListDialogRef.current.close();
+                  }}
+                >
+                  <IoCloseSharp className={styles.closeIcon} />
+                </button>
+              </Tippy>
+            </div>
+          </div>
+          <div className={styles.listnameDiv}>
+            <h4>Enter new list name</h4>
+            <input ref={renameListInputRef} type="text" onKeyUp={(event) => (event.key === "Enter" ? onRenameList() : null)} onInput={resetRenameListDialog} />
+            <p ref={renameListNoInputErrorRef} className={styles.noListError}>
+              <RxCross2 /> Please enter a new list name.
+            </p>
+            <p ref={renameListDuplicateNameErrorRef} className={styles.noListError}>
+              <RxCross2 /> Duplicate list name is not allowed.
+            </p>
+          </div>
+          <button ref={renameListButtonRef} className={styles.createButton} onClick={onRenameList}>
+            Rename
+          </button>
+        </dialog>
+
+        <div
+          onClick={() => {
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
+          ref={scrollTopArrowRef}
+          className={cn(styles.scrollToTop, styles.hide)}
+        >
+          <BsFillArrowUpCircleFill />
         </div>
-
-        <div className={cn(styles.wishlistContent, "niceBox")}>
-          <div ref={dummyheightRef}></div>
-          <div ref={stickyDivRef} className={styles.buttons}>
-            <button onClick={toggleAllListTab} ref={allListBtn} className={styles.active}>
-              All lists
-            </button>
-            <button onClick={() => toggleDefaultTab()} ref={nextListBtn} className={styles.nextListBtn}>
-              Default
+        {/* left */}
+        <div className={styles.left}>
+          <div className={cn("niceBox", styles.title)}>
+            <h1>My wishlist</h1>
+            <button
+              className={styles.newButton}
+              onClick={() => {
+                createListDialogRef.current.showModal();
+                createListInputRef.current.focus();
+              }}
+            >
+              Create a list
             </button>
           </div>
 
-          <div ref={allListDiv}>
-            {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
-              ? wishListData["wishListNames"].map((el, index) => {
-                  return (
-                    <div
-                      ref={(element) => {
-                        allListsRef.current[index] = element;
-                      }}
-                      key={index}
-                      className={cn(styles.alllist, canRunAnimations === true ? "" : styles.noAnimation, wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand)}
-                    >
-                      <div className={styles.itemNameDiv}>
-                        <p className={styles.itemName}>{el}</p>
-                        <div className={styles.itemButtons}>
-                          <button
-                            id={"button-" + index + "-" + el}
-                            onClick={() => {
-                              nextListBtn.current.innerHTML = el;
-                              defaultListRef.current.classList.remove(styles.collapse);
-                              setNextTabData(el);
-                              // setScrollToAllListTab(0);
-                              // setScrollToAllDefaultTab(0)
-                              toggleDefaultTab(true);
-                              const id = wishListData["wishListIds"][wishListData["wishListNames"].indexOf(el)];
-                              nextListDiv.current.id = "wishListId-" + id;
-                            }}
-                          >
-                            <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
-                          </button>
-                          <button>
-                            <FiEdit3 /> <span>Rename</span>
-                          </button>
-                          <button>
-                            <HiOutlineTrash />
-                            <span>Delete</span>
-                          </button>
-                          <button
-                            onClick={(event) => {
-                              const parentDiv = event.target.parentNode.parentNode.parentNode;
-                              parentDiv.classList.remove(styles.noAnimation);
-                              if (parentDiv.classList.contains(styles.collapse)) {
-                                parentDiv.classList.add(styles.expand);
-                                parentDiv.classList.remove(styles.collapse);
-                                setWishListData((prev) => ({ ...prev, collapsedDivs: { ...prev["collapsedDivs"], [el]: false } }));
-                              } else {
-                                parentDiv.classList.add(styles.collapse);
-                                parentDiv.classList.remove(styles.expand);
-                                setWishListData((prev) => ({ ...prev, collapsedDivs: { ...prev["collapsedDivs"], [el]: true } }));
-                              }
-                            }}
-                            className={styles.arrowIconBtn}
-                          >
-                            <IoIosArrowDropupCircle className={styles.arrowIcon} />
-                          </button>
-                        </div>
-                      </div>
-                      <div ref={imagesDivRef} id="images-div" className={styles.imagesDiv}>
-                        {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
-                          [...Object.values(wishListData["wishListData"][el])].slice(0, 6).map((item, index2) => {
-                            return (
-                              <Image
-                                onClick={() => {
-                                  const button = document.getElementById("button-" + index + "-" + el);
-                                  if (button) {
-                                    button.click();
-                                  }
-                                }}
-                                key={index2}
-                                className={styles.image}
-                                src={item["selectedImageUrl"]}
-                                width={150}
-                                height={150}
-                                draggable={false}
-                              />
-                            );
-                          })
-                        ) : (
-                          <EmptyList />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })
-              : "loading"}
-          </div>
+          <div className={cn(styles.wishlistContent, "niceBox")}>
+            <div ref={dummyheightRef}></div>
+            <div ref={stickyDivRef} className={styles.buttons}>
+              <button onClick={toggleAllListTab} ref={allListBtn} className={styles.active}>
+                All lists
+              </button>
+              <button onClick={() => toggleDefaultTab()} ref={nextListBtn} className={styles.nextListBtn}>
+                Default
+              </button>
+            </div>
 
-          <div ref={nextListDiv} className={cn(styles.hide, "nextListDiv")}>
-            {nextTabData ? (
-              <div ref={defaultListRef} className={cn(styles.alllist, "niceBox", styles.noAnimation)}>
-                <div className={styles.itemNameDiv}>
-                  <p className={styles.itemName}>{nextTabData}</p>
-                  <div className={styles.itemButtons}>
-                    <button>
-                      <FiEdit3 /> <span>Rename</span>
-                    </button>
-                    <button>
-                      <HiOutlineTrash />
-                      <span>Delete</span>
-                    </button>
-                  </div>
-                </div>
-                <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                  {nextTabDataObject && nextTabDataObject.hasOwnProperty(nextTabData) ? (
-                    nextTabDataObject[nextTabData].map((item, index2) => {
-                      const isLastDiv = index2 === nextTabDataObject[nextTabData].length - 1;
-                      return (
-                        <div
-                          ref={index2 === nextTabDataObject[nextTabData].length - 1 ? lastDivRef : null}
-                          data-attribute-parentwishlistid={item["parentWishListId"]}
-                          data-attribute-wishlistname={item["wishListName"]}
-                          className={styles.nextTabProductsDiv}
-                          key={index2}
-                          style={{ width: "100%" }}
-                        >
-                          <div className={styles.nextTabProducts}>
-                            <div className={styles.nextTabProductsImage}>
-                              <Image className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />
-                            </div>
-                            <div className={styles.nextTabProducts_right}>
-                              <div style={{ width: "95%" }}>
-                                <div className={styles.nextTabProductsTitle}>{item["title"]}</div>
-                                <div className={styles.nextTabProductsPrice}>$1500</div>
-                              </div>
-                              <div className={styles.nextTabProductsButtons}>
-                                <button>Open</button>
-                                <button>Move</button>
-                                <button>Delete</button>
-                              </div>
-                            </div>
+            <div ref={allListDiv}>
+              {wishListData.hasOwnProperty("wishListData") && wishListData.hasOwnProperty("wishListNames")
+                ? wishListData["wishListNames"].map((el, index) => {
+                    return (
+                      <div
+                        ref={(element) => {
+                          allListsRef.current[index] = element;
+                        }}
+                        key={index}
+                        className={cn(styles.alllist, canRunAnimations === true ? "" : styles.noAnimation, wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand)}
+                      >
+                        <div className={styles.itemNameDiv}>
+                          <p className={styles.itemName}>{el}</p>
+                          <div className={styles.itemButtons}>
+                            <button
+                              id={"button-" + index + "-" + el}
+                              onClick={() => {
+                                nextListBtn.current.innerHTML = el;
+                                defaultListRef.current.classList.remove(styles.collapse);
+                                setNextTabData(el);
+                                // setScrollToAllListTab(0);
+                                // setScrollToAllDefaultTab(0)
+                                toggleDefaultTab(true);
+                                const id = wishListData["wishListIds"][wishListData["wishListNames"].indexOf(el)];
+                                nextListDiv.current.id = "wishListId-" + id;
+                              }}
+                            >
+                              <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                renameListInputRef.current.value = el
+                                selectedRenameInputNameRef.current = el
+                                renameListDialogRef.current.showModal();
+                                renameListInputRef.current.focus()
+                              }}
+                            >
+                              <FiEdit3 /> <span>Rename</span>
+                            </button>
+                            <button>
+                              <HiOutlineTrash />
+                              <span>Delete</span>
+                            </button>
+                            <button
+                              onClick={(event) => {
+                                const parentDiv = event.target.parentNode.parentNode.parentNode;
+                                parentDiv.classList.remove(styles.noAnimation);
+                                if (parentDiv.classList.contains(styles.collapse)) {
+                                  parentDiv.classList.add(styles.expand);
+                                  parentDiv.classList.remove(styles.collapse);
+                                  setWishListData((prev) => ({ ...prev, collapsedDivs: { ...prev["collapsedDivs"], [el]: false } }));
+                                } else {
+                                  parentDiv.classList.add(styles.collapse);
+                                  parentDiv.classList.remove(styles.expand);
+                                  setWishListData((prev) => ({ ...prev, collapsedDivs: { ...prev["collapsedDivs"], [el]: true } }));
+                                }
+                              }}
+                              className={styles.arrowIconBtn}
+                            >
+                              <IoIosArrowDropupCircle className={styles.arrowIcon} />
+                            </button>
                           </div>
-                          {isLastDiv === true ? (
-                            <div ref={loaderRef} className={styles.loaderDiv}>
-                              <Oval height={45} width={45} color="#3b82f6" wrapperStyle={{}} wrapperClass="" visible={true} ariaLabel="oval-loading" secondaryColor="3b83f67c" strokeWidth={6} strokeWidthSecondary={6} />
-                            </div>
+                        </div>
+                        <div ref={imagesDivRef} id="images-div" className={styles.imagesDiv}>
+                          {wishListData["wishListData"].hasOwnProperty(el) && wishListData["wishListData"][el].length > 0 ? (
+                            [...Object.values(wishListData["wishListData"][el])].slice(0, 6).map((item, index2) => {
+                              return (
+                                <Image
+                                  onClick={() => {
+                                    const button = document.getElementById("button-" + index + "-" + el);
+                                    if (button) {
+                                      button.click();
+                                    }
+                                  }}
+                                  key={index2}
+                                  className={styles.image}
+                                  src={item["selectedImageUrl"]}
+                                  width={150}
+                                  height={150}
+                                  draggable={false}
+                                />
+                              );
+                            })
                           ) : (
-                            ""
+                            <EmptyList />
                           )}
                         </div>
-                      );
-                    })
-                  ) : (
-                    <EmptyList />
-                  )}
+                      </div>
+                    );
+                  })
+                : "loading"}
+            </div>
+
+            <div ref={nextListDiv} className={cn(styles.hide, "nextListDiv")}>
+              {nextTabData ? (
+                <div ref={defaultListRef} className={cn(styles.alllist, "niceBox", styles.noAnimation)}>
+                  <div className={styles.itemNameDiv}>
+                    <p className={styles.itemName}>{nextTabData}</p>
+                    <div className={styles.itemButtons}>
+                      <button>
+                        <FiEdit3 /> <span>Rename</span>
+                      </button>
+                      <button>
+                        <HiOutlineTrash />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                    {nextTabDataObject && nextTabDataObject.hasOwnProperty(nextTabData) ? (
+                      nextTabDataObject[nextTabData].map((item, index2) => {
+                        const isLastDiv = index2 === nextTabDataObject[nextTabData].length - 1;
+                        return (
+                          <div
+                            ref={index2 === nextTabDataObject[nextTabData].length - 1 ? lastDivRef : null}
+                            data-attribute-parentwishlistid={item["parentWishListId"]}
+                            data-attribute-wishlistname={item["wishListName"]}
+                            className={styles.nextTabProductsDiv}
+                            key={index2}
+                            style={{ width: "100%" }}
+                          >
+                            <div className={styles.nextTabProducts}>
+                              <div className={styles.nextTabProductsImage}>
+                                <Image className={styles.image} src={item["selectedImageUrl"]} width={150} height={150} draggable={false} />
+                              </div>
+                              <div className={styles.nextTabProducts_right}>
+                                <div style={{ width: "95%" }}>
+                                  <div className={styles.nextTabProductsTitle}>{item["title"]}</div>
+                                  <div className={styles.nextTabProductsPrice}>$1500</div>
+                                </div>
+                                <div className={styles.nextTabProductsButtons}>
+                                  <button>Open</button>
+                                  <button>Move</button>
+                                  <button>Delete</button>
+                                </div>
+                              </div>
+                            </div>
+                            {isLastDiv === true ? (
+                              <div ref={loaderRef} className={styles.loaderDiv}>
+                                <Oval height={45} width={45} color="#3b82f6" wrapperStyle={{}} wrapperClass="" visible={true} ariaLabel="oval-loading" secondaryColor="3b83f67c" strokeWidth={6} strokeWidthSecondary={6} />
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <EmptyList />
+                    )}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              "loading"
-            )}
+              ) : (
+                "loading"
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* right */}
-      <div></div>
-    </div>
+        {/* right */}
+        <div></div>
+      </div>
     </>
   );
 }
