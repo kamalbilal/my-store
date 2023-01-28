@@ -388,9 +388,9 @@
   font-size: 1.4rem;
   padding: 10px 5px;
   border-bottom: 1px solid #eee;
-  text-transform: capitalize;
   border-radius: 5px;
 }
+
 .errorInput {
   border: 1px solid red !important;
 }

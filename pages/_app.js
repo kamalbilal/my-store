@@ -122,6 +122,14 @@ function MyApp({ Component, pageProps }) {
         data: cartData,
       });
 
+      const sortedIds = [...response.data.data["userWishList"]["wishListIds"]].sort((a, b) => a - b);
+      const nameIdMap = {}
+      for(let i = 0; i < response.data.data["userWishList"]["wishListIds"].length; i++) {
+        nameIdMap[response.data.data["userWishList"]["wishListIds"][i]] = response.data.data["userWishList"]["wishListNames"][i];
+      }
+      response.data.data["userWishList"]["wishListIds"] = sortedIds;
+      response.data.data["userWishList"]["wishListNames"] = sortedIds.map(i => nameIdMap[i])
+
       // wishlist
       setWishListData((prev) => {
         const temp = { ...prev };

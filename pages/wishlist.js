@@ -81,7 +81,14 @@ function Wishlist() {
         console.timeEnd("Getting wishlist data");
         console.log(response);
         if (response["success"] === true && response["data"].hasOwnProperty("wishListData")) {
-          // console.log({ ...wishListData });
+          const sortedIds = [...response["data"]["wishListIds"]].sort((a, b) => a - b);
+          const nameIdMap = {};
+          for (let i = 0; i < response["data"]["wishListIds"].length; i++) {
+            nameIdMap[response["data"]["wishListIds"][i]] = response["data"]["wishListNames"][i];
+          }
+          response["data"]["wishListIds"] = sortedIds;
+          response["data"]["wishListNames"] = sortedIds.map((i) => nameIdMap[i]);
+
           setWishListData((prev) => {
             const temp = { ...prev };
             temp["wishListData"] = response["data"]["wishListData"];
@@ -325,7 +332,6 @@ function Wishlist() {
     }
   }
 
-
   function onCreateNewList() {
     const value = createListInputRef.current.value;
     if (!value) {
@@ -416,29 +422,116 @@ function Wishlist() {
       return;
     }
 
-    // check if name is same as before 
-    if (value === selectedRenameInputNameRef.current) {
+    const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
+
+    // check if name is same as before
+    if (capitalizedValue === selectedRenameInputNameRef.current) {
       renameListInputRef.current.value = "";
       renameListDialogRef.current.close();
-      return
+      return;
     }
 
     // check for duplicate name
-    const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
     if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
       renameListDuplicateNameErrorRef.current.style.display = "flex";
     } else {
       renameListInputRef.current.value = "";
       renameListDialogRef.current.close();
+
+      const wishlistId = wishListData["wishListIds"][wishListData["wishListNames"].indexOf(selectedRenameInputNameRef.current)];
+
       setWishListData((prev) => {
-        const temp = {...prev}
-        const indexOf = temp["wishListNames"].indexOf(selectedRenameInputNameRef.current)
+        const temp = { ...prev };
+        const indexOf = temp["wishListNames"].indexOf(selectedRenameInputNameRef.current);
         if (indexOf !== -1) {
-          temp["wishListNames"][indexOf] = value
+          temp["wishListNames"][indexOf] = capitalizedValue;
         }
-        return temp
+        return temp;
       });
-      // createNewWishlist(capitalizedValue);
+
+      if (nextListBtn.current.innerText === selectedRenameInputNameRef.current) {
+        nextListBtn.current.innerHTML = capitalizedValue
+        setNextTabData(capitalizedValue)
+      }
+      renameWishlistApi(capitalizedValue, wishlistId, selectedRenameInputNameRef.current);
+    }
+  }
+
+  // function onNextTabRenameList() {
+  //   const value = renameListInputRef.current.value;
+  //   if (!value) {
+  //     renameListInputRef.current.classList.add(styles.errorInput);
+  //     renameListInputRef.current.focus();
+  //     renameListNoInputErrorRef.current.style.display = "flex";
+  //     return;
+  //   }
+
+  //   const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
+
+  //   // check if name is same as before
+  //   if (capitalizedValue === selectedRenameInputNameRef.current) {
+  //     renameListInputRef.current.value = "";
+  //     renameListDialogRef.current.close();
+  //     return
+  //   }
+
+  //   // check for duplicate name
+  //   if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
+  //     renameListDuplicateNameErrorRef.current.style.display = "flex";
+  //   } else {
+  //     renameListInputRef.current.value = "";
+  //     renameListDialogRef.current.close();
+
+  //     const wishlistId = wishListData["wishListIds"][wishListData["wishListNames"].indexOf(selectedRenameInputNameRef.current)]
+
+  //     setWishListData((prev) => {
+  //       const temp = {...prev}
+  //       const indexOf = temp["wishListNames"].indexOf(selectedRenameInputNameRef.current)
+  //       if (indexOf !== -1) {
+  //         temp["wishListNames"][indexOf] = capitalizedValue
+  //       }
+  //       return temp
+  //     });
+  //     renameWishlistApi(capitalizedValue, wishlistId, selectedRenameInputNameRef.current);
+  //   }
+  // }
+
+  async function renameWishlistApi(name, wishlistId, oldName) {
+    const options = {
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/updateWishListName",
+      method: "POST",
+      credentials: "include",
+      withCredentials: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      data: {
+        wishListName: name,
+        wishlistId: wishlistId,
+      },
+    };
+
+    const response = await MyAxios(options);
+    if (response.success !== true) {
+      setWishListData((prev) => {
+        const temp = { ...prev };
+        const indexOf = temp["wishListNames"].indexOf(name);
+        if (indexOf !== -1) {
+          temp["wishListNames"][indexOf] = oldName;
+        }
+        return temp;
+      });
+
+      toast("Could not rename the list!", {
+        theme: "colored",
+        type: "error",
+        position: "top-right",
+        pauseOnHover: true,
+        pauseOnFocusLoss: false,
+        autoClose: 5000,
+        limit: 1,
+      });
     }
   }
 
@@ -498,7 +591,15 @@ function Wishlist() {
           </div>
           <div className={styles.listnameDiv}>
             <h4>Enter list name</h4>
-            <input ref={createListInputRef} type="text" onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)} onInput={resetNewListDialog} />
+            <input
+              ref={createListInputRef}
+              type="text"
+              onKeyUp={(event) => (event.key === "Enter" ? onCreateNewList() : null)}
+              onInput={(event) => {
+                resetNewListDialog();
+                event.target.value = event.target.value.substring(0, 1).toUpperCase() + event.target.value.substring(1);
+              }}
+            />
             <p ref={createListNoInputErrorRef} className={styles.noListError}>
               <RxCross2 /> Please enter a new list name.
             </p>
@@ -544,7 +645,7 @@ function Wishlist() {
                 <button
                   className={cn(styles.escBtn)}
                   onClick={() => {
-                    resetRenameListDialog()
+                    resetRenameListDialog();
                     renameListDialogRef.current.close();
                   }}
                 >
@@ -555,7 +656,15 @@ function Wishlist() {
           </div>
           <div className={styles.listnameDiv}>
             <h4>Enter new list name</h4>
-            <input ref={renameListInputRef} type="text" onKeyUp={(event) => (event.key === "Enter" ? onRenameList() : null)} onInput={resetRenameListDialog} />
+            <input
+              ref={renameListInputRef}
+              type="text"
+              onKeyUp={(event) => (event.key === "Enter" ? onRenameList() : null)}
+              onInput={(event) => {
+                resetRenameListDialog();
+                event.target.value = event.target.value.substring(0, 1).toUpperCase() + event.target.value.substring(1);
+              }}
+            />
             <p ref={renameListNoInputErrorRef} className={styles.noListError}>
               <RxCross2 /> Please enter a new list name.
             </p>
@@ -637,10 +746,10 @@ function Wishlist() {
                             </button>
                             <button
                               onClick={() => {
-                                renameListInputRef.current.value = el
-                                selectedRenameInputNameRef.current = el
+                                renameListInputRef.current.value = el;
+                                selectedRenameInputNameRef.current = el;
                                 renameListDialogRef.current.showModal();
-                                renameListInputRef.current.focus()
+                                renameListInputRef.current.focus();
                               }}
                             >
                               <FiEdit3 /> <span>Rename</span>
@@ -705,7 +814,14 @@ function Wishlist() {
                   <div className={styles.itemNameDiv}>
                     <p className={styles.itemName}>{nextTabData}</p>
                     <div className={styles.itemButtons}>
-                      <button>
+                      <button
+                        onClick={() => {
+                          renameListInputRef.current.value = nextTabData;
+                          selectedRenameInputNameRef.current = nextTabData;
+                          renameListDialogRef.current.showModal();
+                          renameListInputRef.current.focus();
+                        }}
+                      >
                         <FiEdit3 /> <span>Rename</span>
                       </button>
                       <button>
