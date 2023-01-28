@@ -333,7 +333,7 @@ function Wishlist() {
   }
 
   function onCreateNewList() {
-    const value = createListInputRef.current.value;
+    const value = createListInputRef.current.value.trim();
     if (!value) {
       createListInputRef.current.classList.add(styles.errorInput);
       createListInputRef.current.focus();
@@ -414,7 +414,7 @@ function Wishlist() {
   }
 
   function onRenameList() {
-    const value = renameListInputRef.current.value;
+    const value = renameListInputRef.current.value.trim();
     if (!value) {
       renameListInputRef.current.classList.add(styles.errorInput);
       renameListInputRef.current.focus();
@@ -450,8 +450,8 @@ function Wishlist() {
       });
 
       if (nextListBtn.current.innerText === selectedRenameInputNameRef.current) {
-        nextListBtn.current.innerHTML = capitalizedValue
-        setNextTabData(capitalizedValue)
+        nextListBtn.current.innerHTML = capitalizedValue;
+        setNextTabData(capitalizedValue);
       }
       renameWishlistApi(capitalizedValue, wishlistId, selectedRenameInputNameRef.current);
     }
@@ -509,6 +509,7 @@ function Wishlist() {
       data: {
         wishListName: name,
         wishlistId: wishlistId,
+        oldWishlistName: oldName
       },
     };
 
@@ -744,20 +745,28 @@ function Wishlist() {
                             >
                               <IoEyeOutline className={styles.eyeIcon} /> <span>Show</span>
                             </button>
-                            <button
-                              onClick={() => {
-                                renameListInputRef.current.value = el;
-                                selectedRenameInputNameRef.current = el;
-                                renameListDialogRef.current.showModal();
-                                renameListInputRef.current.focus();
-                              }}
-                            >
-                              <FiEdit3 /> <span>Rename</span>
-                            </button>
-                            <button>
-                              <HiOutlineTrash />
-                              <span>Delete</span>
-                            </button>
+                            {el !== "Default" ? (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    renameListInputRef.current.value = el.trim();
+                                    selectedRenameInputNameRef.current = el;
+                                    renameListDialogRef.current.showModal();
+                                    renameListInputRef.current.focus();
+                                  }}
+                                >
+                                  <FiEdit3 /> <span>Rename</span>
+                                </button>
+
+                                <button>
+                                  <HiOutlineTrash />
+                                  <span>Delete</span>
+                                </button>
+                              </>
+                            ) : (
+                              ""
+                            )}
+
                             <button
                               onClick={(event) => {
                                 const parentDiv = event.target.parentNode.parentNode.parentNode;
@@ -814,20 +823,26 @@ function Wishlist() {
                   <div className={styles.itemNameDiv}>
                     <p className={styles.itemName}>{nextTabData}</p>
                     <div className={styles.itemButtons}>
-                      <button
-                        onClick={() => {
-                          renameListInputRef.current.value = nextTabData;
-                          selectedRenameInputNameRef.current = nextTabData;
-                          renameListDialogRef.current.showModal();
-                          renameListInputRef.current.focus();
-                        }}
-                      >
-                        <FiEdit3 /> <span>Rename</span>
-                      </button>
-                      <button>
-                        <HiOutlineTrash />
-                        <span>Delete</span>
-                      </button>
+                      {nextTabData !== "Default" ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              renameListInputRef.current.value = nextTabData;
+                              selectedRenameInputNameRef.current = nextTabData;
+                              renameListDialogRef.current.showModal();
+                              renameListInputRef.current.focus();
+                            }}
+                          >
+                            <FiEdit3 /> <span>Rename</span>
+                          </button>
+                          <button>
+                            <HiOutlineTrash />
+                            <span>Delete</span>
+                          </button>
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   <div className={styles.imagesDiv} style={{ flexDirection: "column", alignItems: "flex-start" }}>
