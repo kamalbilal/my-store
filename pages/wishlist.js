@@ -29,7 +29,7 @@ function Wishlist() {
   const [pagination, setPagination] = useState({});
   const [nextTabDataObject, setNextTabDataObject] = useState({});
 
-  const allListsRef = useRef([]);
+  const allListsRef = useRef({});
   const defaultListRef = useRef();
   const dummyheightRef = useRef();
 
@@ -57,6 +57,9 @@ function Wishlist() {
   const renameListNoInputErrorRef = useRef();
   const renameListDuplicateNameErrorRef = useRef();
   const selectedRenameInputNameRef = useRef();
+
+  const deleteListDialogRef = useRef();
+  const deleteListData = useRef({})
 
   useEffect(() => {
     if (wishListData && !wishListData.hasOwnProperty("wishListData")) {
@@ -232,7 +235,17 @@ function Wishlist() {
       top: scrollToTop != false ? 0 : scrollToAllDefaultTab,
     });
 
-    allListsRef.current.map((el) => el.classList.add(styles.noAnimation));
+
+    const keys = Object.keys(allListsRef.current)
+    for (let index = 0; index < keys.length; index++) {
+      const keyName = keys[index];
+      if (wishListData["wishListNames"].includes(keyName)) {
+        const el = allListsRef.current[keyName]
+        el.classList.add(styles.noAnimation)
+      }
+      
+    }
+    // .map((el) => ;
   }
 
   console.log(wishListData);
@@ -457,45 +470,6 @@ function Wishlist() {
     }
   }
 
-  // function onNextTabRenameList() {
-  //   const value = renameListInputRef.current.value;
-  //   if (!value) {
-  //     renameListInputRef.current.classList.add(styles.errorInput);
-  //     renameListInputRef.current.focus();
-  //     renameListNoInputErrorRef.current.style.display = "flex";
-  //     return;
-  //   }
-
-  //   const capitalizedValue = value.substring(0, 1).toUpperCase() + value.substring(1);
-
-  //   // check if name is same as before
-  //   if (capitalizedValue === selectedRenameInputNameRef.current) {
-  //     renameListInputRef.current.value = "";
-  //     renameListDialogRef.current.close();
-  //     return
-  //   }
-
-  //   // check for duplicate name
-  //   if (wishListData["wishListNames"].indexOf(capitalizedValue) !== -1) {
-  //     renameListDuplicateNameErrorRef.current.style.display = "flex";
-  //   } else {
-  //     renameListInputRef.current.value = "";
-  //     renameListDialogRef.current.close();
-
-  //     const wishlistId = wishListData["wishListIds"][wishListData["wishListNames"].indexOf(selectedRenameInputNameRef.current)]
-
-  //     setWishListData((prev) => {
-  //       const temp = {...prev}
-  //       const indexOf = temp["wishListNames"].indexOf(selectedRenameInputNameRef.current)
-  //       if (indexOf !== -1) {
-  //         temp["wishListNames"][indexOf] = capitalizedValue
-  //       }
-  //       return temp
-  //     });
-  //     renameWishlistApi(capitalizedValue, wishlistId, selectedRenameInputNameRef.current);
-  //   }
-  // }
-
   async function renameWishlistApi(name, wishlistId, oldName) {
     const options = {
       url: process.env.NEXT_PUBLIC_DB_HOST + "/updateWishListName",
@@ -509,7 +483,7 @@ function Wishlist() {
       data: {
         wishListName: name,
         wishlistId: wishlistId,
-        oldWishlistName: oldName
+        oldWishlistName: oldName,
       },
     };
 
@@ -534,6 +508,67 @@ function Wishlist() {
         limit: 1,
       });
     }
+  }
+
+  async function deleteWishlistApi() {
+    deleteListDialogRef.current.close();
+    const wishlistId = deleteListData.current["wishlistId"]
+    const wishlistName = deleteListData.current["wishlistName"]
+    if (!wishlistId || !wishlistName) {
+      toast("Could not delete the list!", {
+        theme: "colored",
+        type: "error",
+        position: "top-right",
+        pauseOnHover: true,
+        pauseOnFocusLoss: false,
+        autoClose: 5000,
+        limit: 1,
+      });
+      return
+    }
+    const options = {
+      url: process.env.NEXT_PUBLIC_DB_HOST + "/deleteWishList",
+      method: "POST",
+      credentials: "include",
+      withCredentials: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      data: {
+        wishlistId: wishlistId,
+      },
+    };
+
+    let prevValues = { ...wishListData };
+
+    setWishListData((prev) => {
+      const temp = { ...prev };
+      const indexOf = temp["wishListNames"].indexOf(wishlistName);
+      if (indexOf !== -1) {
+        temp["wishListNames"].splice(indexOf, 1);
+        temp["wishListIds"].splice(indexOf, 1);
+      }
+      return temp;
+    });
+
+    const response = await MyAxios(options);
+    console.log(response);
+    if (response.success !== true) {
+      setWishListData({...prevValues});
+
+      toast("Could not delete the list!", {
+        theme: "colored",
+        type: "error",
+        position: "top-right",
+        pauseOnHover: true,
+        pauseOnFocusLoss: false,
+        autoClose: 5000,
+        limit: 1,
+      });
+    }
+
+    prevValues = null
   }
 
   useEffect(() => {
@@ -678,6 +713,58 @@ function Wishlist() {
           </button>
         </dialog>
 
+        <dialog
+          onClick={(event) => {
+            const rect = deleteListDialogRef.current.getBoundingClientRect();
+            if (event.clientY < rect.top || event.clientY > rect.bottom || event.clientX < rect.left || event.clientX > rect.right) {
+              deleteListDialogRef.current.close();
+            }
+          }}
+          ref={deleteListDialogRef}
+          className={styles.deleteListDialog}
+        >
+          <div>
+            <h1>Delete list</h1>
+            <div>
+              <Tippy
+                className={cn("customTippy", styles.tippy)}
+                duration={200}
+                animation="scale"
+                theme="light-border"
+                allowHTML={true}
+                delay={[1000, 0]}
+                placement="right"
+                trigger="mouseenter"
+                appendTo={deleteListDialogRef.current}
+                zIndex={99999}
+                content={
+                  <span>
+                    Press <span style={{ color: "red" }}>ESC</span> To Close
+                  </span>
+                }
+              >
+                <button
+                  className={cn(styles.escBtn, styles.redBg)}
+                  onClick={() => {
+                    // resetRenameListDialog();
+                    deleteListDialogRef.current.close();
+                  }}
+                >
+                  <IoCloseSharp className={styles.closeIcon} />
+                </button>
+              </Tippy>
+            </div>
+          </div>
+
+          <div>
+            <p className={styles.confirmDialogText}>Sure you want to delete this list?</p>
+          </div>
+          
+          <button ref={renameListButtonRef} className={cn(styles.createButton, styles.redBg)} onClick={deleteWishlistApi}>
+            Delete
+          </button>
+        </dialog>
+
         <div
           onClick={() => {
             window.scrollTo({
@@ -722,7 +809,7 @@ function Wishlist() {
                     return (
                       <div
                         ref={(element) => {
-                          allListsRef.current[index] = element;
+                          allListsRef.current[el] = element;
                         }}
                         key={index}
                         className={cn(styles.alllist, canRunAnimations === true ? "" : styles.noAnimation, wishListData["collapsedDivs"][el] === true ? styles.collapse : styles.expand)}
@@ -758,7 +845,16 @@ function Wishlist() {
                                   <FiEdit3 /> <span>Rename</span>
                                 </button>
 
-                                <button>
+                                <button
+                                  className={styles.deleteButton}
+                                  onClick={() => {
+                                    const wishListId = wishListData["wishListIds"][index];
+                                    const wishlistName = el;
+                                    // deleteWishlistApi(wishListId, wishlistName);
+                                    deleteListData.current = {wishlistId: wishListId, wishlistName : wishlistName}
+                                    deleteListDialogRef.current.showModal()
+                                  }}
+                                >
                                   <HiOutlineTrash />
                                   <span>Delete</span>
                                 </button>
@@ -835,7 +931,9 @@ function Wishlist() {
                           >
                             <FiEdit3 /> <span>Rename</span>
                           </button>
-                          <button>
+                          <button
+                            className={styles.deleteButton}
+                            >
                             <HiOutlineTrash />
                             <span>Delete</span>
                           </button>
