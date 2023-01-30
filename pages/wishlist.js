@@ -124,7 +124,7 @@ function Wishlist() {
         return temp;
       });
     }
-  }, [wishListData]);
+  }, [wishListData, []]);
 
   useEffect(() => {
     console.log(pagination);
@@ -245,7 +245,7 @@ function Wishlist() {
       }
       
     }
-    // .map((el) => ;
+    
   }
 
   console.log(wishListData);
@@ -548,10 +548,18 @@ function Wishlist() {
       if (indexOf !== -1) {
         temp["wishListNames"].splice(indexOf, 1);
         temp["wishListIds"].splice(indexOf, 1);
+        if (temp["wishListData"].hasOwnProperty(wishlistName)) {
+          delete temp["wishListData"][wishlistName]
+        }
       }
       return temp;
     });
 
+    const nextTabText = nextListBtn.current.innerText
+    if (nextTabText === wishlistName) {
+      setNextTabData("Default")
+      nextListBtn.current.innerHTML = "Default"
+    }
     const response = await MyAxios(options);
     console.log(response);
     if (response.success !== true) {

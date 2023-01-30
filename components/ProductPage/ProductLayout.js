@@ -552,8 +552,8 @@ function ProductLayout({ productData }) {
         router.query.select.split("-").map((el) => {
           if (!el) return;
           el = el.split(":");
-          const first = el[0];
-          const second = el[1];
+          const first = replaceSpecialCharacters(el[0]);
+          const second = replaceSpecialCharacters(el[1]);
           try {
             const element = document.querySelector(`[data-attribute-first='${first}'][data-attribute-second='${second}']`);
             if (element) element.click();
@@ -590,6 +590,9 @@ function ProductLayout({ productData }) {
     console.log(sizeColorsSelectedData);
   }, [sizeColorsSelectedData, mainshippingFee, quantity]);
 
+  function replaceSpecialCharacters(str) {
+    return `${str}`.replace(/[^\d\w]/g, "")
+  }
   return (
     <div className={styles.container}>
       {/* left */}
@@ -768,9 +771,10 @@ function ProductLayout({ productData }) {
                       className={cn(styles.item, containImage === true ? "" : styles.item_padding)}
                       key={index2}
                       ref={(ref) => createNewRefs(ref, index2, propertyId)}
-                      data-attribute-first={element["skuPropertyId"]}
-                      data-attribute-second={element2["propertyValueId"]}
-                      data-attribute-third={element2["propertyValueDisplayName"]}
+                      data-attribute-first={replaceSpecialCharacters(element["skuPropertyId"])}
+                      data-attribute-second={replaceSpecialCharacters(element2["propertyValueId"])}
+                      data-attribute-third={replaceSpecialCharacters(element2["propertyValueDisplayName"])}
+                      data-test={"smslmlsm"}
                       onClick={(e) => {
                         const id = e.target.id * 1;
                         setCurrentImageIndex(id);
@@ -778,9 +782,9 @@ function ProductLayout({ productData }) {
                           setShowMainImageModal_OR_SizesColorsModal("sizeColorsModal");
                         }
 
-                        const dataAttributeFirst = e.target.getAttribute("data-attribute-first");
-                        const dataAttributeSecond = e.target.getAttribute("data-attribute-second");
-                        const dataAttributeThird = e.target.getAttribute("data-attribute-third");
+                        const dataAttributeFirst = replaceSpecialCharacters(e.target.getAttribute("data-attribute-first"));
+                        const dataAttributeSecond = replaceSpecialCharacters(e.target.getAttribute("data-attribute-second"));
+                        const dataAttributeThird = replaceSpecialCharacters(e.target.getAttribute("data-attribute-third"));
 
                         if (sizeColors_allRefs[dataAttributeFirst][id].classList.contains(styles.itemFocus)) {
                           sizeColors_allRefs[dataAttributeFirst][id].classList.remove(styles.itemFocus);
