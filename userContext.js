@@ -16,3 +16,4 @@ export const SearchPageNumber_context = createContext(null);
 export const SearchPageNumberHistory_context = createContext(null);
 export const UserData_context = createContext(null);
 export const getUserData_context = createContext(null);
+export const WishListPagination_context = createContext(null);

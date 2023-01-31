@@ -1,7 +1,7 @@
 import cn from "classnames";
 import { useContext, useEffect, memo, useRef, useState, useLayoutEffect } from "react";
 import MyAxios from "../libs/MyAxios";
-import { WishLishContext } from "../userContext";
+import { WishLishContext, WishListPagination_context } from "../userContext";
 import styles from "../styles/wishlist.module.css";
 import { HiOutlineTrash } from "react-icons/hi";
 import { FiEdit3 } from "react-icons/fi";
@@ -21,12 +21,12 @@ function Wishlist() {
   const router = useRouter();
 
   const { wishListData, setWishListData } = useContext(WishLishContext);
+  const { pagination, setPagination } = useContext(WishListPagination_context);
   const [canRunAnimations, setCanRunAnimations] = useState(false);
   const [nextTabData, setNextTabData] = useState("Default");
   const [scrollToAllListTab, setScrollToAllListTab] = useState(0);
   const [scrollToAllDefaultTab, setScrollToAllDefaultTab] = useState(0);
   const [changeTabs, setChangeTabs] = useState({ allList: true, default: false });
-  const [pagination, setPagination] = useState({});
   const [nextTabDataObject, setNextTabDataObject] = useState({});
 
   const allListsRef = useRef({});
@@ -106,28 +106,28 @@ function Wishlist() {
     }
   }, []);
 
-  useEffect(() => {
-    if (pagination && pagination.hasOwnProperty("pagesByName")) {
-      return;
-    }
-    if (wishListData && wishListData.hasOwnProperty("wishListNames") && wishListData.hasOwnProperty("wishListIds")) {
-      setPagination((prev) => {
-        const temp = { ...prev };
-        temp["pagesByName"] = {};
-        temp["pagesById"] = {};
-        for (let index = 0; index < wishListData["wishListIds"].length; index++) {
-          const wishListName = wishListData["wishListNames"][index];
-          const wishListId = wishListData["wishListIds"][index];
-          temp["pagesById"][wishListId] = { page: 1, isCompleted: false };
-          temp["pagesByName"][wishListName] = { page: 1, isCompleted: false };
-        }
-        return temp;
-      });
-    }
-  }, [wishListData, []]);
+  // useEffect(() => {
+  //   if (pagination && pagination.hasOwnProperty("pagesByName")) {
+  //     return;
+  //   }
+  //   if (wishListData && wishListData.hasOwnProperty("wishListNames") && wishListData.hasOwnProperty("wishListIds")) {
+  //     setPagination((prev) => {
+  //       const temp = { ...prev };
+  //       temp["pagesByName"] = {};
+  //       temp["pagesById"] = {};
+  //       for (let index = 0; index < wishListData["wishListIds"].length; index++) {
+  //         const wishListName = wishListData["wishListNames"][index];
+  //         const wishListId = wishListData["wishListIds"][index];
+  //         temp["pagesById"][wishListId] = { page: 1, isCompleted: false };
+  //         temp["pagesByName"][wishListName] = { page: 1, isCompleted: false };
+  //       }
+  //       return temp;
+  //     });
+  //   }
+  // }, [wishListData]);
 
   useEffect(() => {
-    console.log(pagination);
+    console.log({pagination});
   }, [pagination]);
 
   function showLoader() {
@@ -142,7 +142,7 @@ function Wishlist() {
     showLoader();
     const wishlistId = lastDivRef.current.getAttribute("data-attribute-parentwishlistid");
     const wishlistName = lastDivRef.current.getAttribute("data-attribute-wishlistname");
-
+    console.log(pagination);
     console.log({
       wishlistId: parseInt(wishlistId),
       wishlistName: wishlistName,
@@ -391,6 +391,13 @@ function Wishlist() {
         }
         return temp;
       });
+
+      setPagination((prev) => {
+              const temp = { ...prev };
+              temp["pagesByName"][name] = { page: 1, isCompleted: false };
+              temp["pagesById"][response.data.id] = { page: 1, isCompleted: false };
+              return temp;
+      });
     } else {
       setWishListData((prev) => {
         const temp = { ...prev };
@@ -507,6 +514,15 @@ function Wishlist() {
         autoClose: 5000,
         limit: 1,
       });
+    } else {
+      setPagination((prev) => {
+        const temp = { ...prev };
+        const prevNameData = {...temp["pagesByName"][oldName]};
+        temp["pagesByName"][name] = prevNameData
+
+        delete temp["pagesByName"][oldName]
+        return temp;
+      });
     }
   }
 
@@ -573,6 +589,13 @@ function Wishlist() {
         pauseOnFocusLoss: false,
         autoClose: 5000,
         limit: 1,
+      });
+    } else {
+      setPagination((prev) => {
+        const temp = { ...prev };
+        delete temp["pagesByName"][wishlistName];
+        delete temp["pagesById"][wishlistId];
+        return temp;
       });
     }
 
@@ -941,6 +964,14 @@ function Wishlist() {
                           </button>
                           <button
                             className={styles.deleteButton}
+                            onClick={() => {
+                              const indexOf = wishListData["wishListNames"].indexOf(nextTabData)
+                              const wishListId = wishListData["wishListIds"][indexOf];
+                              const wishlistName = nextTabData;
+                              // deleteWishlistApi(wishListId, wishlistName);
+                              deleteListData.current = {wishlistId: wishListId, wishlistName : wishlistName}
+                              deleteListDialogRef.current.showModal()
+                            }}
                             >
                             <HiOutlineTrash />
                             <span>Delete</span>

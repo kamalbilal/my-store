@@ -23,6 +23,7 @@ import {
   SearchPageNumberHistory_context,
   UserData_context,
   getUserData_context,
+  WishListPagination_context
 } from "../userContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -48,6 +49,7 @@ function MyApp({ Component, pageProps }) {
   const [searchPageNumberHistory, setSearchPageNumberHistory] = useState({}); // dafault value
   const [userData, setUserData] = useState({}); // dafault value
   const [getUserData, setGetUserData] = useState(); // dafault value
+  const [pagination, setPagination] = useState({}); // dafault value
 
   const router = useRouter();
   const forbiddenLinks = ["/register", "/login", "/register/authentication", "/login/authentication"];
@@ -142,6 +144,18 @@ function MyApp({ Component, pageProps }) {
         }
         return temp;
       });
+      setPagination((prev) => {
+        const temp = { ...prev };
+        temp["pagesByName"] = {};
+        temp["pagesById"] = {};
+        for (let index = 0; index < response.data.data["userWishList"]["wishListIds"].length; index++) {
+          const wishListName = response.data.data["userWishList"]["wishListNames"][index];
+          const wishListId = response.data.data["userWishList"]["wishListIds"][index];
+          temp["pagesById"][wishListId] = { page: 1, isCompleted: false };
+          temp["pagesByName"][wishListName] = { page: 1, isCompleted: false };
+        }
+        return temp;
+      });
     } else {
       setUserData({});
       setCartNumber({
@@ -179,6 +193,7 @@ function MyApp({ Component, pageProps }) {
       );
     } else {
       return (
+        <WishListPagination_context.Provider value={{ pagination, setPagination}}>
         <getUserData_context.Provider value={{ getUserData, setGetUserData }}>
           <UserData_context.Provider value={{ userData, setUserData }}>
             <SearchPageNumberHistory_context.Provider value={{ searchPageNumberHistory, setSearchPageNumberHistory }}>
@@ -208,6 +223,7 @@ function MyApp({ Component, pageProps }) {
             </SearchPageNumberHistory_context.Provider>
           </UserData_context.Provider>
         </getUserData_context.Provider>
+        </WishListPagination_context.Provider>
       );
     }
   }
