@@ -106,26 +106,6 @@ function Wishlist() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (pagination && pagination.hasOwnProperty("pagesByName")) {
-  //     return;
-  //   }
-  //   if (wishListData && wishListData.hasOwnProperty("wishListNames") && wishListData.hasOwnProperty("wishListIds")) {
-  //     setPagination((prev) => {
-  //       const temp = { ...prev };
-  //       temp["pagesByName"] = {};
-  //       temp["pagesById"] = {};
-  //       for (let index = 0; index < wishListData["wishListIds"].length; index++) {
-  //         const wishListName = wishListData["wishListNames"][index];
-  //         const wishListId = wishListData["wishListIds"][index];
-  //         temp["pagesById"][wishListId] = { page: 1, isCompleted: false };
-  //         temp["pagesByName"][wishListName] = { page: 1, isCompleted: false };
-  //       }
-  //       return temp;
-  //     });
-  //   }
-  // }, [wishListData]);
-
   useEffect(() => {
     console.log({pagination});
   }, [pagination]);
@@ -328,14 +308,14 @@ function Wishlist() {
   }, [nextTabData, wishListData]);
 
   useEffect(() => {
-    if (imagesDivRef.current) {
+    if (imagesDivRef.current && changeTabs["allList"] === true) {
       const height = imagesDivRef.current.clientHeight;
       console.log(height);
       const root = document.documentElement;
       // Set the value of the --my-variable CSS variable
       root.style.setProperty("--wishlist-expand-collapse-max-height", `${height + 70}px`);
     }
-  }, [imagesDivRef.current]);
+  }, [imagesDivRef.current, changeTabs["allList"]]);
 
   function resetNewListDialog() {
     if (createListInputRef.current.classList.contains(styles.errorInput) || createListDuplicateNameErrorRef.current.style.display === "flex") {
